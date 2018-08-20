@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
   //const double rho_inverse = 10 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
   //const double delta_function_width = 1;
   const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
-  long double position[num_time_steps];
+  //long double position[num_time_steps];
   //long double Average_Position[num_time_steps][num_distance_steps] = {0};  // second index denotes initial position
   long double distance_list[num_distance_steps];
   //long double Contribution_from_each_trial[num_trials] = {0};
@@ -157,9 +157,9 @@ if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_
 //cout << Contribution_from_each_trial[trial] << endl;
 //cout << current_position << endl;
   fout7 << current_position << endl;
- position[int(floor(double(time)/time_scale_coarse_graining + .5))] = current_position;
+ //position[int(floor(double(time)/time_scale_coarse_graining + .5))] = current_position;
  //Average_Position[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] += current_position/num_trials;
- current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
+ //current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
     //cout << current_position << endl;
          //dummy_counter = dummy_counter +1;
         //cout << dummy_counter << endl;
