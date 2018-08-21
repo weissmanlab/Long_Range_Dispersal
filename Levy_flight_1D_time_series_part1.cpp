@@ -1,9 +1,11 @@
+#include <stdio.h>
 #include <iostream>
 #include <unistd.h>
 #include <cmath>
 #include <random>
 #include <iostream>
 #include <string>
+#include <string.h>
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>     /* atof */
