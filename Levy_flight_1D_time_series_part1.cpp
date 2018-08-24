@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
   //const double mu_step = .0001; 
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   //const double rho_inverse = 10 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
-  //const double delta_function_width = 1;
+  const double delta_function_width = 1;
   const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
   //long double position[num_time_steps];
   //long double Average_Position[num_time_steps][num_distance_steps] = {0};  // second index denotes initial position
@@ -124,6 +124,20 @@ for(int trial =0; trial < num_trials; trial++)
          file_name >> stringfile; 
     ofstream fout7;
     fout7.open(stringfile);
+  
+   char OUTPUTFILE3[50];
+  sprintf(OUTPUTFILE3, "entrance_and_exit_times");
+  std::stringstream file_name3;
+         file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << distance <<  "trial" << trial << ".txt" ;
+         std::string stringfile3;
+         file_name3 >> stringfile3; 
+    ofstream fout8;
+    fout8.open(stringfile3);
+  bool inside_zone = false; 
+   bool inside_zone_new; 
+  //if(abs(current_position) <= delta_function_width)  // use step function with finite width as replacement for delta function
+ //{inside_zone = true;}
+
   for (int time =0; time < (num_time_steps-1)*time_scale_coarse_graining; time++) {
     
      
@@ -148,25 +162,40 @@ if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_
 //dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] = dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] + Contribution_from_each_trial[trial]/num_trials;   // here we're adding up the contribution from each trial for a given time
 
 
-/*
+
  if(abs(current_position) <= delta_function_width)  // use step function with finite width as replacement for delta function
  { //Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
    //Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;  ;
     // Second term is the exponential discount factor which accounts for the probability that the two lineages have already coalesced.
+    //fout8 << time << endl;
+ 
 
+ inside_zone_new = true; 
  }
-*/
+
+ else{ inside_zone_new = false; }
+
+if(inside_zone_new == true && inside_zone == false)
+{fout8 << time << " " ;}
+
+if(inside_zone_new == false && inside_zone == true)
+{fout8 << time << endl;}
+
+inside_zone = inside_zone_new;
+
+
 //cout << Contribution_from_each_trial[trial] << endl;
 //cout << current_position << endl;
   fout7 << current_position << endl;
  //position[int(floor(double(time)/time_scale_coarse_graining + .5))] = current_position;
  //Average_Position[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] += current_position/num_trials;
- //current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
+ current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
     //cout << current_position << endl;
          //dummy_counter = dummy_counter +1;
         //cout << dummy_counter << endl;
        };
   fout7.close();
+  fout8.close();
   current_position = fmod(initial_position, periodic_boundary);
   
 
