@@ -86,7 +86,7 @@ chdir(OUTPUTFILE100);
 for(int distance =0; distance < num_distance_steps; distance++)
 {  //initial_position = 1; 
      initial_position = atof(argv[2]); 
-   
+     distance = initial_position;
       std::stringstream file_name4;
          file_name4 <<  "distance_value_"  <<  initial_position  ;   // This is the directory name
          std::string stringfile4;
