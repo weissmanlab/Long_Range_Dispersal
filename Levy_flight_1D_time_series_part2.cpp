@@ -7,7 +7,13 @@
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>     /* atof */
+#include <type_traits>
 using namespace std;
+
+
+
+
+
 int main(int argc, char* argv[])
 {         if(argc != 5) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps " << endl; return 0;} 
   //coarse grain time... don't include every step - have another loop for coarse graining/smoothing time (10 steps for every recorded step)
@@ -37,9 +43,9 @@ int main(int argc, char* argv[])
   //long double Average_Position[num_time_steps][num_distance_steps] = {0};  // second index denotes initial position
   //long double distance_list[num_distance_steps];
   //long double Contribution_from_each_trial[num_trials] = {0};
-  long double *Contribution_from_each_trial = new long double[num_trials];// {0};
+  double *Contribution_from_each_trial = new double[num_trials];// {0};
   //long double Contribution_from_each_trialEXPONENT[num_trials] = {0};
-  long double *Contribution_from_each_trialEXPONENT= new long double[num_trials];
+  double *Contribution_from_each_trialEXPONENT= new double[num_trials];
 
 for(int i =0; i < num_trials; i++)
 {
@@ -48,7 +54,7 @@ for(int i =0; i < num_trials; i++)
 
 
 }
-  long double *dist_of_coalescent_times = new long double[num_time_steps];  //distribution of coalescent times for the given initial seperation 
+  double *dist_of_coalescent_times = new double[num_time_steps];  //distribution of coalescent times for the given initial seperation 
  {for(int i =0; i < num_trials; i++)
 {
    
@@ -57,7 +63,7 @@ for(int i =0; i < num_trials; i++)
 }}
 
 
- long double mean_homozygosity[num_mu_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
+ double mean_homozygosity[num_mu_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
   
 //long double *dist_of_coalescent_times_ALL = new long double[num_time_steps][num_distance_steps];  //distribution of coalescent times for the given initial seperation 
   
@@ -71,8 +77,8 @@ for(int j = 0; j < num_distance_steps; j++)
 }}
 */
 
-  long double mean_homozygosity_ALL[num_mu_steps][num_distance_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
-  long double normalization =0;
+   double mean_homozygosity_ALL[num_mu_steps][num_distance_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
+  double normalization =0;
   //std::default_random_engine generator(time(0));
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
@@ -155,8 +161,8 @@ for(int trial =0; trial < num_trials; trial++)
     fin88.open(stringfile88);
   //if(fin88.is_open() == false){cout << "NOT OPEN" << endl;}
   //if(fin88.is_open() == true){cout << "OPEN" << endl;}
-int entrance_time =7 ;
-  int exit_time= 7 ;
+int entrance_time = -1 ;  // If file is empty entrance and exit time will be the same and while loops will be ignored - dist of coalescent times will remain zero
+  int exit_time= -1 ;
   //for (int time =0; time < (num_time_steps-1)*time_scale_coarse_graining; time++) {
     
     //for (int time =0; time < num_time_steps; time++) {
@@ -181,14 +187,44 @@ if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_
 //cout << int(floor(double(time)/time_scale_coarse_graining + .5))  << endl;
 //dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] = dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] + Contribution_from_each_trial[trial]/num_trials;   // here we're adding up the contribution from each trial for a given time
 
-cout << stringfile88 << " " << time << endl;
+
+if (time < entrance_time)
+{
+   dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+
+}
+
+
+if (time >= entrance_time && time < exit_time)
+{
+   Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;
+//cout << Contribution_from_each_trial[trial] << endl;
+Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
+ dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+
+}
+
+if (time >= exit_time)
+{
+   fin88 >> entrance_time >> exit_time;
+
+}
+
+//cout << stringfile88 << " " << time << endl;
+
+/*
 if(fin88.is_open() == false){cout << "NOT OPEN" << endl;}
+char super_output[50];  
+strcpy(super_output, stringfile88.c_str());
+
+
 fin88 >> entrance_time >> exit_time;
  //fin88 >> exit_time;
 
- cout << entrance_time << " " << exit_time << endl;
-/*
-while(time < entrance_time)
+ //cout << entrance_time << " " << exit_time << endl;
+
+
+while(time < entrance_time && entrance_time != exit_time)
 {  if(time > 0)
      {  //dist_of_coalescent_times[time] = dist_of_coalescent_times[time -1];
          dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
@@ -201,6 +237,7 @@ while(time < entrance_time)
 while(time >= entrance_time  && time < exit_time)
 {  
  Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;
+cout << Contribution_from_each_trialEXPONENT << endl;
 Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
  dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
    time += 1;
@@ -285,7 +322,9 @@ char OUTPUTFILE[50];
 fout4.open(stringfile);
 for (int time =0; time < num_time_steps; time++) {
 //fout4 << dist_of_coalescent_times_ALL[time][distance] << endl;
- fout4 << dist_of_coalescent_times[time] << endl;
+if(time ==0) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
+if(time !=0 && dist_of_coalescent_times[time] != dist_of_coalescent_times[time -1]) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
+
 }
 fout4.close();
 
@@ -304,7 +343,7 @@ char OUTPUTFILE2[50];
 //fout4.open("time_series_averaged.txt");
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
-fout5 << mean_homozygosity[mu] << endl;
+fout5 << mu*mu_step << " " << mean_homozygosity[mu] << endl;
  
 }
 fout5.close();

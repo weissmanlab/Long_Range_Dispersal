@@ -86,7 +86,7 @@ chdir(OUTPUTFILE100);
 for(int distance =0; distance < num_distance_steps; distance++)
 {  //initial_position = 1; 
      initial_position = atof(argv[2]); 
-     distance = initial_position;
+     //distance = initial_position;
       std::stringstream file_name4;
          file_name4 <<  "distance_value_"  <<  initial_position  ;   // This is the directory name
          std::string stringfile4;
@@ -119,7 +119,7 @@ for(int trial =0; trial < num_trials; trial++)
           char OUTPUTFILE[50];
   sprintf(OUTPUTFILE, "time_series");
   std::stringstream file_name;
-         file_name <<  OUTPUTFILE  << "alpha" << alpha << "distance" << distance <<  "trial" << trial << ".txt" ;
+         file_name <<  OUTPUTFILE  << "alpha" << alpha << "distance" << initial_position <<  "trial" << trial << ".txt" ;
          std::string stringfile;
          file_name >> stringfile; 
     ofstream fout7;
@@ -128,7 +128,7 @@ for(int trial =0; trial < num_trials; trial++)
    char OUTPUTFILE3[50];
   sprintf(OUTPUTFILE3, "entrance_and_exit_times");
   std::stringstream file_name3;
-         file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << distance <<  "trial" << trial << ".txt" ;
+         file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << initial_position <<  "trial" << trial << ".txt" ;
          std::string stringfile3;
          file_name3 >> stringfile3; 
     ofstream fout8;
@@ -186,7 +186,7 @@ inside_zone = inside_zone_new;
 
 //cout << Contribution_from_each_trial[trial] << endl;
 //cout << current_position << endl;
-  fout7 << current_position << endl;
+  if(time % time_scale_coarse_graining ==0){ fout7 << time*timestep << " " << current_position << endl;}
  //position[int(floor(double(time)/time_scale_coarse_graining + .5))] = current_position;
  //Average_Position[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] += current_position/num_trials;
  current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
