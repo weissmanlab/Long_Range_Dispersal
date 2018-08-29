@@ -11,7 +11,7 @@
 #include <stdlib.h>     /* atof */
 using namespace std;
 int main(int argc, char* argv[])
-{         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, number of time steps, and timescale coarse graining." << endl; return 0;} 
+{         if(argc != 5) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, and total number of time steps." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
   //coarse grain time... don't include every step - have another loop for coarse graining/smoothing time (10 steps for every recorded step)
   // longer timescales are necessary for free diffusion with no drift to create a proper distribution of coalescence times.  finit t_con seems to lead to a similar power law regardless of jump kernel- vary jump kernel and check this
   //int time = 0;
@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 //cout << fmod(-8, 3)<< endl;
   const int distance_off_set = 0;
   const int num_time_steps = atoi(argv[4]);
-  const int time_scale_coarse_graining = atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
+  const int time_scale_coarse_graining = 1; //atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
   //const int num_mu_steps = 1000;  // number of mu increments in Laplace time 
   const int num_trials = atoi(argv[3]);
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
@@ -111,6 +111,17 @@ chdir(OUTPUTFILE101);
 
 distance_list[distance] =  initial_position;
    current_position = fmod(initial_position, periodic_boundary);
+ofstream fout555;
+    fout555.open("parameter_file.txt");
+    fout555 << "alpha " << alpha << endl;
+    fout555 << "distance " << initial_position << endl;
+    fout555 << "number of trials " << num_trials << endl;
+    fout555 << "number of time steps " << num_trials << endl;
+    fout555 << "timestep size " << timestep << endl;
+    fout555 << "t_con_inverse " << t_con_inverse << endl;
+    fout555.close();
+
+
 for(int trial =0; trial < num_trials; trial++)
  {   //Contribution_from_each_trial[trial] = 0;
      //Contribution_from_each_trialEXPONENT[trial] = 0;
@@ -186,7 +197,8 @@ inside_zone = inside_zone_new;
 
 //cout << Contribution_from_each_trial[trial] << endl;
 //cout << current_position << endl;
-  if(time % time_scale_coarse_graining ==0){ fout7 << time*timestep << " " << current_position << endl;}
+ //if(time % time_scale_coarse_graining ==0){ fout7 << time*timestep << " " << current_position << endl;}
+ if(time % 500 ==0){ fout7 << time*timestep << " " << current_position << endl;}
  //position[int(floor(double(time)/time_scale_coarse_graining + .5))] = current_position;
  //Average_Position[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] += current_position/num_trials;
  current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 

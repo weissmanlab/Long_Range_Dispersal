@@ -313,7 +313,7 @@ for (int time =0; time < num_time_steps; time++) {
 char OUTPUTFILE[50];
   sprintf(OUTPUTFILE, "dist_of_coalescent_times_");
   std::stringstream file_name;
-         file_name <<  OUTPUTFILE << "alpha_value_"<< alpha << "distance_value_" << initial_position << ".txt" ;
+         file_name <<  OUTPUTFILE << "alpha_value_"<< alpha << "distance_value_" << initial_position << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile;
          file_name >> stringfile; 
            
@@ -333,7 +333,7 @@ fout4.close();
 char OUTPUTFILE2[50];
   sprintf(OUTPUTFILE2, "mean_homozygosity_");
   std::stringstream file_name99;
-         file_name99 <<  OUTPUTFILE2 << "alpha_value_"<< alpha << "distance_value_" << initial_position << ".txt" ;
+         file_name99 <<  OUTPUTFILE2 << "alpha_value_"<< alpha << "distance_value_" << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile99;
          file_name99 >> stringfile99; 
            
