@@ -16,7 +16,7 @@ using namespace std;
 
 
 int main(int argc, char* argv[])
-{         if(argc != 5) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps " << endl; return 0;} 
+{         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, rho_inverse " << endl; return 0;} 
   //coarse grain time... don't include every step - have another loop for coarse graining/smoothing time (10 steps for every recorded step)
   // longer timescales are necessary for free diffusion with no drift to create a proper distribution of coalescence times.  finit t_con seems to lead to a similar power law regardless of jump kernel- vary jump kernel and check this
   //int time = 0;
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
   const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
   const double mu_step = .0001; 
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
-  const double rho_inverse = 10 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
+  const double rho_inverse = atof(argv[5]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
   const double delta_function_width = 1;  //this must be same as in part 1
   const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
   //long double position[num_time_steps];
@@ -323,8 +323,8 @@ char OUTPUTFILE[50];
 fout4.open(stringfile);
 for (int time =0; time < num_time_steps; time++) {
 //fout4 << dist_of_coalescent_times_ALL[time][distance] << endl;
-if(time ==0) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
-if(time !=0 && dist_of_coalescent_times[time] != dist_of_coalescent_times[time -1]) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
+if(time%500 ==0) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;} // Coarse grain and only output every 500th value of the dist of coalescent times to save disk space (don't want a bunch of 5 million line files)
+//if(time !=0 && dist_of_coalescent_times[time] != dist_of_coalescent_times[time -1]) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
 
 }
 fout4.close();

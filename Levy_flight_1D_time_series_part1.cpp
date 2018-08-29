@@ -25,8 +25,8 @@ int main(int argc, char* argv[])
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double D = 0;   // Diffusion constant
-  const double cauchy_param = 0.00;//0.1;//0.01; //20; // controls cauchy power law jump kernel
-  const double log_param = 0;   // controls lognormal jump kernel
+ // const double cauchy_param = 0.00;//0.1;//0.01; //20; // controls cauchy power law jump kernel
+ // const double log_param = 0;   // controls lognormal jump kernel
   const double fisher_param = 1.00;
   const double cutoff = 0; // minimum jump size
   const double timestep = .1; // for deterministic drift term
@@ -50,8 +50,8 @@ int main(int argc, char* argv[])
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
   std::normal_distribution<double> norm_dist(0.0, 4*D);
-  std::cauchy_distribution<double> cauchy_dist(0.0,1);
-  std::lognormal_distribution<double> lognorm_dist(0.0,.5);
+  //std::cauchy_distribution<double> cauchy_dist(0.0,1);
+  //std::lognormal_distribution<double> lognorm_dist(0.0,.5);
 std::fisher_f_distribution<double> fisher_dist(2*alpha,2*alpha);
 //use fisher distribution for tunable power law tail
   int dummy_counter = 0;
@@ -143,14 +143,14 @@ for(int trial =0; trial < num_trials; trial++)
      
  double signed_step_size =  sqrt(2*D)*norm_dist(generator) -timestep*t_con_inverse*current_position;
  
- double jump_size_cauchy = cauchy_dist(generator);
-double jump_size_log = lognorm_dist(generator);
+ //double jump_size_cauchy = cauchy_dist(generator);
+//double jump_size_log = lognorm_dist(generator);
 double jump_size_fisher = fisher_dist(generator);
 //cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
-if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
+//if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
 if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
-if(abs(jump_size_cauchy) > cutoff){signed_step_size = signed_step_size + cauchy_param*jump_size_cauchy;  } 
-if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
+//if(abs(jump_size_cauchy) > cutoff){signed_step_size = signed_step_size + cauchy_param*jump_size_cauchy;  } 
+//if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
 if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_param*jump_size_fisher;  }
 
 //cout << jump_size_log << endl;
