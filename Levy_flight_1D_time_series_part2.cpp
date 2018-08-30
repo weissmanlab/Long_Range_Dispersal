@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <unistd.h>
 #include <cmath>
 #include <random>
@@ -333,7 +334,7 @@ fout4.close();
 char OUTPUTFILE2[50];
   sprintf(OUTPUTFILE2, "mean_homozygosity_");
   std::stringstream file_name99;
-         file_name99 <<  OUTPUTFILE2 << "alpha_value_"<< alpha << "distance_value_" << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name99 <<  OUTPUTFILE2 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile99;
          file_name99 >> stringfile99; 
            
@@ -344,7 +345,7 @@ char OUTPUTFILE2[50];
 //fout4.open("time_series_averaged.txt");
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
-fout5 << mu*mu_step << " " << mean_homozygosity[mu] << endl;
+fout5 << initial_position << " " << mu*mu_step << " " << mean_homozygosity[mu] << endl;
  
 }
 fout5.close();
