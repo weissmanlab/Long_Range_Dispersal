@@ -279,7 +279,7 @@ Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_t
 
 //normalize dist of coalescent times
 
-/*
+
 normalization = 0;
 
 for (int time =0; time < num_time_steps; time++) {
@@ -297,7 +297,7 @@ if(normalization != 0)
 normalization = 0;
 }
 else { cout << "normalization = 0 !" << endl;} 
-*/
+
 //Laplace transform dist of coalescent times to get mean homozygosity
 
 

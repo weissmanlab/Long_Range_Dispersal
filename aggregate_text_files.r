@@ -7,7 +7,7 @@ txt_files_df <- lapply(txt_files_ls, function(x) {read.table(file = x, header = 
 # Combine them
 combined_df <- do.call("rbind", lapply(txt_files_df, as.data.frame)) 
 
-mu <- .01  # set whatever mu value you want
+mu <- .0999  # set whatever mu value you want
 
 super_dummy = 0
 sink("outfile.txt")
