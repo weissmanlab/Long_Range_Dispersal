@@ -57,7 +57,7 @@ for(int i =0; i < num_trials; i++)
 
 }
   double *dist_of_coalescent_times = new double[num_time_steps];  //distribution of coalescent times for the given initial seperation 
- {for(int i =0; i < num_trials; i++)
+ {for(int i =0; i < num_time_steps; i++)
 {
    
    dist_of_coalescent_times[i] = 0;
