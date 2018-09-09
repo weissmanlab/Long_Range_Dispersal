@@ -1,0 +1,6 @@
+alpha 1.9
+distance 1
+number of trials 1000
+number of time steps 1000
+timestep size 0.1
+t_con_inverse 0
