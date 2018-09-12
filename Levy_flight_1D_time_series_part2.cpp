@@ -495,7 +495,10 @@ char OUTPUTFILE[50];
 fout4.open(stringfile);
 for (int time =0; time < num_time_steps; time++) {
 //fout4 << dist_of_coalescent_times_ALL[time][distance] << endl;
-if(time%500 ==0) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;} // Coarse grain and only output every 500th value of the dist of coalescent times to save disk space (don't want a bunch of 5 million line files)
+//if(time%500 ==0) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;} // Coarse grain and only output every 500th value of the dist of coalescent times to save disk space (don't want a bunch of 5 million line files)
+
+fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl; // Coarse grain and only output every 500th value of the dist of coalescent times to save disk space (don't want a bunch of 5 million line files)
+
 //if(time !=0 && dist_of_coalescent_times[time] != dist_of_coalescent_times[time -1]) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
 
 }
