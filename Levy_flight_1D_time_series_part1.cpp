@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
  // const double log_param = 0;   // controls lognormal jump kernel
   const double fisher_param = 1.00;
   const double cutoff = 0; // minimum jump size
-  const double timestep = .1; // for deterministic drift term
+  const double timestep = 1;//const double timestep = .1; // for deterministic drift term
   //const double mu_step = .0001; 
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   //const double rho_inverse = 10 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.

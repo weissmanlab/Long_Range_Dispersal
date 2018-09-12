@@ -36,12 +36,12 @@ int main(int argc, char* argv[])
   //const double log_param = 0;   // controls lognormal jump kernel
   //const double fisher_param = 1.00;
   const double cutoff = 0; // minimum jump size
-  const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
+  const double timestep = 1; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
   const double mu_step = .01; 
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double rho_inverse = atof(argv[5]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
   const double delta_function_width = 1;  //this must be same as in part 1
-  const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
+  const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   //long double position[num_time_steps];
   //long double Average_Position[num_time_steps][num_distance_steps] = {0};  // second index denotes initial position
   //long double distance_list[num_distance_steps];
@@ -204,8 +204,10 @@ if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_
 
 if (time < entrance_time)
 {
-   dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
-
+   //dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+    Contribution_from_each_trialEXPONENT[trial] += 0;
+    Contribution_from_each_trial[trial] = 0;
+    dist_of_coalescent_times[time] += 0;  //no contribution from a trial when we are outside coalescence zone
 }
 
 
@@ -514,7 +516,7 @@ char OUTPUTFILE2[50];
 //fout4.open("time_series_averaged.txt");
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
-fout5 << initial_position << " " << mu*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu])) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu])) << endl;
+fout5 << initial_position << " " << mu*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu]))/sqrt(float(num_trials)) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu]))/sqrt(float(num_trials)) << endl;
  
 }
 fout5.close();
