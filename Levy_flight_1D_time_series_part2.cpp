@@ -516,7 +516,7 @@ char OUTPUTFILE2[50];
 //fout4.open("time_series_averaged.txt");
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
-fout5 << initial_position << " " << mu*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu]))/sqrt(float(num_trials)) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu]))/sqrt(float(num_trials)) << endl;
+fout5 << initial_position << " " << mu*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) << endl;
  
 }
 fout5.close();
