@@ -19,11 +19,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, rho_inverse " << endl; return 0;} 
-  //coarse grain time... don't include every step - have another loop for coarse graining/smoothing time (10 steps for every recorded step)
-  // longer timescales are necessary for free diffusion with no drift to create a proper distribution of coalescence times.  finit t_con seems to lead to a similar power law regardless of jump kernel- vary jump kernel and check this
-  //int time = 0;
-  // include periodic boundaries to ensure dist of coalescent times with jumps converges
-//cout << fmod(-8, 3)<< endl;
+  
   const int distance_off_set = 0;
   const int num_time_steps = atoi(argv[4]);
   const int time_scale_coarse_graining = 1;//atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
@@ -32,9 +28,7 @@ int main(int argc, char* argv[])
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double D = 0;   // Diffusion constant
-  //const double cauchy_param = 0.00;//0.1;//0.01; //20; // controls cauchy power law jump kernel
-  //const double log_param = 0;   // controls lognormal jump kernel
-  //const double fisher_param = 1.00;
+  
   const double cutoff = 0; // minimum jump size
   const double timestep = 1; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
   const double mu_step = .01; 
@@ -42,12 +36,9 @@ int main(int argc, char* argv[])
   const double rho_inverse = atof(argv[5]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
   const double delta_function_width = 1;  //this must be same as in part 1
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
-  //long double position[num_time_steps];
-  //long double Average_Position[num_time_steps][num_distance_steps] = {0};  // second index denotes initial position
-  //long double distance_list[num_distance_steps];
-  //long double Contribution_from_each_trial[num_trials] = {0};
+  
   double *Contribution_from_each_trial = new double[num_trials];// {0};
-  //long double Contribution_from_each_trialEXPONENT[num_trials] = {0};
+  
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
 
 for(int i =0; i < num_trials; i++)
@@ -263,15 +254,6 @@ for (int time =0; time < num_time_steps; time++) {
 /*******************************************/
 
 // The loops below calculates the variance and SD of the homozygosity
-
-
-
-
-
-
-
-
-
 
 
 
