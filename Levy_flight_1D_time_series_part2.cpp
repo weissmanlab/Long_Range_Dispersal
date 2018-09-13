@@ -340,14 +340,9 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 }
 
   fin88.close();
-  //current_position = fmod(initial_position, periodic_boundary);
   
 
-  // next store position at every time step, plot as time series.
- //cout << trial << endl;
-
 }
-//normalize dist of coalescent times
 
 
 
