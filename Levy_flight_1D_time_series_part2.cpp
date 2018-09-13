@@ -73,15 +73,8 @@ double mean_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0};
 double mean_homozygosity_VARIANCE[num_mu_steps] = {0};  
 //long double *dist_of_coalescent_times_ALL = new long double[num_time_steps][num_distance_steps];  //distribution of coalescent times for the given initial seperation 
   
-/* 
-for(int j = 0; j < num_distance_steps; j++)
- {for(int i =0; i < num_trials; i++)
-{
-   
-   dist_of_coalescent_times_ALL[i][j] = 0;
 
-}}
-*/
+
 
    double mean_homozygosity_ALL[num_mu_steps][num_distance_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
   double normalization =0;
@@ -179,25 +172,7 @@ int entrance_time = -1 ;  // If file is empty entrance and exit time will be the
     
     //for (int time =0; time < num_time_steps; time++) {
      for (int time =0; time < num_time_steps; time++) {
- /*double signed_step_size =  sqrt(2*D)*norm_dist(generator) -timestep*t_con_inverse*current_position;
- 
- double jump_size_cauchy = cauchy_dist(generator);
-double jump_size_log = lognorm_dist(generator);
-double jump_size_fisher = fisher_dist(generator);
-//cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
-if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
-if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
-if(abs(jump_size_cauchy) > cutoff){signed_step_size = signed_step_size + cauchy_param*jump_size_cauchy;  } 
-if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
-if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_param*jump_size_fisher;  }
-*/
-//cout << jump_size_log << endl;
-//cout << signed_step_size << endl;
-//double dummy_time = atof(time);
-//double time_index = int(floor(double(time)/time_scale_coarse_graining + .5));
-// We coarse grain time by recording only every nth step.  This saves memory and allows us to exted to longer timescales.
-//cout << int(floor(double(time)/time_scale_coarse_graining + .5))  << endl;
-//dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] = dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] + Contribution_from_each_trial[trial]/num_trials;   // here we're adding up the contribution from each trial for a given time
+
 
 
  
@@ -226,76 +201,27 @@ if (time >= exit_time)
 
 }
 
-//cout << stringfile88 << " " << time << endl;
 
-/*
-if(fin88.is_open() == false){cout << "NOT OPEN" << endl;}
-char super_output[50];  
-strcpy(super_output, stringfile88.c_str());
-
-
-fin88 >> entrance_time >> exit_time;
- //fin88 >> exit_time;
-
- //cout << entrance_time << " " << exit_time << endl;
-
-
-while(time < entrance_time && entrance_time != exit_time)
-{  if(time > 0)
-     {  //dist_of_coalescent_times[time] = dist_of_coalescent_times[time -1];
-         dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
-        
-          
-     }
-    time += 1;
-}
-
-while(time >= entrance_time  && time < exit_time)
-{  
- Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;
-cout << Contribution_from_each_trialEXPONENT << endl;
-Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
- dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
-   time += 1;
-
-}
-*/
-
-//dist_of_coalescent_times[int(floor(double(time)/time_scale_coarse_graining + .5))] += Contribution_from_each_trial[trial]/num_trials;   // here we're adding up the contribution from each trial for a given time
-
-//fin7 >> current_position ;
-/*
- if(abs(current_position) <= delta_function_width)  // use step function with finite width as replacement for delta function
- { Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
-   Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;  ;
-    // Second term is the exponential discount factor which accounts for the probability that the two lineages have already coalesced.
-
- }
-*/
-//cout << Contribution_from_each_trial[trial] << endl;
-//cout << current_position << endl;
-  //fout7 << current_position << endl;
- //position[int(floor(double(time)/time_scale_coarse_graining + .5))] = current_position;
- //Average_Position[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] += current_position/num_trials;
- //current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
-    //cout << current_position << endl;
-         //dummy_counter = dummy_counter +1;
-        //cout << dummy_counter << endl;
        }
   
 
 
 
   fin88.close();
-  //current_position = fmod(initial_position, periodic_boundary);
   
-
-  // next store position at every time step, plot as time series.
  
 
 }
-/*******************************************/
-/*******************************************/
+
+
+
+
+
+
+
+
+
+
 
 normalization = 0;
 
@@ -320,13 +246,34 @@ else { cout << "normalization = 0 !" << endl;}
 
 for (int mu =0; mu < num_mu_steps; mu++){
 for (int time =0; time < num_time_steps; time++) {
-    //mean_homozygosity_ALL[mu][distance] = mean_homozygosity_ALL[mu][distance] + dist_of_coalescent_times_ALL[time][distance]*exp(-mu*mu_step*time_scale_coarse_graining*time*timestep);
-   //mean_homozygosity_ALL[mu][distance] += dist_of_coalescent_times_ALL[time][distance]*exp(-mu*mu_step*time_scale_coarse_graining*time*timestep);
-  //mean_homozygosity_ALL[mu][0] += dist_of_coalescent_times[time]*exp(-mu*mu_step*time_scale_coarse_graining*time*timestep);
-   //mean_homozygosity[mu] += dist_of_coalescent_times[time]*exp(-mu*mu_step*time_scale_coarse_graining*time*timestep);
+   
    mean_homozygosity[mu] += dist_of_coalescent_times[time]*exp(-mu*mu_step*time*timestep);
 
 }}
+
+
+
+
+
+
+
+// The loops above calculates the mean homozygosity
+
+/*******************************************/
+/*******************************************/
+
+// The loops below calculates the variance and SD of the homozygosity
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -359,25 +306,7 @@ int entrance_time = -1 ;  // If file is empty entrance and exit time will be the
     
     //for (int time =0; time < num_time_steps; time++) {
      for (int time =0; time < num_time_steps; time++) {
- /*double signed_step_size =  sqrt(2*D)*norm_dist(generator) -timestep*t_con_inverse*current_position;
  
- double jump_size_cauchy = cauchy_dist(generator);
-double jump_size_log = lognorm_dist(generator);
-double jump_size_fisher = fisher_dist(generator);
-//cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
-if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
-if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
-if(abs(jump_size_cauchy) > cutoff){signed_step_size = signed_step_size + cauchy_param*jump_size_cauchy;  } 
-if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
-if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_param*jump_size_fisher;  }
-*/
-//cout << jump_size_log << endl;
-//cout << signed_step_size << endl;
-//double dummy_time = atof(time);
-//double time_index = int(floor(double(time)/time_scale_coarse_graining + .5));
-// We coarse grain time by recording only every nth step.  This saves memory and allows us to exted to longer timescales.
-//cout << int(floor(double(time)/time_scale_coarse_graining + .5))  << endl;
-//dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] = dist_of_coalescent_times_ALL[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] + Contribution_from_each_trial[trial]/num_trials;   // here we're adding up the contribution from each trial for a given time
 
 
  for( int mu = 0; mu < num_mu_steps; mu++)
@@ -389,61 +318,7 @@ if(abs(jump_size_fisher) > cutoff){signed_step_size = signed_step_size + fisher_
 
 
 
-//cout << stringfile88 << " " << time << endl;
 
-/*
-if(fin88.is_open() == false){cout << "NOT OPEN" << endl;}
-char super_output[50];  
-strcpy(super_output, stringfile88.c_str());
-
-
-fin88 >> entrance_time >> exit_time;
- //fin88 >> exit_time;
-
- //cout << entrance_time << " " << exit_time << endl;
-
-
-while(time < entrance_time && entrance_time != exit_time)
-{  if(time > 0)
-     {  //dist_of_coalescent_times[time] = dist_of_coalescent_times[time -1];
-         dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
-        
-          
-     }
-    time += 1;
-}
-
-while(time >= entrance_time  && time < exit_time)
-{  
- Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;
-cout << Contribution_from_each_trialEXPONENT << endl;
-Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
- dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
-   time += 1;
-
-}
-*/
-
-//dist_of_coalescent_times[int(floor(double(time)/time_scale_coarse_graining + .5))] += Contribution_from_each_trial[trial]/num_trials;   // here we're adding up the contribution from each trial for a given time
-
-//fin7 >> current_position ;
-/*
- if(abs(current_position) <= delta_function_width)  // use step function with finite width as replacement for delta function
- { Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
-   Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;  ;
-    // Second term is the exponential discount factor which accounts for the probability that the two lineages have already coalesced.
-
- }
-*/
-//cout << Contribution_from_each_trial[trial] << endl;
-//cout << current_position << endl;
-  //fout7 << current_position << endl;
- //position[int(floor(double(time)/time_scale_coarse_graining + .5))] = current_position;
- //Average_Position[int(floor(double(time)/time_scale_coarse_graining + .5))][distance] += current_position/num_trials;
- //current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
-    //cout << current_position << endl;
-         //dummy_counter = dummy_counter +1;
-        //cout << dummy_counter << endl;
        }
   
 
@@ -474,12 +349,14 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 }
 //normalize dist of coalescent times
 
-for( int mu = 0; mu < num_mu_steps; mu++)
-{
- //cout << mean_homozygosity_VARIANCE[mu]  << endl;
 
 
-}
+/*******************************************/
+/*******************************************/
+
+//Now we output our results to files
+
+
 
 
 char OUTPUTFILE[50];
@@ -516,7 +393,7 @@ char OUTPUTFILE2[50];
   ofstream fout5;
 
 
-//fout4.open("time_series_averaged.txt");
+
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
 fout5 << initial_position << " " << mu*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) << endl;
@@ -529,107 +406,7 @@ chdir("..");
 
 //}
 chdir("..");
-/*
-ofstream fout;
-fout.open("log_plot_mean_homozygosity_v_distance.txt");
-for (int distance =0; distance < num_distance_steps; distance++) {
-//mu = 10*mu_step
-fout << log(mean_homozygosity_ALL[100][distance]) << endl;
-  //fout << mean_homozygosity_ALL[100][distance] << endl;
-  //fout <<  log(mean_homozygosity_ALL[999][distance]) << endl;
 
-}
-fout.close();
-*/
-
-
-/*
-ofstream fout2;
-fout2.open("log_plot_mean_homozygosity_v_distance.txt");
-for (int time =0; time < num_time_steps; time++) {
-fout2 << dist_of_coalescent_times_ALL[time][19] << endl;
- 
-}
-fout2.close();
-*/
-//for (int distance =0; distance < num_distance_steps; distance++) {
-
-
-//}
-/*
-ofstream fout3;
-fout3.open("distance_list.txt");
-for (int distance =0; distance < num_distance_steps; distance++) {
-fout3 <<  distance_list[distance] << endl;
- 
-}
-fout3.close();
-*/
-
-/*
-ofstream fout5;
-fout5.open("Time_Series_Parameters.txt");
-
-//fout5 <<  "num_distance_steps" << endl;
-fout5 <<  num_distance_steps << endl;
-//fout5 <<  "num_time_steps" << endl;
-fout5 <<  num_time_steps << endl;
-//fout5 <<  "time_scale_coarse_graining" << endl;
-fout5 <<  time_scale_coarse_graining << endl;
-//fout5 <<  "num_trials" << endl;
-fout5 <<  num_trials << endl;
-//fout5 <<  "timestep" << endl;
-fout5 <<  timestep << endl;
-
-//fout5 << "t_con_inverse"  << endl;
-fout5 << t_con_inverse  << endl;
-
-fout5.close();
-*/
-/*
-const int distance_off_set = 0;
-  const int num_time_steps = 1500;
-  const int time_scale_coarse_graining = 10; //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
-  const int num_mu_steps = 1000;  // number of mu increments in Laplace time 
-  const int num_trials = 50;
-  const int num_distance_steps = 5;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
-  const double periodic_boundary = 10000000; //position constrained between -pb and +pb
-  const double D = 1;   // Diffusion constant
-  const double cauchy_param = 0.00;//0.1;//0.01; //20; // controls cauchy power law jump kernel
-  const double log_param = 0;   // controls lognormal jump kernel
-  const double fisher_param = 0.00;
-  const double cutoff = 0; // minimum jump size
-  const double timestep = .1; // for deterministic drift term
-  const double mu_step = .0001; 
-  const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
-  const double rho_inverse = 10 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
-  const double delta_function_width = 1;
-  const double alpha = 0.0;  // controls power law tail of jump kernel
-*/
-
-
-
-
-
-
-/*
-ofstream fout2;
-fout2.open("dist_of_coalescent_times.txt");
-for (int time =0; time < num_time_steps; time++) {
-fout2 << dist_of_coalescent_times_ALL[time][num_distance_steps-1] << endl;
- 
-}
-fout2.close();
-*/
-/*
-ofstream fout3;
-fout3.open("mean_homozygosity.txt");
-for (int mu =0; mu < num_mu_steps; mu++) {
-fout3 << mean_homozygosity_ALL[mu][14] << endl;
- 
-}
-fout3.close();
-*/
 
   return 0;
 
