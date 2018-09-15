@@ -260,14 +260,15 @@ for (int time =0; time < num_time_steps; time++) {
 
 
 for(int trial =0; trial < num_trials; trial++)
- {   //Contribution_from_each_trial[trial] = 0;
-     //Contribution_from_each_trialEXPONENT[trial] = 0;
-  for( int mu = 0; mu < num_mu_steps; mu++)
-{
- mean_homozygosity_INDIVIDUAL_TRIAL[mu] =  0;
+ {   Contribution_from_each_trial[trial] = 0;
+     Contribution_from_each_trialEXPONENT[trial] = 0;
+       
+       for( int mu = 0; mu < num_mu_steps; mu++)
+     {
+      mean_homozygosity_INDIVIDUAL_TRIAL[mu] =  0;
 
 
-}
+     }
   
 
           char OUTPUTFILE88[50];
@@ -289,6 +290,32 @@ int entrance_time = -1 ;  // If file is empty entrance and exit time will be the
     //for (int time =0; time < num_time_steps; time++) {
      for (int time =0; time < num_time_steps; time++) {
  
+
+
+if (time < entrance_time)
+{
+   //dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+    Contribution_from_each_trialEXPONENT[trial] += 0;
+    Contribution_from_each_trial[trial] = 0;
+    dist_of_coalescent_times[time] += 0;  //no contribution from a trial when we are outside coalescence zone
+}
+
+
+if (time >= entrance_time && time < exit_time)
+{
+   Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;
+//cout << Contribution_from_each_trial[trial] << endl;
+Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
+ dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+
+}
+
+if (time >= exit_time)
+{
+   fin88 >> entrance_time >> exit_time;
+
+}
+
 
 
  for( int mu = 0; mu < num_mu_steps; mu++)
