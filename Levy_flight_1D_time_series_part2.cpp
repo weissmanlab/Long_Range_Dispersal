@@ -68,8 +68,10 @@ double mean_homozygosity_VARIANCE[num_mu_steps] = {0};
 
 
    double mean_homozygosity_ALL[num_mu_steps][num_distance_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
-  double normalization =0;
+  //double normalization =0;
   //std::default_random_engine generator(time(0));
+   
+/*
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
   std::normal_distribution<double> norm_dist(0.0, 4*D);
@@ -77,8 +79,8 @@ double mean_homozygosity_VARIANCE[num_mu_steps] = {0};
   std::lognormal_distribution<double> lognorm_dist(0.0,.5);
 std::fisher_f_distribution<double> fisher_dist(2*alpha,2*alpha);
 //use fisher distribution for tunable power law tail
-  int dummy_counter = 0;
-
+  //int dummy_counter = 0;
+*/
 double initial_position = atof(argv[2]) ;  // initial signed distance between individuals
   double current_position;
 
@@ -213,7 +215,7 @@ if (time >= exit_time)
 
 
 
-
+/*
 normalization = 0;
 
 for (int time =0; time < num_time_steps; time++) {
@@ -232,6 +234,7 @@ normalization = 0;
 }
 else { cout << "normalization = 0 !" << endl;} 
 
+*/
 //Laplace transform dist of coalescent times to get mean homozygosity
 
 
@@ -330,7 +333,7 @@ if (time >= exit_time)
 
        }
   
-
+/*
 for( int mu = 0; mu < num_mu_steps; mu++)
 {
  
@@ -340,6 +343,7 @@ if(mean_homozygosity_INDIVIDUAL_TRIAL[0] != 0)
 
 }
 
+*/
 
 for( int mu = 0; mu < num_mu_steps; mu++)
 {
