@@ -19,12 +19,12 @@ int main(int argc, char* argv[])
 /********************************/
  
   const int num_time_steps = atoi(argv[4]);
-  const int num_mu_steps = 10;  // number of mu increments in Laplace time 
+  const int num_mu_steps = 4;  // number of mu increments in Laplace time 
   const int num_trials = atoi(argv[3]);
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double timestep = 1; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
-  const double mu_step = .01; 
+  const double mu_step = .0001; 
   //const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double rho_inverse = atof(argv[5]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
   const double delta_function_width = 1;  //this must be same as in part 1
@@ -114,7 +114,7 @@ if (time >= exit_time)
 for (int mu =0; mu < num_mu_steps; mu++){
 for (int time =0; time < num_time_steps; time++) {
    
-   mean_homozygosity[mu] += dist_of_coalescent_times[time]*exp(-mu*mu_step*time*timestep);
+   mean_homozygosity[mu] += dist_of_coalescent_times[time]*exp(-pow(10,mu)*mu_step*time*timestep);
 
 }}
 
@@ -161,7 +161,7 @@ for(int trial =0; trial < num_trials; trial++)
       }
           // now we calculate the hmozygosity for each trial
       for( int mu = 0; mu < num_mu_steps; mu++)
-     {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-mu*mu_step*time*timestep);
+     {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*mu_step*time*timestep);
      }
 
       }
@@ -203,7 +203,7 @@ char OUTPUTFILE2[50];
 
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
-fout5 << initial_position << " " << mu*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) << endl;
+fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) << endl;
  // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
 }
 fout5.close();
