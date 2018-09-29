@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
   const double D = 0;   // Diffusion constant
  // const double cauchy_param = 0.00;//0.1;//0.01; //20; // controls cauchy power law jump kernel
  // const double log_param = 0;   // controls lognormal jump kernel
-  const double levy_param = 1.00;
-  //const double fisher_param = 0;//1.00;
+  //const double levy_param = 0;
+  const double fisher_param =1.00;
   const double cutoff = 0; // minimum jump size
   const double timestep = 1;//const double timestep = .1; // for deterministic drift term
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
@@ -140,16 +140,16 @@ for(int trial =0; trial < num_trials; trial++)
  
  //double jump_size_cauchy = cauchy_dist(generator);
 //double jump_size_log = lognorm_dist(generator);
-//double jump_size_fisher = fisher_dist(generator);
-double jump_size_levy = gsl_ran_levy(r,  1.0, alpha);
+double jump_size_fisher = fisher_dist(generator);
+double jump_size_levy = gsl_ran_levy(r,  1.5, alpha);
 //cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
-//if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
+if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
 //if(abs(jump_size_cauchy) > cutoff){signed_step_size = signed_step_size + cauchy_param*jump_size_cauchy;  } 
 //if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
-//if(abs(jump_size_fisher) > cutoff){signed_step_size +=  fisher_param*jump_size_fisher;  }
+if(abs(jump_size_fisher) > cutoff){signed_step_size +=  fisher_param*jump_size_fisher;  }
 
-signed_step_size +=  levy_param*jump_size_levy;
+//signed_step_size +=  levy_param*jump_size_levy;
  
  if(abs(current_position) <= delta_function_width)  // use step function with finite width as replacement for delta function
  { inside_zone_new = true; }
