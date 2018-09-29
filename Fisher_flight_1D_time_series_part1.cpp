@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double delta_function_width = 1;
   const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
-  const gsl_rng_type * T;
+  //const gsl_rng_type * T;
   //T = gsl_rng_default;
   //gsl_rng* r;
    //r = gsl_rng_alloc (T);
@@ -46,7 +46,7 @@ std::normal_distribution<double> norm_dist(0.0, 4*D);
   //std::lognormal_distribution<double> lognorm_dist(0.0,.5);
 std::fisher_f_distribution<double> fisher_dist(2*alpha,2*alpha);
 //std::Levy_alpha_stable_distribution<double> fisher_dist(2*alpha,2*alpha);
-double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);
+//double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);
 
 //double dummy;
 //dummy = gsl_ran_levy(r,  1.5, 1.5);
@@ -141,7 +141,7 @@ for(int trial =0; trial < num_trials; trial++)
  //double jump_size_cauchy = cauchy_dist(generator);
 //double jump_size_log = lognorm_dist(generator);
 double jump_size_fisher = fisher_dist(generator);
-double jump_size_levy = gsl_ran_levy(r,  1.5, alpha);
+//double jump_size_levy = gsl_ran_levy(r,  1.5, alpha);
 //cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
 if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
