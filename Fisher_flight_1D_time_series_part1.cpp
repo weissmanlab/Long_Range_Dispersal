@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include <gsl/gsl_randist.h>
-#include <gsl/gsl_cdf.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_statistics_double.h>
+//#include <gsl/gsl_randist.h>
+//#include <gsl/gsl_cdf.h>
+//#include <gsl/gsl_rng.h>
+//#include <gsl/gsl_statistics_double.h>
 #include <iostream>
 #include <unistd.h>
 #include <cmath>
@@ -34,9 +34,9 @@ int main(int argc, char* argv[])
   const double delta_function_width = 1;
   const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
   const gsl_rng_type * T;
-  T = gsl_rng_default;
-  gsl_rng* r;
-   r = gsl_rng_alloc (T);
+  //T = gsl_rng_default;
+  //gsl_rng* r;
+   //r = gsl_rng_alloc (T);
 
 
   //std::default_random_engine generator(time(0));
