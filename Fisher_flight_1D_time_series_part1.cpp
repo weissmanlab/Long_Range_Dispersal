@@ -17,22 +17,22 @@ using namespace std;
 int main(int argc, char* argv[])
 {         if(argc != 5) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, and total number of time steps." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
   // include periodic boundaries to ensure dist of coalescent times with jumps converges
-  const int distance_off_set = 0;
+  //const int distance_off_set = 0;
   const int num_time_steps = atoi(argv[4]);
-  const int time_scale_coarse_graining = 1; //atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
+  //const int time_scale_coarse_graining = 1; //atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
   const int num_trials = atoi(argv[3]);
-  const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
+  //const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
-  const double D = 0;   // Diffusion constant
+  //const double D = 0;   // Diffusion constant
  // const double cauchy_param = 0.00;//0.1;//0.01; //20; // controls cauchy power law jump kernel
  // const double log_param = 0;   // controls lognormal jump kernel
   //const double levy_param = 0;
   const double fisher_param =1.00;
-  const double cutoff = 0; // minimum jump size
+  //const double cutoff = 0; // minimum jump size
   const double timestep = 1;//const double timestep = .1; // for deterministic drift term
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double delta_function_width = 1;
-  const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
+  const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   //const gsl_rng_type * T;
   //T = gsl_rng_default;
   //gsl_rng* r;
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
   //std::default_random_engine generator(time(0));
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
-std::normal_distribution<double> norm_dist(0.0, 4*D);
+//std::normal_distribution<double> norm_dist(0.0, 4*D);
   //std::cauchy_distribution<double> cauchy_dist(0.0,1);
   //std::lognormal_distribution<double> lognorm_dist(0.0,.5);
 std::fisher_f_distribution<double> fisher_dist(2*alpha,2*alpha);
@@ -133,10 +133,10 @@ for(int trial =0; trial < num_trials; trial++)
   bool inside_zone = false; 
    bool inside_zone_new; 
   
-  for (int time =0; time < (num_time_steps-1)*time_scale_coarse_graining; time++) {
-    
+  //for (int time =0; time < (num_time_steps-1)*time_scale_coarse_graining; time++) {
+    for (int time =0; time < num_time_steps; time++) {
      
- double signed_step_size =  sqrt(2*D)*norm_dist(generator) -timestep*t_con_inverse*current_position;
+ double signed_step_size =  0; //sqrt(2*D)*norm_dist(generator) -timestep*t_con_inverse*current_position;
  
  //double jump_size_cauchy = cauchy_dist(generator);
 //double jump_size_log = lognorm_dist(generator);
@@ -147,7 +147,11 @@ double jump_size_fisher = fisher_dist(generator);
 if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
 //if(abs(jump_size_cauchy) > cutoff){signed_step_size = signed_step_size + cauchy_param*jump_size_cauchy;  } 
 //if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
-if(abs(jump_size_fisher) > cutoff){signed_step_size +=  fisher_param*jump_size_fisher;  }
+//if(abs(jump_size_fisher) > cutoff){
+
+  signed_step_size +=  fisher_param*jump_size_fisher; 
+
+   //}
 
 //signed_step_size +=  levy_param*jump_size_levy;
  
@@ -164,7 +168,9 @@ if(inside_zone_new == false && inside_zone == true)
 
 inside_zone = inside_zone_new;
 
- if(time % 500 ==0){ fout7 << time*timestep << " " << current_position << endl;}
+ //if(time % 500 ==0){ 
+  fout7 << time*timestep << " " << current_position << endl;
+//}
  
  current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
    

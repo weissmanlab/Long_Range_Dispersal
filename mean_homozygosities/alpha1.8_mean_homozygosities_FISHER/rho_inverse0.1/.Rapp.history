@@ -1,0 +1,4 @@
+source("/Users/tylersmith/alpha1.8_mean_homozygosities/aggregate_text_files.r")
+source("/Users/tylersmith/alpha1.8_mean_homozygosities/log_plot_mean_homozyg_distance.r")
+source("/Users/tylersmith/alpha1.8_mean_homozygosities/aggregate_text_files.r")
+source("/Users/tylersmith/alpha1.8_mean_homozygosities/log_plot_mean_homozyg_distance.r")
