@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double delta_function_width = 1;
   const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
+  const double scale_parameter = 10.0; // sets scale of levy alpha stable
   const gsl_rng_type * T;
   T = gsl_rng_default;
   gsl_rng* r;
@@ -44,7 +45,7 @@ int main(int argc, char* argv[])
 //std::normal_distribution<double> norm_dist(0.0, 4*D);
   //std::cauchy_distribution<double> cauchy_dist(0.0,1);
   //std::lognormal_distribution<double> lognorm_dist(0.0,.5);
-std::fisher_f_distribution<double> fisher_dist(2*alpha,2*alpha);
+//std::fisher_f_distribution<double> fisher_dist(2*alpha,2*alpha);
 //std::Levy_alpha_stable_distribution<double> fisher_dist(2*alpha,2*alpha);
 double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);
 
@@ -107,6 +108,7 @@ ofstream fout_parameter_file;
     fout_parameter_file << "number of time steps " << num_trials << endl;
     fout_parameter_file << "timestep size " << timestep << endl;
     fout_parameter_file << "t_con_inverse " << t_con_inverse << endl;
+    fout_parameter_file << "scale_factor " << scale_factor << endl;
     fout_parameter_file.close();
 
 
@@ -142,7 +144,7 @@ for(int trial =0; trial < num_trials; trial++)
  //double jump_size_cauchy = cauchy_dist(generator);
 //double jump_size_log = lognorm_dist(generator);
 //double jump_size_fisher = fisher_dist(generator);
-double jump_size_levy = gsl_ran_levy(r,  1.0, alpha);
+double jump_size_levy = gsl_ran_levy(r,  scale_parameter, alpha);
 //cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
