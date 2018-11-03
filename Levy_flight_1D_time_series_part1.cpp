@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
   const double timestep = 1;//const double timestep = .1; // for deterministic drift term
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double delta_function_width = 1;
-  const double alpha = atof(argv[1]);;  // controls power law tail of jump kernel
+  const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   const double scale_parameter = 10.0; // sets scale of levy alpha stable
   const gsl_rng_type * T;
   T = gsl_rng_default;
@@ -169,7 +169,7 @@ inside_zone = inside_zone_new;
 
  //if(time % 500 ==0){ 
 
-  fout7 << time*timestep << " " << current_position << endl;
+ // fout7 << time*timestep << " " << current_position << endl;
 
 //}
  

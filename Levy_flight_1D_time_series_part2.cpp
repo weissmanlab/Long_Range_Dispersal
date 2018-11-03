@@ -36,6 +36,7 @@ double initial_position = atof(argv[2]) ;  // initial signed distance between in
   double *Contribution_from_each_trial = new double[num_trials];// {0};
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
   double *dist_of_coalescent_times = new double[num_time_steps];
+double Log_hist_of_single_trial_homozygosities[num_mu_steps][200];
 for(int i =0; i < num_trials; i++)
 {Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
  for(int i =0; i < num_time_steps; i++)
@@ -169,8 +170,25 @@ for(int trial =0; trial < num_trials; trial++)
 for( int mu = 0; mu < num_mu_steps; mu++)
 {mean_homozygosity_VARIANCE[mu] +=  (mean_homozygosity_INDIVIDUAL_TRIAL[mu] - mean_homozygosity[mu])*(mean_homozygosity_INDIVIDUAL_TRIAL[mu] - mean_homozygosity[mu])/float(num_trials);
 }
+// Then we bin the homozygosities from each individual trial
+// 
+for( int mu = 0; mu < num_mu_steps; mu++)
+{for(int QQ = 0; QQ < 200; QQ++)
+   {
+   if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  <= exp(-double(QQ)) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] > exp(-double(QQ + 1))  )
+       {  Log_hist_of_single_trial_homozygosities[mu][QQ] += 1 ;
 
-  fin_entrance_and_exit_times.close();
+       }
+   
+
+   }
+
+
+}
+ 
+
+
+ fin_entrance_and_exit_times.close();
 
 }
 /*******************************************/
@@ -207,6 +225,28 @@ fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygos
  // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
 }
 fout5.close();
+
+
+char OUTPUTFILE3[50];
+  sprintf(OUTPUTFILE3, "histogram_of_single_trial_homozygosities");
+  std::stringstream file_name100;
+         file_name100 <<  OUTPUTFILE3 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         std::string stringfile100;
+         file_name100 >> stringfile100;
+
+  ofstream fout6;
+
+fout6.open(stringfile100);
+for (int mu =0; mu < num_mu_steps; mu++) {
+for (int QQ =0; QQ < 200; QQ++)
+{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << -QQ  << " " << Log_hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
+ }
+// Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
+  }
+  fout6.close();
+ 
+
+
 
 chdir("..");
 chdir("..");

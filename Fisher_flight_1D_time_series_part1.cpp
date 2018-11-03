@@ -169,7 +169,7 @@ if(inside_zone_new == false && inside_zone == true)
 inside_zone = inside_zone_new;
 
  //if(time % 500 ==0){ 
-  fout7 << time*timestep << " " << current_position << endl;
+ // fout7 << time*timestep << " " << current_position << endl;
 //}
  
  current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
