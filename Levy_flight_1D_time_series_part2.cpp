@@ -41,7 +41,7 @@ double initial_position = atof(argv[2]) ;  // initial signed distance between in
   double *Contribution_from_each_trial = new double[num_trials];// {0};
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
   double *dist_of_coalescent_times = new double[num_time_steps];
-double Log_hist_of_single_trial_homozygosities[num_mu_steps][200];
+int Log_hist_of_single_trial_homozygosities[num_mu_steps][200] = {0};
 for(int i =0; i < num_trials; i++)
 {Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
  for(int i =0; i < num_time_steps; i++)
