@@ -120,7 +120,7 @@ for(int trial =0; trial < num_trials; trial++)
          std::string stringfile;
          file_name >> stringfile; 
     ofstream fout7;
-    fout7.open(stringfile);
+   //fout7.open(stringfile);
   
    char OUTPUTFILE3[50];
   sprintf(OUTPUTFILE3, "entrance_and_exit_times");
@@ -175,7 +175,7 @@ inside_zone = inside_zone_new;
  current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
    
        };
-  fout7.close();
+  //fout7.close();
   fout8.close();
   current_position = fmod(initial_position, periodic_boundary);
   
