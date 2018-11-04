@@ -30,8 +30,13 @@ int main(int argc, char* argv[])
   const double delta_function_width = 1;  //this must be same as in part 1
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   double mean_homozygosity[num_mu_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
-double mean_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0};  
-double mean_homozygosity_VARIANCE[num_mu_steps] = {0};  
+double mean_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // conditional expectation E[exp(-2mut)|path] ] = E[Hom|path]   
+double second_moment_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // Second moment (conditional) E[exp(-4*mu*t)|path] ] = E[Hom^2|path]
+
+double conditional_VARIANCE_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // conditional variance Var(exp(-2*mu*t)|path)  = E[Hom^2|path] - E[Hom|path]^2
+double mean_homozygosity_VARIANCE_of_Conditional_Expectations[num_mu_steps] = {0};  // Var(E[Hom| path])
+double mean_homozygosity_expectation_value_of_Conditional_VARIANCE[num_mu_steps] = {0};  // E[Var(Hom| path)]
+double mean_homozygosity_TOTAL_VARIANCE[num_mu_steps] = {0} ;  // Var(exp(-2*mu*t)) = Var(Hom) = Var(E[Hom| path]) + E[Var(Hom| path)]
 double initial_position = atof(argv[2]) ;  // initial signed distance between individuals
   double *Contribution_from_each_trial = new double[num_trials];// {0};
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
@@ -115,7 +120,10 @@ if (time >= exit_time)
 for (int mu =0; mu < num_mu_steps; mu++){
 for (int time =0; time < num_time_steps; time++) {
    
-   mean_homozygosity[mu] += dist_of_coalescent_times[time]*exp(-pow(10,mu)*mu_step*time*timestep);
+   mean_homozygosity[mu] += dist_of_coalescent_times[time]*exp(-pow(10,mu)*2*mu_step*time*timestep); 
+//factor of 2 in exponent is an important convention; we want the laplace transform L{P(t)}(2*mu) = E[exp(-2*mu*t)]
+//For each trial we calculate the conditional expectation E[exp(-2*mu*t)|path] = E[Hom|path]
+  //In order to correctly calculate the variance of the homozygosity we need  Var(exp(-2*mu*t)) = Var(Hom) = Var(E[Hom|path]) + E[Var(Hom|path)]  - Law of total variance
 
 }}
 
@@ -133,6 +141,8 @@ for(int trial =0; trial < num_trials; trial++)
        for( int mu = 0; mu < num_mu_steps; mu++)
      {
       mean_homozygosity_INDIVIDUAL_TRIAL[mu] =  0;
+     second_moment_of_homozygosity_INDIVIDUAL_TRIAL[mu] = 0;
+      conditional_VARIANCE_of_homozygosity_INDIVIDUAL_TRIAL[mu] = 0; 
      }
   
 
@@ -152,7 +162,8 @@ for(int trial =0; trial < num_trials; trial++)
  
      if (time >= entrance_time && time < exit_time)
      {Contribution_from_each_trialEXPONENT[trial] += rho_inverse*timestep;
-      Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
+      Contribution_from_each_trial[trial] =  rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]); 
+//This array yields the conditional probability of coalescence for the current time, P(time|path).  By looping through num_timesteps we obtain and Laplace transform the distribution for all times
      // dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
 
       }
@@ -160,15 +171,29 @@ for(int trial =0; trial < num_trials; trial++)
      if (time >= exit_time)
      {fin_entrance_and_exit_times >> entrance_time >> exit_time;
       }
-          // now we calculate the hmozygosity for each trial
+          
+
+// now we calculate the homozygosity for each trial
       for( int mu = 0; mu < num_mu_steps; mu++)
-     {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*mu_step*time*timestep);
+     {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*2*mu_step*time*timestep); // extra factor of 2 in exponent of Laplace transform is standard in pop gen
+      
+      second_moment_of_homozygosity_INDIVIDUAL_TRIAL[mu] += Contribution_from_each_trial[trial]*exp(-pow(10, mu)*4*mu_step*time*timestep); // E[Hom^2| path]
      }
 
       }
-         // Then we determine the variance in the homozygosity
+       
+
+  // Then we determine the variance in the homozygosity
 for( int mu = 0; mu < num_mu_steps; mu++)
-{mean_homozygosity_VARIANCE[mu] +=  (mean_homozygosity_INDIVIDUAL_TRIAL[mu] - mean_homozygosity[mu])*(mean_homozygosity_INDIVIDUAL_TRIAL[mu] - mean_homozygosity[mu])/float(num_trials);
+{conditional_VARIANCE_of_homozygosity_INDIVIDUAL_TRIAL[mu] = second_moment_of_homozygosity_INDIVIDUAL_TRIAL[mu] - pow(mean_homozygosity_INDIVIDUAL_TRIAL[mu], 2);
+
+mean_homozygosity_expectation_value_of_Conditional_VARIANCE[mu] += conditional_VARIANCE_of_homozygosity_INDIVIDUAL_TRIAL[mu]/num_trials;
+mean_homozygosity_VARIANCE_of_Conditional_Expectations[mu] +=  pow((mean_homozygosity_INDIVIDUAL_TRIAL[mu] - mean_homozygosity[mu]),2)/float(num_trials); //
+ 
+
+
+
+
 }
 // Then we bin the homozygosities from each individual trial
 // 
@@ -219,10 +244,17 @@ char OUTPUTFILE2[50];
 
   ofstream fout5;
 
+double SDOM = 0; // Standard deviation of the mean.  Defined in loop below.
+
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
-fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) <<  " " << (mean_homozygosity[mu] + sqrt(mean_homozygosity_VARIANCE[mu])/sqrt(float(num_trials))) << endl;
- // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
+
+mean_homozygosity_TOTAL_VARIANCE[mu] = mean_homozygosity_expectation_value_of_Conditional_VARIANCE[mu] + mean_homozygosity_VARIANCE_of_Conditional_Expectations[mu]; //law of total variance
+
+SDOM = sqrt(mean_homozygosity_TOTAL_VARIANCE[mu])/sqrt(float(num_trials));
+
+fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - SDOM) <<  " " << (mean_homozygosity[mu] + SDOM) << endl;
+ // Here we output mean homozygosity as a function of mu and include error bars - mean plus or minus standard deviation of the mean.
 }
 fout5.close();
 
@@ -240,7 +272,7 @@ fout6.open(stringfile100);
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < 200; QQ++)
 {fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << -QQ  << " " << Log_hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
- }
+ } // note that the log scale being used here is base e
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
   fout6.close();
