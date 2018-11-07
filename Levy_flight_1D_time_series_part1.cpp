@@ -15,7 +15,7 @@
 #include <stdlib.h>     /* atof */
 using namespace std;
 int main(int argc, char* argv[])
-{         if(argc != 5) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
+{         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
   // include periodic boundaries to ensure dist of coalescent times with jumps converges
  // const int distance_off_set = 0;
   const int num_time_steps = atoi(argv[4]);
