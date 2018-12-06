@@ -17,7 +17,8 @@ int main(int argc, char* argv[])
   
 //We declare and initialize relevant variables in this section
 /********************************/
- 
+ std::mt19937 generator(time(0));
+  std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
   const int num_time_steps = atoi(argv[4]);
   const int num_mu_steps = 4;  // number of mu increments in Laplace time 
   const int num_trials = atoi(argv[3]);
@@ -41,7 +42,20 @@ double initial_position = atof(argv[2]) ;  // initial signed distance between in
   double *Contribution_from_each_trial = new double[num_trials];// {0};
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
   double *dist_of_coalescent_times = new double[num_time_steps];
-int Log_hist_of_single_trial_homozygosities[num_mu_steps][200] = {0};
+const int num_histogram_bins = 2000;
+double hist_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+double hist_of_bootstrapped_mean_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+const int num_samples_bootstrapped_means = 10000;
+
+
+// YOU MAY NEED POINTER BELOW - check this if errors occur w/ executable
+double List_of_bootstrapped_mean_homozygosities[num_mu_steps][num_samples_bootstrapped_means] = {0};
+//int List_of_bootstrapped_mean_homozygosities[num_mu_steps][10000] = {0};
+double CDF_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+double Quantile_function_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+
+double CDF_of_bootstrapped_mean_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+
 for(int i =0; i < num_trials; i++)
 {Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
  for(int i =0; i < num_time_steps; i++)
@@ -197,12 +211,15 @@ mean_homozygosity_VARIANCE_of_Conditional_Expectations[mu] +=  pow((mean_homozyg
 }
 // Then we bin the homozygosities from each individual trial
 // 
-for( int mu = 0; mu < num_mu_steps; mu++)
-{for(int QQ = 0; QQ < 200; QQ++)
-   {
-   if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  <= exp(-double(QQ)) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] > exp(-double(QQ + 1))  )
-       {  Log_hist_of_single_trial_homozygosities[mu][QQ] += 1 ;
 
+int Test_Sum[4] = {0};
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{for(int QQ = 0; QQ < num_histogram_bins; QQ++)
+   {
+   if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  >= double(QQ)/double(num_histogram_bins) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] < double(QQ + 1)/double(num_histogram_bins)  )
+       {  hist_of_single_trial_homozygosities[mu][QQ] += 1/double(num_trials) ;  // normalized histogram
+             //cout << 1/double(num_trials) << endl;
        }
    
 
@@ -211,11 +228,247 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
 }
  
+fin_entrance_and_exit_times.close();
+
+}  // This bracket ends the loop over trials
 
 
- fin_entrance_and_exit_times.close();
+
+// Then we get the CDF for the individual trials
+// 
+
+
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{ CDF_of_single_trial_homozygosities[mu][0] = hist_of_single_trial_homozygosities[mu][0];
+  for(int QQ = 1; QQ < num_histogram_bins; QQ++) // start at 1 instead of 0 here
+   {
+   
+        CDF_of_single_trial_homozygosities[mu][QQ] = CDF_of_single_trial_homozygosities[mu][QQ -1] + hist_of_single_trial_homozygosities[mu][QQ] ;
+
+       //cout << CDF_of_single_trial_homozygosities[mu][QQ] << endl;
+   
+
+   }
+
 
 }
+// Round values of CDF function to nearest .005 so that the domain and range are the same and we can invert the function
+
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{ 
+  for(int QQ = 0; QQ < num_histogram_bins; QQ++)
+   {
+   
+        CDF_of_single_trial_homozygosities[mu][QQ] = floor(double(num_histogram_bins)*CDF_of_single_trial_homozygosities[mu][QQ])/double(num_histogram_bins);
+        //cout << CDF_of_single_trial_homozygosities[mu][QQ] << endl;
+       
+   
+
+   }
+
+
+}
+
+
+// invert CDF to get quantile function
+int new_index = 0;
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{ 
+  for(int QQ = 0; QQ < num_histogram_bins; QQ++)
+   {
+   
+        new_index = int(double(num_histogram_bins)*CDF_of_single_trial_homozygosities[mu][QQ]);
+         Quantile_function_of_single_trial_homozygosities[mu][new_index] = double(QQ)/double(num_histogram_bins);
+       
+   
+
+   }
+
+
+}
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{ 
+  for(int QQ = 0; QQ < num_histogram_bins; QQ++)
+   {
+   
+        if(Quantile_function_of_single_trial_homozygosities[mu][QQ] == 0 &&  QQ != 0)
+           { Quantile_function_of_single_trial_homozygosities[mu][QQ] = Quantile_function_of_single_trial_homozygosities[mu][QQ -1]; 
+           }
+        //cout << Quantile_function_of_single_trial_homozygosities[mu][QQ] << endl;
+
+   }
+
+
+}
+
+
+
+/*
+for( int mu = 0; mu < num_mu_steps; mu++)
+{for(int QQ = 0; QQ < 200; QQ++)
+   {
+        Test_Sum[mu] += hist_of_single_trial_homozygosities[mu][QQ];
+   
+
+   }
+
+   cout << Test_Sum[mu] << endl;
+}
+
+*/
+
+
+
+
+ 
+
+
+
+
+for(int trial =0; trial < num_trials; trial++)
+ {   
+ 
+
+//const int bootstrapped_mean = 0;
+
+
+
+
+double dummy_rand1 = 0;
+int dummy_rand1_INDEX = int(floor(double(num_histogram_bins)*dummy_rand1));
+//double dummy_rand2 = 0;
+//bool condition_satisfied = false;
+// generate list of sample means
+
+//int YESYESYES = 0;
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
+   {
+      
+          dummy_rand1 = uniform_dist(generator);    // we generate random numbers according to the single homozygosity histogram via inverse transform sampling
+          //cout << dummy_rand1;
+          dummy_rand1_INDEX = int(floor(double(num_histogram_bins)*dummy_rand1));  //This is the index associated to the above domain value for the Quantile function array
+          
+          //cout << dummy_rand1_INDEX << endl;
+         
+              
+
+              List_of_bootstrapped_mean_homozygosities[mu][sample] += Quantile_function_of_single_trial_homozygosities[mu][dummy_rand1_INDEX]/double(num_trials);
+              
+   
+
+   }
+
+
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+// use list of sample means to get histogram of sample mean values
+//
+for( int mu = 0; mu < num_mu_steps; mu++)
+{for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
+  {
+      for(int QQ = 0; QQ < num_histogram_bins; QQ++)
+   {
+          if( List_of_bootstrapped_mean_homozygosities[mu][sample]  >= double(QQ)/double(num_histogram_bins) && List_of_bootstrapped_mean_homozygosities[mu][sample] < double(QQ + 1)/double(num_histogram_bins) )
+                {
+
+                  hist_of_bootstrapped_mean_homozygosities[mu][QQ] += 1/double(num_samples_bootstrapped_means);
+                }
+
+
+
+
+   }
+
+      
+         //cout << List_of_bootstrapped_mean_homozygosities[mu][sample] << endl;
+     
+
+  }
+
+}
+
+
+
+// use the histogram to get the CDF
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{  CDF_of_single_trial_homozygosities[mu][0] = hist_of_single_trial_homozygosities[mu][0];
+  for(int QQ = 1; QQ < num_histogram_bins; QQ++)
+   {
+   
+         //Log_hist_of_single_trial_homozygosities[mu][QQ] += 1 ;
+            CDF_of_bootstrapped_mean_homozygosities[mu][QQ] = CDF_of_bootstrapped_mean_homozygosities[mu][QQ-1] + hist_of_bootstrapped_mean_homozygosities[mu][QQ];
+       
+   
+   
+   }
+
+
+}
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{  //CDF_of_single_trial_homozygosities[mu][0] = hist_of_single_trial_homozygosities[mu][0];
+  for(int QQ = 1; QQ < num_histogram_bins; QQ++)
+   {
+   
+         
+            cout << CDF_of_bootstrapped_mean_homozygosities[mu][QQ] << endl;
+       
+              //cout << "banana" << endl;
+   
+   }
+
+
+}
+
+
+
+int lower_CI_INDEX[4] = {0};
+
+int upper_CI_INDEX[4] = {0};
+
+//Use the CDF to determine the confidence intervals for the mean 
+
+
+//cout << (CDF_of_bootstrapped_mean_homozygosities[0][199] ) << endl;
+for( int mu = 0; mu < num_mu_steps; mu++)
+{  //super_dummy_INDEX = 0;
+    while(CDF_of_bootstrapped_mean_homozygosities[mu][lower_CI_INDEX[mu]] < .16 )   {lower_CI_INDEX[mu]++;}
+    while(CDF_of_bootstrapped_mean_homozygosities[mu][upper_CI_INDEX[mu]] < .84 ) {upper_CI_INDEX[mu]++;}
+
+
+}
+
+
+double lower_CI[4];
+double upper_CI[4];
+
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{ 
+lower_CI[mu]= double(lower_CI_INDEX[mu])/double(num_histogram_bins);    // confidence interval for mean homozygosity obtained via bootstrapping
+upper_CI[mu]= double(upper_CI_INDEX[mu])/double(num_histogram_bins);
+}
+
+
+
 /*******************************************/
 
 
@@ -249,12 +502,9 @@ double SDOM = 0; // Standard deviation of the mean.  Defined in loop below.
 fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
 
-mean_homozygosity_TOTAL_VARIANCE[mu] = mean_homozygosity_expectation_value_of_Conditional_VARIANCE[mu] + mean_homozygosity_VARIANCE_of_Conditional_Expectations[mu]; //law of total variance
 
-SDOM = sqrt(mean_homozygosity_TOTAL_VARIANCE[mu])/sqrt(float(num_trials));
-
-fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << (mean_homozygosity[mu] - SDOM) <<  " " << (mean_homozygosity[mu] + SDOM) << endl;
- // Here we output mean homozygosity as a function of mu and include error bars - mean plus or minus standard deviation of the mean.
+fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
+ // Here we output mean homozygosity as a function of mu and include error bars
 }
 fout5.close();
 
@@ -270,8 +520,8 @@ char OUTPUTFILE3[50];
 
 fout6.open(stringfile100);
 for (int mu =0; mu < num_mu_steps; mu++) {
-for (int QQ =0; QQ < 200; QQ++)
-{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << -QQ  << " " << Log_hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
+for (int QQ =0; QQ < num_histogram_bins; QQ++)
+{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << -QQ  << " " << hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
  } // note that the log scale being used here is base e
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
