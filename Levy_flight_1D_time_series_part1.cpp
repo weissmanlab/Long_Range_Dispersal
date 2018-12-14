@@ -15,7 +15,7 @@
 #include <stdlib.h>     /* atof */
 using namespace std;
 int main(int argc, char* argv[])
-{         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
+{         if(argc != 7) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, delta function width, Diffusion constant (aka scale parameter)" << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
   // include periodic boundaries to ensure dist of coalescent times with jumps converges
  // const int distance_off_set = 0;
   const int num_time_steps = atoi(argv[4]);
@@ -31,9 +31,9 @@ int main(int argc, char* argv[])
   //const double cutoff = 0; // minimum jump size
   const double timestep = 1;//const double timestep = .1; // for deterministic drift term
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
-  const double delta_function_width = 1;
+  const double delta_function_width = atof(argv[5]);;
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
-  const double scale_parameter = atof(argv[5]); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
+  const double scale_parameter = atof(argv[6]); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
   const gsl_rng_type * T;
   T = gsl_rng_default;
   gsl_rng* r;
@@ -154,7 +154,7 @@ double jump_size_levy = gsl_ran_levy(r,  scale_parameter, alpha);
 
 signed_step_size +=  levy_param*jump_size_levy;
  
- if(abs(current_position) <= delta_function_width)  // use step function with finite width as replacement for delta function
+ if(abs(current_position) <= delta_function_width/2.0)  // use step function with finite width as replacement for delta function
  { inside_zone_new = true; }
 
  else{ inside_zone_new = false; }
