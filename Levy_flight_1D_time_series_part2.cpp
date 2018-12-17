@@ -13,7 +13,7 @@
 #include <cstdlib>
 using namespace std;
 int main(int argc, char* argv[])
-{         if(argc != 7) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, delta_function_width, rho_inverse " << endl; return 0;} 
+{         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, rho_inverse " << endl; return 0;} 
   
 //We declare and initialize relevant variables in this section
 /********************************/
@@ -29,8 +29,8 @@ int main(int argc, char* argv[])
   const double timestep = 1; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
   const double mu_step = .001;  // .0001; //change back later 
   //const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
-  const double rho_inverse = atof(argv[6]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
-  const double delta_function_width = atof(argv[5]);  //this must be same as in part 1
+  const double rho_inverse = atof(argv[5]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
+  const double delta_function_width = 1.0; //atof(argv[5]);  //this must be same as in part 1
   const double delta_function_height = 1.0/delta_function_width;
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   double mean_homozygosity[num_mu_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
