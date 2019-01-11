@@ -97,6 +97,9 @@ for replicates in range(5000):
                 coalascetime[1]=times
                 coal_state=0
                 outr.write('%f %s\n'%(coalascetime[0],coalascetime[1]))
+        
+        xs=x
+        ys=y
                         
 outr.close()            
             
