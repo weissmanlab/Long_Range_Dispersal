@@ -2,7 +2,7 @@ library(ggplot2)
 library(gridExtra)
 library(Hmisc)
 library(dplyr)
-alpha <- 1.65
+alpha <- 1.25
 #par(mfrow=c(3,3))
 x <- list()
 y <- list()
