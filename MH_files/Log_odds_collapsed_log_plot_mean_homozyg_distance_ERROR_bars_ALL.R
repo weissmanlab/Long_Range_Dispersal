@@ -1,0 +1,97 @@
+library(ggplot2)
+library(gridExtra)
+library(Hmisc)
+library(dplyr)
+
+par(mfrow=c(4,3))
+x <- list()
+y <- list()
+p <- list()
+k <- 1
+for(j in 1:4){for(i in 0:2){
+
+if(j==1)
+{alpha <- 1.25}
+if(j==2)
+{alpha <- 1.45}
+if(j==3)
+{alpha <- 1.65}
+if(j==4)
+{alpha <- 1.85}
+
+if(i==0)
+{mu <- .1}
+
+if(i==1)
+{mu <- .01}
+
+if(i==2)
+{mu <- .001}
+
+
+
+Simulation_Data <-   read.table("Total_outfile_ALL.txt")
+Semianalytic_Data <- read.table("formatted_semianalytic_data_ALL.txt")
+
+Simulation_Data  <- subset(Simulation_Data, V1 == alpha)
+#Simulation_Data  <-subset(Simulation_Data, V2 ==rho_inverse)
+Simulation_Data <- subset(Simulation_Data, V3 ==mu)
+
+Semianalytic_Data <- read.table("formatted_semianalytic_data_ALL.txt")
+Semianalytic_Data  <- subset(Semianalytic_Data, V1 == alpha)
+#Semianalytic_Data  <-subset(Semianalytic_Data, V2 ==rho_inverse)
+Semianalytic_Data  <- subset(Semianalytic_Data, V3 ==mu)
+
+
+
+
+
+
+Simulation_Data <- Simulation_Data[!(Simulation_Data$V3 == 1 ),]
+Semianalytic_Data  <-Semianalytic_Data [!(Semianalytic_Data$V3 == 1 ),]
+
+
+Simulation_Data <- Simulation_Data[!(Simulation_Data$V7 - Simulation_Data$V6  > 5),]
+Semianalytic_Data <- Semianalytic_Data[!(Semianalytic_Data$V7 - Semianalytic_Data$V6  > 5),]
+
+Simulation_Data <- Simulation_Data[!(Simulation_Data$V5   < -30),]
+
+#Simulation_Data[4] <- (Simulation_Data[4] + .5*log(Simulation_Data[3]))
+#Semianalytic_Data[4] <- (Semianalytic_Data[4] + .5*log(Semianalytic_Data[3]))
+
+
+Simulation_Data[5] <- log(exp(Simulation_Data[5])/(1 - exp(Simulation_Data[5]))) -log(Simulation_Data[2])
+Semianalytic_Data[5] <- log(exp(Semianalytic_Data[5])/(1 - exp(Semianalytic_Data[5]))) -log(Semianalytic_Data[2])
+#print(Simulation_Data[5])
+Simulation_Data[6] <- log(exp(Simulation_Data[6])/(1 - exp(Simulation_Data[6]))) -log(Simulation_Data[2])
+Semianalytic_Data[6] <- log(exp(Semianalytic_Data[6])/(1 - exp(Semianalytic_Data[6]))) -log(Semianalytic_Data[2])
+
+Simulation_Data[7] <- log(exp(Simulation_Data[7])/(1 - exp(Simulation_Data[7]))) -log(Simulation_Data[2])
+Semianalytic_Data[7] <- log(exp(Semianalytic_Data[7])/(1 - exp(Semianalytic_Data[7]))) -log(Semianalytic_Data[2])
+
+#replace mean homozygosity/probability of identity with log of odds of identiy + log(rho)
+
+
+#Simulation_Data[6] = log(exp(Simulation_Data[6])(1 - exp(Simulation_Data[6]))) -#log(Simulation_Data[2])
+#Simulation_Data[7] = log(exp(Simulation_Data[7])(1 - exp(Simulation_Data[7]))) -log(Simulation_Data[2])
+#Semianalytic_Data[5] = Semianalytic_Data[5] - log(Semianalytic_Data[2])
+#Simulation_Data[6] = Simulation_Data[6] - log(Simulation_Data[2])
+#Semianalytic_Data[5] = Semianalytic_Data[5] - log(Semianalytic_Data[2])
+#Simulation_Data[6] = Simulation_Data[6] - log(Simulation_Data[2])
+#Semianalytic_Data[7] = Semianalytic_Data[7] - log(Semianalytic_Data[2])
+colnames(Simulation_Data)[4] <- "log_of_distance_rescaled"
+colnames(Semianalytic_Data)[4] <- "log_of_distance_rescaled"
+colnames(Simulation_Data)[5] <- "log_odds_of_identity"
+colnames(Semianalytic_Data)[5] <- "log_odds_of_identity"
+
+p[[k]] <- ggplot() + geom_point(data=Semianalytic_Data, aes(log_of_distance_rescaled, log_odds_of_identity), color = "red") + 
+        geom_pointrange(data=Simulation_Data, aes(x = log_of_distance_rescaled, y =log_odds_of_identity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("alpha", alpha,  "mu", mu))
+#print(p[[k]])
+k <- k + 1
+
+}
+
+}
+do.call(grid.arrange,p)
+
+####################
