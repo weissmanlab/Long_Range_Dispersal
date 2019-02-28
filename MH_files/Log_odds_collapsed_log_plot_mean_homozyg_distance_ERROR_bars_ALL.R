@@ -3,14 +3,13 @@ library(gridExtra)
 library(Hmisc)
 library(dplyr)
 
-
+tail_cutoff <- 5
 par(mfrow=c(2,2))
 x <- list()
 y <- list()
 p <- list(4)
 k <- 1
-for(j in 4:4){#for(i in 0:2){
-
+for(j in 1:4){#for(i in 0:2){
 if(j==1)
 {alpha <- 1.25}
 if(j==2)
@@ -89,6 +88,18 @@ Semianalytic_Data[7] <- Semianalytic_Data[7] - (1/Semianalytic_Data[1] - 1)*log(
 #replace mean homozygosity/probability of identity with log of odds of identiy + log(rho)
 
 
+#take tail for power law estimation
+Tail_Sum <- 0
+Simulation_Data_Tail <- subset(Simulation_Data, V4 >= tail_cutoff)
+Tail_Sum <- sum(exp(Simulation_Data_Tail$V5)) # interpret probabilites as frequencies.  sum of frequencies is analogous to number of trials/events in the tail of a histogram divided by the total number of trials
+Expected_log_dist_from_xmin <- sum(exp(Simulation_Data_Tail$V5)*(Simulation_Data_Tail$V4 -log(exp(tail_cutoff) )))/Tail_Sum
+
+tail_estimate <- 1 + 1/Expected_log_dist_from_xmin
+alpha_estimate <- tail_estimate -1
+print(tail_estimate) 
+#See "Power Law Distributions in Empirical Data" by Clauset, Shalizi and Newman for an explanation of this maximum likelihood algorithm for power law tails.  The formula they give in section three to estimate tails from discrete data in a histogram is alpha = 1+ n[Sum(ln(xi/xmin))]^-1, where the sum is taken over all trials found in a bin greater than or equal to the tail cutoff xmin.  Since we have frequencies rather that a certain number of trials at each distance, we need to re-express this formula in terms of frequencies.  alpha = 1+ n[Sum(n_i ln(xi/xmin))]^-1 where the sum is now taken over all x.  This is equivlaent to 1+ f_tail[Sum(f_i ln(xi/xmin))]^-1, where f_i is the fraction of points found at a particular distance and f_tail = sum(f_i) is the fraction of points found in the tail.  f_i/f_tail = n_i/n, and the estimators are equvialent. 
+
+
 #Simulation_Data[6] = log(exp(Simulation_Data[6])(1 - exp(Simulation_Data[6]))) -#log(Simulation_Data[2])
 #Simulation_Data[7] = log(exp(Simulation_Data[7])(1 - exp(Simulation_Data[7]))) -log(Simulation_Data[2])
 #Semianalytic_Data[5] = Semianalytic_Data[5] - log(Semianalytic_Data[2])
@@ -100,6 +111,10 @@ colnames(Simulation_Data)[4] <- "log_of_distance_rescaled"
 colnames(Semianalytic_Data)[4] <- "log_of_distance_rescaled"
 colnames(Simulation_Data)[5] <- "log_odds_of_identity_rescaled"
 colnames(Semianalytic_Data)[5] <- "log_odds_of_identity_rescaled"
+
+
+
+
 
 Rho <- as.factor(1/Simulation_Data[, 2])
 Mu <- as.factor(Simulation_Data[, 3])

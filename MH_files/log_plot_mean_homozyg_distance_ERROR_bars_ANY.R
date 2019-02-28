@@ -2,7 +2,8 @@ library(ggplot2)
 library(gridExtra)
 library(Hmisc)
 library(dplyr)
-alpha <- 1.25
+alpha <- 1.85
+tail_cutoff <- 111 # on natural log scale
 #par(mfrow=c(3,3))
 x <- list()
 y <- list()
@@ -12,7 +13,7 @@ for(i in 0:2){for(j in 1:3){
 
 rho_inverse <- 10^(-i)
 mu <- 10^(-j)
-
+dummy_slope_Data <-   read.table("dummy_slope.txt")
 Simulation_Data <-   read.table("Total_outfile_ALL.txt")
 Simulation_Data  <- subset(Simulation_Data, V1 == alpha)
 Simulation_Data  <-subset(Simulation_Data, V2 ==rho_inverse)
@@ -30,6 +31,21 @@ All_Data$labels[1:length(Simulation_Data[,1])] <- 'ni1'
 All_Data <- All_Data[!(All_Data$V7 - All_Data$V6  > 5),]
 Simulation_Data <- Simulation_Data[!(Simulation_Data$V7 - Simulation_Data$V6  > 5),]
 Semianalytic_Data <- Semianalytic_Data[!(Semianalytic_Data$V7 - Semianalytic_Data$V6  > 5),]
+
+
+#take tail for power law estimation
+Tail_Sum <- 0
+Dummy_Data_Tail <- subset(dummy_slope_Data, V1 >= tail_cutoff)
+Tail_Sum <- sum(exp(Dummy_Data_Tail$V2)) # interpret probabilites as frequencies.  sum of frequencies is analogous to number of trials/events in the tail of a histogram divided by the total number of trials
+Expected_log_dist_from_xmin <- sum(exp(Dummy_Data_Tail$V2)*(Dummy_Data_Tail$V1 -log(exp(tail_cutoff) )))/Tail_Sum
+
+tail_estimate <- 1 + 1/Expected_log_dist_from_xmin
+alpha_estimate <- tail_estimate -1
+print(tail_estimate) 
+#See "Power Law Distributions in Empirical Data" by Clauset, Shalizi and Newman for an explanation of this maximum likelihood algorithm for power law tails.  The formula they give in section three to estimate tails from discrete data in a histogram is alpha = 1+ n[Sum(ln(xi/xmin))]^-1, where the sum is taken over all trials found in a bin greater than or equal to the tail cutoff xmin.  Since we have frequencies rather that a certain number of trials at each distance, we need to re-express this formula in terms of frequencies.  alpha = 1+ n[Sum(n_i ln(xi/xmin))]^-1 where the sum is now taken over all x.  This is equivlaent to 1+ f_tail[Sum(f_i ln(xi/xmin))]^-1, where f_i is the fraction of points found at a particular distance and f_tail = sum(f_i) is the fraction of points found in the tail.  f_i/f_tail = n_i/n, and the estimators are equvialent. 
+
+
+
 
 
 colnames(Simulation_Data)[4] <- "log_of_distance"
