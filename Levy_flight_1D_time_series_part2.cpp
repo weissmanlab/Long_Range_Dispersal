@@ -197,7 +197,7 @@ if (time >= exit_time)
                 }
 
 
-
+             
 
               }}
 
@@ -447,7 +447,7 @@ fout7.open(stringfile101);
 
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < num_histogram_bins; QQ++)
-{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
+{fout7 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
