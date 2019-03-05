@@ -76,7 +76,7 @@ const int num_samples_bootstrapped_means = 10000;
 double List_of_bootstrapped_mean_homozygosities[num_mu_steps][num_samples_bootstrapped_means] = {0};
 double Sorted_List_of_bootstrapped_mean_homozygosities[num_mu_steps][num_samples_bootstrapped_means] = {0};
 
-/
+
 
 for(int i =0; i < num_trials; i++)
 {Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
@@ -187,7 +187,7 @@ if (time >= exit_time)
 
  // bin histogram of single trial homozygosities here.
 
-
+         for (int mu =0; mu < num_mu_steps; mu++){
                 for(int QQ = 0; QQ < num_histogram_bins; QQ++)
              {
           if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  >= double(QQ)/double(num_histogram_bins) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] < double(QQ + 1)/double(num_histogram_bins) )
@@ -199,7 +199,7 @@ if (time >= exit_time)
 
 
 
-              }
+              }}
 
 
 
@@ -433,16 +433,16 @@ for (int QQ =0; QQ < num_histogram_bins; QQ++)
 
 
 
-char OUTPUTFILE3[50];
-  sprintf(OUTPUTFILE3, "histogram_of_bootstrapped_mean_homozygosities");
-  std::stringstream file_name100;
-         file_name100 <<  OUTPUTFILE3 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
-         std::string stringfile100;
-         file_name100 >> stringfile100;
+char OUTPUTFILE4[50];
+  sprintf(OUTPUTFILE4, "histogram_of_bootstrapped_mean_homozygosities");
+  std::stringstream file_name101;
+         file_name101 <<  OUTPUTFILE4 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         std::string stringfile101;
+         file_name101 >> stringfile101;
 
-  ofstream fout6;
+  ofstream fout7;
 
-fout6.open(stringfile100);
+fout7.open(stringfile101);
 
 
 for (int mu =0; mu < num_mu_steps; mu++) {
@@ -451,7 +451,7 @@ for (int QQ =0; QQ < num_histogram_bins; QQ++)
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
-  fout6.close();
+  fout7.close();
  
 
 
