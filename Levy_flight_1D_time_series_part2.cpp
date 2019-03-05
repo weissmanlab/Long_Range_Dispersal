@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
   const int num_time_steps = atoi(argv[4]);
   const int num_mu_steps = 4;  // number of mu increments in Laplace time 
   const int num_trials = atoi(argv[3]);
-   std::mt19937 generator(time(0));
+  std::mt19937 generator(time(0));
   std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
 
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
@@ -68,7 +68,7 @@ for (int mu = 0; mu < num_mu_steps; mu++) {
 
 double hist_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
 
-//double hist_of_bootstrapped_mean_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+double hist_of_bootstrapped_mean_homozygosities[num_mu_steps][num_histogram_bins] = {0};
 const int num_samples_bootstrapped_means = 10000;
 
 
@@ -76,11 +76,7 @@ const int num_samples_bootstrapped_means = 10000;
 double List_of_bootstrapped_mean_homozygosities[num_mu_steps][num_samples_bootstrapped_means] = {0};
 double Sorted_List_of_bootstrapped_mean_homozygosities[num_mu_steps][num_samples_bootstrapped_means] = {0};
 
-//int List_of_bootstrapped_mean_homozygosities[num_mu_steps][10000] = {0};
-//double CDF_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
-//double Quantile_function_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
-
-//double CDF_of_bootstrapped_mean_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+/
 
 for(int i =0; i < num_trials; i++)
 {Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
@@ -162,6 +158,11 @@ for( int mu = 0; mu < num_mu_steps; mu++)
      {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*2*mu_step*time*timestep); // extra factor of 2 in exponent of Laplace transform is standard in pop gen
       
       List_of_single_trial_homozygosities[mu][trial] = mean_homozygosity_INDIVIDUAL_TRIAL[mu];
+     
+       
+
+
+
      }
 
 
@@ -184,6 +185,21 @@ if (time >= exit_time)
 
 
 
+ // bin histogram of single trial homozygosities here.
+
+
+                for(int QQ = 0; QQ < num_histogram_bins; QQ++)
+             {
+          if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  >= double(QQ)/double(num_histogram_bins) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] < double(QQ + 1)/double(num_histogram_bins) )
+                {
+
+                  hist_of_single_trial_homozygosities[mu][QQ] += 1/double(num_trials);
+                }
+
+
+
+
+              }
 
 
 
@@ -224,11 +240,10 @@ for (int time =0; time < num_time_steps; time++) {
 
 double dummy_rand1 = 0;
 int dummy_rand1_INDEX = 0;
-//double dummy_rand2 = 0;
-//bool condition_satisfied = false;
+
 // generate list of sample means
 
-//int YESYESYES = 0;
+
 
 for( int mu = 0; mu < num_mu_steps; mu++)
 {for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
@@ -289,28 +304,17 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
 
  }
-/*
-for( int mu = 0; mu < num_mu_steps; mu++)
-{ for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
-    {
-       //cout << List_of_bootstrapped_mean_homozygosities[mu][sample] << endl;
-
-    }
-
-}
 
 
 
-for( int mu = 0; mu < num_mu_steps; mu++)
-{ for(int trial = 0; trial < num_trials; trial++)
-    {
-         //cout << List_of_single_trial_homozygosities[mu][trial] << endl;
 
- }
-}
-*/
 
-/*
+
+
+
+
+
+
 // use list of sample means to get histogram of sample mean values
 //
 for( int mu = 0; mu < num_mu_steps; mu++)
@@ -330,57 +334,20 @@ for( int mu = 0; mu < num_mu_steps; mu++)
    }
 
       
-         //cout << List_of_bootstrapped_mean_homozygosities[mu][sample] << endl;
+         
      
 
   }
 
 }
 
-*/
-/*
-// use the histogram to get the CDF
 
-for( int mu = 0; mu < num_mu_steps; mu++)
-{  CDF_of_bootstrapped_mean_homozygosities[mu][0] = hist_of_bootstrapped_mean_homozygosities[mu][0];
-  for(int QQ = 1; QQ < num_histogram_bins; QQ++)
-   {
-   
-         //Log_hist_of_single_trial_homozygosities[mu][QQ] += 1 ;
-            CDF_of_bootstrapped_mean_homozygosities[mu][QQ] = CDF_of_bootstrapped_mean_homozygosities[mu][QQ-1] + hist_of_bootstrapped_mean_homozygosities[mu][QQ];
-       
-   
-   
-   }
-
-
-}
-
-for( int mu = 0; mu < num_mu_steps; mu++)
-{  //CDF_of_single_trial_homozygosities[mu][0] = hist_of_single_trial_homozygosities[mu][0];
-  for(int QQ = 1; QQ < num_histogram_bins; QQ++)
-   {
-   
-         
-            cout << CDF_of_bootstrapped_mean_homozygosities[mu][QQ] << endl;
-       
-              //cout << "banana" << endl;
-   
-   }
-
-
-}
-
-*/
 
 int lower_CI_INDEX[4] = {0};
 
 int upper_CI_INDEX[4] = {0};
 
-//Use the CDF to determine the confidence intervals for the mean 
 
-
-//cout << (CDF_of_bootstrapped_mean_homozygosities[0][199] ) << endl;
 for( int mu = 0; mu < num_mu_steps; mu++)
 {  
     lower_CI_INDEX[mu] = int(floor(double(num_samples_bootstrapped_means)*double(.16)));
@@ -442,7 +409,7 @@ fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygos
 }
 fout5.close();
 
-/*
+
 char OUTPUTFILE3[50];
   sprintf(OUTPUTFILE3, "histogram_of_single_trial_homozygosities");
   std::stringstream file_name100;
@@ -453,14 +420,41 @@ char OUTPUTFILE3[50];
   ofstream fout6;
 
 fout6.open(stringfile100);
+
+
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < num_histogram_bins; QQ++)
-{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << -QQ  << " " << hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
- } // note that the log scale being used here is base e
+{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
+ } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
   fout6.close();
- */
+ 
+
+
+
+char OUTPUTFILE3[50];
+  sprintf(OUTPUTFILE3, "histogram_of_bootstrapped_mean_homozygosities");
+  std::stringstream file_name100;
+         file_name100 <<  OUTPUTFILE3 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         std::string stringfile100;
+         file_name100 >> stringfile100;
+
+  ofstream fout6;
+
+fout6.open(stringfile100);
+
+
+for (int mu =0; mu < num_mu_steps; mu++) {
+for (int QQ =0; QQ < num_histogram_bins; QQ++)
+{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
+ } 
+// Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
+  }
+  fout6.close();
+ 
+
+
 
 
 
