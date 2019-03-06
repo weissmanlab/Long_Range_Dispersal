@@ -476,6 +476,32 @@ for (int QQ =0; QQ < num_samples_bootstrapped_means; QQ++)
   fout8.close();
 
 
+
+char OUTPUTFILE6[50];
+  sprintf(OUTPUTFILE6, "list_of_single_trial_homozygosities");
+  std::stringstream file_name103;
+         file_name103 <<  OUTPUTFILE6 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         std::string stringfile103;
+         file_name103 >> stringfile103;
+
+  ofstream fout9;
+
+fout9.open(stringfile103);
+
+
+for (int mu =0; mu < num_mu_steps; mu++) {
+for (int QQ =0; QQ < num_trials; QQ++)
+{fout9 << initial_position << " " << pow(10, mu)*mu_step << " " << List_of_single_trial_homozygosities[mu][QQ]  << " " << 1.0/double(num_trials)<<  endl;
+ } 
+// Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
+  }
+  fout9.close();
+
+
+
+
+
+
 chdir("..");
 chdir("..");
 
