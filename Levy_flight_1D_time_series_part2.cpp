@@ -455,7 +455,25 @@ for (int QQ =0; QQ < num_histogram_bins; QQ++)
  
 
 
+char OUTPUTFILE5[50];
+  sprintf(OUTPUTFILE5, "sorted_list_of_bootstrapped_mean_homozygosities");
+  std::stringstream file_name102;
+         file_name102 <<  OUTPUTFILE5 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         std::string stringfile102;
+         file_name102 >> stringfile102;
 
+  ofstream fout8;
+
+fout8.open(stringfile102);
+
+
+for (int mu =0; mu < num_mu_steps; mu++) {
+for (int QQ =0; QQ < num_samples_bootstrapped_means; QQ++)
+{fout8 << initial_position << " " << pow(10, mu)*mu_step << " " << Sorted_List_of_bootstrapped_mean_homozygosities[mu][QQ]  << " " << 1.0/double(num_samples_bootstrapped_means)<<  endl;
+ } 
+// Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
+  }
+  fout8.close();
 
 
 chdir("..");
