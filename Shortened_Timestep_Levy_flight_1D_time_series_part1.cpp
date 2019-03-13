@@ -29,11 +29,11 @@ int main(int argc, char* argv[])
   const double levy_param = 1.00;
   //const double fisher_param = 0;//1.00;
   //const double cutoff = 0; // minimum jump size
-  const double timestep = 1.0;//const double timestep = .1; // for deterministic drift term
+  const double timestep = 0.1;//const double timestep = .1; // for deterministic drift term
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double delta_function_width = 1.0; //atof(argv[5]);;
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
-  const double scale_parameter = atof(argv[5]);//*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
+  const double scale_parameter = atof(argv[5])*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
   // the scale parameter c is related to the generalized diffusion constant D as c =(4D*timestep)^(1/alpha)
   const gsl_rng_type * T;
   T = gsl_rng_default;

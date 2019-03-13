@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
-  const double timestep = 1.0; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
+  const double timestep = 0.1; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
   const double mu_step = .001;  // .0001; //change back later 
   //const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double rho_inverse = atof(argv[5]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
