@@ -2,8 +2,11 @@
 //The number of timesteps for said trajectories is varied from one timestep to num_time_steps_max, 
 //and for each number of timesteps a sample of num_trials trajectories is taken in order to calculate the distribution of coalescence times at that given time. 
 // This procedure allows us to efficiently sample the paths that begin at an arbitrary point and end at the origin.
+//#include <libstable/stable/src/stable.h> //  download this external library and add it to the your path (you should probably place it in the include directory.  Putting it in Long_Range_Dispersal is fine as well)
+// MAKE SURE TO COMPILE libstable WITH make COMMAND - read the associated paper "libstable: Fast, Parallel, and High-Precision Computation of α-Stable Distributions in R, C/C++, and MATLAB"
 
 #include <stdio.h>
+#include <vector>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
 #include <gsl/gsl_rng.h>
@@ -18,9 +21,12 @@
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>     /* atof */
+
 using namespace std;
 int main(int argc, char* argv[])
-{         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
+{      
+    std::vector<double> v;
+   if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials for each terminal time  (we consider trajectories of varying time length) , maximum number of time steps, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
   // include periodic boundaries to ensure dist of coalescent times with jumps converges
  // const int distance_off_set = 0;
   const int num_time_steps_max = atoi(argv[4]);  //the total length of the trajectories considered
@@ -43,9 +49,11 @@ int main(int argc, char* argv[])
   gsl_rng* r;
    r = gsl_rng_alloc (T);
 
+ 
+
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
-double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);
+double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
 
 
   double initial_position = atof(argv[2]) ;  // initial signed distance between individuals
@@ -121,9 +129,24 @@ for(int trial =0; trial < num_trials; trial++)
          file_name3 >> stringfile3; 
     ofstream fout8;
     fout8.open(stringfile3);
+ 
+  
+
+ char OUTPUTFILE4[50];
+  sprintf(OUTPUTFILE4, "free_and_contrained_CHOSEN_TIME_jump_sizes");
+  std::stringstream file_name4;
+         file_name4 <<  OUTPUTFILE4  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << trial << ".txt" ;
+         std::string stringfile4;
+         file_name4 >> stringfile4; 
+    ofstream fout9;
+    fout9.open(stringfile4);
+  
   bool inside_zone = false; 
    bool inside_zone_new; 
-  
+
+
+
+
     double free_trajectory[num_time_steps];  // dummy free trajectory generated will be used to construct constrained trajectory
     double constrained_trajectory[num_time_steps];  // the constrained trajectory we're interested in generating
     double free_step_list[num_time_steps];  // list of jumps taken at each timestep for free trajectory
@@ -136,10 +159,11 @@ for(int trial =0; trial < num_trials; trial++)
 double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
  
  free_step_list[time] = signed_step_size;  // list of jumps taken at each timestep for free trajectory
+ free_trajectory[time] = current_position;
  constrained_step_list[time] = free_step_list[time]; // list of jumps taken at each timestep for constrained trajectory
  current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
- free_trajectory[time] = current_position;
  
+ //fout9 << free_step_list[time] << endl;
        }
   
 
@@ -150,9 +174,14 @@ double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
 
   int chosen_time = int(floor(uniform_dist(generator)));  // Time at which we shift the trajectory by a large jump to ensure that the endpoint is the origin
 
-  constrained_step_list[chosen_time] -= free_trajectory[num_time_steps]; // correct constrined list so that it will result in trajectory that ends at the origin
+  constrained_step_list[chosen_time] = free_step_list[chosen_time] - free_trajectory[num_time_steps -1]; // correct constrined list so that it will result in trajectory that ends at the origin
 
-   
+  fout9  << free_step_list[chosen_time] << " " << constrained_step_list[chosen_time] << endl;
+  
+
+ 
+
+
   current_position = fmod(initial_position, periodic_boundary); //reset current position to inital position
      
     
@@ -191,12 +220,17 @@ current_position = fmod((current_position + signed_step_size),  periodic_boundar
 // We include with each sampled trajectory a weight equal to WEIGHT = Prob(constrained_step_list[chosen_time])/Prob(free_step_list[chosen_time])
 // Including this weight in our calculations removes the bias and allows each path to contribute as if we had drawn directly from the conditional distribution.
 
+// In part 1 we will output free_step_list[chosen_time] and constrained_step_list[chosen_time] along with the entrance and exit times
+// In part 1.5 we will use and r code to evaluate the Levy stable dist at these two distance and use their ratrio to produce the weights
+
+
 // In part two we will normalize the weights and perform a weighted average over paths to get the distribution of coalsecence times.  
 // We then multiply the result by the probability of a trajectory ending at the origin to convert from the conditional expectation
 // over constrained paths to the expectation over all paths.
 
 
 fout8.close();
+fout9.close();
 current_position = fmod(initial_position, periodic_boundary); // reset to inital position
 
 }}
