@@ -176,7 +176,8 @@ double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
 
   constrained_step_list[chosen_time] = free_step_list[chosen_time] - free_trajectory[num_time_steps -1]; // correct constrined list so that it will result in trajectory that ends at the origin
 
-  fout9  << free_step_list[chosen_time] << " " << constrained_step_list[chosen_time] << endl;
+  fout9  << free_step_list[chosen_time] <<  endl; 
+  fout9 << constrained_step_list[chosen_time] << endl;
   
 
  
@@ -221,7 +222,7 @@ current_position = fmod((current_position + signed_step_size),  periodic_boundar
 // Including this weight in our calculations removes the bias and allows each path to contribute as if we had drawn directly from the conditional distribution.
 
 // In part 1 we will output free_step_list[chosen_time] and constrained_step_list[chosen_time] along with the entrance and exit times
-// In part 1.5 we will use and r code to evaluate the Levy stable dist at these two distance and use their ratrio to produce the weights
+// In part 1.5 we will use an r code to evaluate the Levy stable dist at these two distances and use their ratrio to produce the weights
 
 
 // In part two we will normalize the weights and perform a weighted average over paths to get the distribution of coalsecence times.  
