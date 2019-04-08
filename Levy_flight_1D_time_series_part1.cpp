@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
   T = gsl_rng_default;
   gsl_rng* r;
    r = gsl_rng_alloc (T);
-
+    gsl_rng_set(r, time(0));
 
   //std::default_random_engine generator(time(0));
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator

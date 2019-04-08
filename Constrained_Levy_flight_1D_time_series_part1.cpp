@@ -25,14 +25,21 @@
 using namespace std;
 int main(int argc, char* argv[])
 {      
+    
+    //std::cout << time(0) << std::endl;
     std::vector<double> v;
-   if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials for each terminal time  (we consider trajectories of varying time length) , maximum number of time steps, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
+   if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, total number of trials, number of time steps in each trajectory, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
   // include periodic boundaries to ensure dist of coalescent times with jumps converges
  // const int distance_off_set = 0;
-  const int num_time_steps_max = atoi(argv[4]);  //the total length of the trajectories considered
+  const int num_time_steps = atoi(argv[4]);  //the total length of the trajectories considered
  // const int time_scale_coarse_graining = 1; //atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
-  const int num_trials = atoi(argv[3]); // numer of trials PER terminal timepoint. TOTAL
-  const int Total_num_trials = num_time_steps_max*num_trials;
+  //const int num_trials = atoi(argv[3]); // numer of trials PER terminal timepoint. TOTAL
+  const int Total_num_trials = atoi(argv[3]);  //ACTUAL NUMBER OF TRIALS RUN IS SLIGHLY LESS: Total_num_trials - num_time_steps is true number of trials
+  if(Total_num_trials%(num_time_steps -1) != 0) {cout << "ERROR.  Total number of trials must be a multiple of (num_time_steps -1) " << endl; return 0;}
+
+  const int num_trials = Total_num_trials/(num_time_steps -1);
+
+   //num_time_steps*num_trials;
   //const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   
@@ -48,7 +55,7 @@ int main(int argc, char* argv[])
   T = gsl_rng_default;
   gsl_rng* r;
    r = gsl_rng_alloc (T);
-
+   gsl_rng_set(r, time(0));
  
 
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
@@ -108,14 +115,15 @@ ofstream fout_parameter_file;
     fout_parameter_file << "alpha " << alpha << endl;
     fout_parameter_file << "distance " << initial_position << endl;
     fout_parameter_file << "number of trials per terminal timestep " << num_trials << endl;
-    fout_parameter_file << "max number number of time steps considered " << num_time_steps_max << endl;
-    fout_parameter_file << "max number number of time steps considered " << num_time_steps_max << endl;
+    fout_parameter_file << "max number number of time steps considered " << num_time_steps << endl;
+    fout_parameter_file << "max number number of time steps considered " << num_time_steps << endl;
     fout_parameter_file << "total number of trials " << Total_num_trials << endl;
     fout_parameter_file << "t_con_inverse " << t_con_inverse << endl;
     fout_parameter_file << "scale_parameter " << scale_parameter << endl;
     fout_parameter_file.close();
 
-for(int num_time_steps =1; num_time_steps < num_time_steps_max; num_time_steps++)
+int total_trial_count = 0;
+for(int origin_time =1; origin_time < num_time_steps; origin_time++)
 {
 
 for(int trial =0; trial < num_trials; trial++)
@@ -124,7 +132,8 @@ for(int trial =0; trial < num_trials; trial++)
    char OUTPUTFILE3[50];
   sprintf(OUTPUTFILE3, "entrance_and_exit_times");
   std::stringstream file_name3;
-         file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << trial << ".txt" ;
+         //file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << total_trial_count << ".txt" ;
+         file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << initial_position <<  "trial" << total_trial_count << ".txt" ;
          std::string stringfile3;
          file_name3 >> stringfile3; 
     ofstream fout8;
@@ -135,7 +144,10 @@ for(int trial =0; trial < num_trials; trial++)
  char OUTPUTFILE4[50];
   sprintf(OUTPUTFILE4, "free_and_contrained_CHOSEN_TIME_jump_sizes");
   std::stringstream file_name4;
-         file_name4 <<  OUTPUTFILE4  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << trial << ".txt" ;
+         //file_name4 <<  OUTPUTFILE4  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << total_trial_count << ".txt" ;
+         file_name4 <<  OUTPUTFILE4 << "alpha" << alpha << "distance" << initial_position <<  "trial" << total_trial_count << ".txt" ;
+
+
          std::string stringfile4;
          file_name4 >> stringfile4; 
     ofstream fout9;
@@ -144,14 +156,14 @@ for(int trial =0; trial < num_trials; trial++)
   bool inside_zone = false; 
    bool inside_zone_new; 
 
-
+total_trial_count += 1;
 
 
     double free_trajectory[num_time_steps];  // dummy free trajectory generated will be used to construct constrained trajectory
     double constrained_trajectory[num_time_steps];  // the constrained trajectory we're interested in generating
     double free_step_list[num_time_steps];  // list of jumps taken at each timestep for free trajectory
     double constrained_step_list[num_time_steps]; // list of jumps taken at each timestep for constrained trajectory
- 
+ //std::cout << gsl_ran_levy(r,  scale_parameter, alpha) << endl;
     for (int time =0; time < num_time_steps; time++) {
      
  
@@ -170,11 +182,11 @@ double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
 
 
 
-  std::uniform_real_distribution<double> uniform_dist(0.0, num_time_steps);
+  std::uniform_real_distribution<double> uniform_dist(0.0, origin_time );
 
   int chosen_time = int(floor(uniform_dist(generator)));  // Time at which we shift the trajectory by a large jump to ensure that the endpoint is the origin
 
-  constrained_step_list[chosen_time] = free_step_list[chosen_time] - free_trajectory[num_time_steps -1]; // correct constrined list so that it will result in trajectory that ends at the origin
+  constrained_step_list[chosen_time] = free_step_list[chosen_time] - free_trajectory[origin_time]; // correct constrained list so that it will result in trajectory that ends at the origin
 
   fout9  << free_step_list[chosen_time] <<  endl; 
   fout9 << constrained_step_list[chosen_time] << endl;
