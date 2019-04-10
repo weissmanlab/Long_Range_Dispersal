@@ -53,13 +53,23 @@ const int num_histogram_bins = 2000;
 
 
 
+
+
 double **List_of_single_trial_homozygosities = new double*[num_mu_steps];
+double **List_of_single_trial_WEIGHTS = new double*[num_mu_steps];
 for (int mu = 0; mu < num_mu_steps; mu++) {
   List_of_single_trial_homozygosities[mu] = new double[num_trials];
+  List_of_single_trial_WEIGHTS[mu] = new double[num_trials];
+
 }
+
+
 for (int mu = 0; mu < num_mu_steps; mu++) {
   for(int i =0; i < num_trials; i++)
-{List_of_single_trial_homozygosities[mu][i] = 0; }
+{List_of_single_trial_homozygosities[mu][i] = 0; 
+ List_of_single_trial_WEIGHTS[mu][i] = 0;
+
+}
 
 
 }
@@ -144,7 +154,27 @@ for(int trial =0; trial < num_trials; trial++)
     ifstream fin_entrance_and_exit_times;
     /****************************************/
     // Here we're opening the file containing entrance times associated with each individual trial
+    char INPUTFILE_trajectory_WEIGHT[50];
+
+  sprintf(INPUTFILE_trajectory_WEIGHT, "trajectory_WEIGHT");
+  
+  std::stringstream file_name_trajectory_WEIGHT;
+         file_name_trajectory_WEIGHT <<  INPUTFILE_trajectory_WEIGHT  << "alpha" << alpha << "distance" << initial_position <<  "trial" << trial << ".txt" ;
+         std::string stringfile_trajectory_WEIGHT;
+         file_name_trajectory_WEIGHT >> stringfile_trajectory_WEIGHT; 
+    ifstream fin_trajectory_WEIGHT;
+// Here we're opening the file containing the weights associated with each individual trial
+
+
+
+
+    
+    fin_trajectory_WEIGHT.open(stringfile_trajectory_WEIGHT);
     fin_entrance_and_exit_times.open(stringfile_entrance_and_exit_times);
+ 
+  double TRAJECTORY_WEIGHT;
+ fin_trajectory_WEIGHT >> TRAJECTORY_WEIGHT;
+
  double entrance_time = -1.0 ;  // If file is empty entrance and exit time will be the same and while loops will be ignored - dist of coalescent times will remain zero
   double exit_time= -1.0 ;
   
@@ -152,14 +182,14 @@ for (int time =0; time < num_time_steps; time++) {
 if (timestep*double(time) >= entrance_time && timestep*double(time) < exit_time) //update exponent and add to dist_of_coalescent_times[time] when in coalescence zone
 {Contribution_from_each_trial[trial] =  delta_function_height*rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
  Contribution_from_each_trialEXPONENT[trial] += delta_function_height*rho_inverse*timestep;
- dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
-
+ //dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+ dist_of_coalescent_times[time] += TRAJECTORY_WEIGHT*Contribution_from_each_trial[trial];
 for( int mu = 0; mu < num_mu_steps; mu++)
      {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*2*mu_step*time*timestep); // extra factor of 2 in exponent of Laplace transform is standard in pop gen
       
-      List_of_single_trial_homozygosities[mu][trial] = mean_homozygosity_INDIVIDUAL_TRIAL[mu];
+      
      
-       
+      
 
 
 
@@ -181,25 +211,22 @@ if (timestep*double(time) >= exit_time)
 
 }
   fin_entrance_and_exit_times.close();
-
+  fin_trajectory_WEIGHT.close();
 
 
 
  // bin histogram of single trial homozygosities here.
 
-         for (int mu =0; mu < num_mu_steps; mu++){
-                for(int QQ = 0; QQ < num_histogram_bins; QQ++)
-             {
-          if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  >= double(QQ)/double(num_histogram_bins) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] < double(QQ + 1)/double(num_histogram_bins) )
-                {
+         for (int mu =0; mu < num_mu_steps; mu++){for(int QQ = 0; QQ < num_histogram_bins; QQ++)
+             {if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  >= double(QQ)/double(num_histogram_bins) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] < double(QQ + 1)/double(num_histogram_bins) )
+                {hist_of_single_trial_homozygosities[mu][QQ] += TRAJECTORY_WEIGHT;}
+              }
 
-                  hist_of_single_trial_homozygosities[mu][QQ] += 1/double(num_trials);
-                }
-
-
-             
-
-              }}
+            List_of_single_trial_homozygosities[mu][trial] = mean_homozygosity_INDIVIDUAL_TRIAL[mu];
+            List_of_single_trial_WEIGHTS[mu][trial] = TRAJECTORY_WEIGHT;
+            mean_homozygosity[mu] += TRAJECTORY_WEIGHT*mean_homozygosity_INDIVIDUAL_TRIAL[mu];
+            
+            }
 
 
 
@@ -207,16 +234,7 @@ if (timestep*double(time) >= exit_time)
 
 
 }
-//Laplace transform dist of coalescent times to get mean homozygosity
-for (int mu =0; mu < num_mu_steps; mu++){
-for (int time =0; time < num_time_steps; time++) {
-   
-   mean_homozygosity[mu] += dist_of_coalescent_times[time]*exp(-pow(10,mu)*2*mu_step*time*timestep); 
-//factor of 2 in exponent is an important convention; we want the laplace transform L{P(t)}(2*mu) = E[exp(-2*mu*t)]
-//For each trial we calculate the conditional expectation E[exp(-2*mu*t)|path] = E[Hom|path]
-  //In order to correctly calculate the variance of the homozygosity we need  Var(exp(-2*mu*t)) = Var(Hom) = Var(E[Hom|path]) + E[Var(Hom|path)]  - Law of total variance
 
-}}
 
 // The loops above calculates the mean homozygosity
 
