@@ -15,12 +15,12 @@
 #include <vector>
 using namespace std;
 int main(int argc, char* argv[])
-{         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, rho_inverse " << endl; return 0;} 
+{         if(argc != 7) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps,  mutation rate, rho_inverse " << endl; return 0;} 
   
 //We declare and initialize relevant variables in this section
 
   const int num_time_steps = atoi(argv[4]);
-  const int num_mu_steps = 4;  // number of mu increments in Laplace time 
+  const int num_mu_steps = 1;  // number of mu increments in Laplace time 
   const int num_trials = atoi(argv[3]);
   std::mt19937 generator(time(0));
   std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
@@ -28,9 +28,10 @@ int main(int argc, char* argv[])
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double timestep = 1.0; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
-  const double mu_step = .001;  // .0001; //change back later 
+  const double MU = atof(argv[5]);
+  const double mu_step = MU;  // .0001; //change back later 
   //const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
-  const double rho_inverse = atof(argv[5]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
+  const double rho_inverse = atof(argv[6]); // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
   const double delta_function_width = 1.0; //atof(argv[5]);  //this must be same as in part 1
   const double delta_function_height = 1.0/delta_function_width;
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
@@ -47,7 +48,8 @@ double initial_position = atof(argv[2]) ;  // initial signed distance between in
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
   double *dist_of_coalescent_times = new double[num_time_steps];
 const int num_histogram_bins = 1e4;
-
+double probability_of_hitting_origin; // this is the probability of obtaining a nonzero homozygosity value for an arbitrary path.  
+//If the path hits the coalescence zone at any time it's homozygosity is nonzero.
 
 
 
@@ -157,6 +159,26 @@ chdir(OUTPUTFILE_Child_Directory);
 //we read them in and calculate the distribution of coalescence times and the mean homozygosity
 
 
+
+char INPUTFILE_PROB_OF_HITTING_ORIGIN[50]; //we're sampling paths that hit the origin and have nonzero mean homozygosity.  
+
+  sprintf(INPUTFILE_PROB_OF_HITTING_ORIGIN, "probability_of_constrained_trajectory_WEIGHT_");
+  
+  std::stringstream file_name_PROB_OF_HITTING_ORIGIN;
+         file_name_PROB_OF_HITTING_ORIGIN <<  INPUTFILE_PROB_OF_HITTING_ORIGIN  << "alpha" << alpha << "distance" << initial_position  << ".txt" ;
+         std::string stringfile_PROB_OF_HITTING_ORIGIN;
+         file_name_PROB_OF_HITTING_ORIGIN >> stringfile_PROB_OF_HITTING_ORIGIN; 
+    ifstream fin_PROB_OF_HITTING_ORIGIN;
+
+fin_PROB_OF_HITTING_ORIGIN.open(stringfile_PROB_OF_HITTING_ORIGIN);
+  
+  fin_PROB_OF_HITTING_ORIGIN >>  probability_of_hitting_origin;
+
+
+
+fin_PROB_OF_HITTING_ORIGIN.close();
+
+
 for(int trial =0; trial < num_trials; trial++)
  {  Contribution_from_each_trial[trial] = 0;
      Contribution_from_each_trialEXPONENT[trial] = 0;
@@ -173,7 +195,7 @@ for(int trial =0; trial < num_trials; trial++)
   sprintf(INPUTFILE_entrance_and_exit_times, "entrance_and_exit_times");
   
   std::stringstream file_name_entrance_and_exit_times;
-         file_name_entrance_and_exit_times <<  INPUTFILE_entrance_and_exit_times  << "alpha" << alpha << "distance" << initial_position <<  "trial" << trial << ".txt" ;
+         file_name_entrance_and_exit_times <<  INPUTFILE_entrance_and_exit_times  << "alpha" << alpha << "distance" << initial_position << "MU" << MU <<  "trial" << trial << ".txt" ;
          std::string stringfile_entrance_and_exit_times;
          file_name_entrance_and_exit_times >> stringfile_entrance_and_exit_times; 
     ifstream fin_entrance_and_exit_times;
@@ -184,7 +206,7 @@ for(int trial =0; trial < num_trials; trial++)
   sprintf(INPUTFILE_trajectory_WEIGHT, "trajectory_WEIGHT_");
   
   std::stringstream file_name_trajectory_WEIGHT;
-         file_name_trajectory_WEIGHT <<  INPUTFILE_trajectory_WEIGHT  << "alpha" << alpha << "distance" << initial_position <<  "trial" << trial << ".txt" ;
+         file_name_trajectory_WEIGHT <<  INPUTFILE_trajectory_WEIGHT  << "alpha" << alpha << "distance" << initial_position <<  "MU" << MU <<  "trial" << trial << ".txt" ;
          std::string stringfile_trajectory_WEIGHT;
          file_name_trajectory_WEIGHT >> stringfile_trajectory_WEIGHT; 
     ifstream fin_trajectory_WEIGHT;
@@ -378,10 +400,29 @@ for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
 
 for(int trial =0; trial < num_trials; trial++)
          { 
+               
+               if(List_of_rand_uni_dist_nums[trial]  <= SORTED_List_of_single_trial_WEIGHTS_CDF[mu][num_trials])
+              {
                 while(SORTED_List_of_single_trial_WEIGHTS_CDF[mu][running_index] < List_of_rand_uni_dist_nums[trial] ){running_index++;}
+              
          
               // now use the running index to add single trial to sample boostrap mean
-            List_of_bootstrapped_mean_homozygosities[mu][sample] += SORTED_List_of_single_trial_homozygosities[mu][running_index]/double(num_trials);
+              List_of_bootstrapped_mean_homozygosities[mu][sample] += SORTED_List_of_single_trial_homozygosities[mu][running_index]/double(num_trials);
+               }
+                
+
+                  
+                   // Don't add zeros to histogram and bootstrap.  
+               //Instead sample the conditonal dist od paths that hit origin and multiply the calculated mean and CI's by probability of hitting orign.  
+               //This is a less noisy way of determinig the mean, will have tighter confidence intervals.
+                  /*
+                else{ List_of_bootstrapped_mean_homozygosities[mu][sample] += 0;
+                      // CDF NOT normalized to one.  CDF is normalized to probability of trajectory hitting the origin.
+                      // Values above this represent probability that trajectories that never hit the origin and have single trial homozygosity value of zero
+
+                    }
+                   */
+
 
          }
 
@@ -514,7 +555,8 @@ upper_CI[mu]= Sorted_List_of_bootstrapped_mean_homozygosities[mu][upper_CI_INDEX
 
 
 
-
+// now account for probability of hitting origin.  We have condtional mean and CI's (conditioned on path hitting origin). 
+// To get marginal dist of all paths we mutiply by probability of hitting origin.  Simply multiply outputs by probability_of_hitting_origin.
 
 
 
@@ -524,20 +566,20 @@ upper_CI[mu]= Sorted_List_of_bootstrapped_mean_homozygosities[mu][upper_CI_INDEX
 char OUTPUTFILE[50];
   sprintf(OUTPUTFILE, "dist_of_coalescent_times_");
   std::stringstream file_name;
-         file_name <<  OUTPUTFILE << "alpha_value_"<< alpha << "distance_value_" << initial_position << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name <<  OUTPUTFILE << "alpha_value_"<< alpha << "distance_value_" << initial_position <<  "MU" << MU << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile;
          file_name >> stringfile; 
   ofstream fout4;
 
 fout4.open(stringfile);
-for (int time =0; time < num_time_steps; time++) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
+for (int time =0; time < num_time_steps; time++) {fout4 << time*timestep << " " << probability_of_hitting_origin*dist_of_coalescent_times[time] << endl;}
 fout4.close();
 
 
 char OUTPUTFILE2[50];
   sprintf(OUTPUTFILE2, "mean_homozygosity_");
   std::stringstream file_name99;
-         file_name99 <<  OUTPUTFILE2 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name99 <<  OUTPUTFILE2 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile99;
          file_name99 >> stringfile99; 
 
@@ -549,7 +591,7 @@ fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
 
 
-fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
+fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << probability_of_hitting_origin*mean_homozygosity[mu] << " " << probability_of_hitting_origin*lower_CI[mu] <<  " " << probability_of_hitting_origin*upper_CI[mu] << endl;
  // Here we output mean homozygosity as a function of mu and include error bars
 }
 fout5.close();
@@ -558,7 +600,7 @@ fout5.close();
 char OUTPUTFILE3[50];
   sprintf(OUTPUTFILE3, "histogram_of_single_trial_homozygosities");
   std::stringstream file_name100;
-         file_name100 <<  OUTPUTFILE3 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name100 <<  OUTPUTFILE3 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile100;
          file_name100 >> stringfile100;
 
@@ -568,8 +610,10 @@ fout6.open(stringfile100);
 
 
 for (int mu =0; mu < num_mu_steps; mu++) {
-for (int QQ =0; QQ < num_histogram_bins; QQ++)
-{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
+
+  fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(0)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_single_trial_homozygosities[mu][0] + (1-probability_of_hitting_origin) <<  endl;
+for (int QQ =1; QQ < num_histogram_bins; QQ++)
+{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
@@ -581,7 +625,7 @@ for (int QQ =0; QQ < num_histogram_bins; QQ++)
 char OUTPUTFILE4[50];
   sprintf(OUTPUTFILE4, "histogram_of_bootstrapped_mean_homozygosities");
   std::stringstream file_name101;
-         file_name101 <<  OUTPUTFILE4 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name101 <<  OUTPUTFILE4 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position <<  "MU" << MU << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile101;
          file_name101 >> stringfile101;
 
@@ -591,8 +635,9 @@ fout7.open(stringfile101);
 
 
 for (int mu =0; mu < num_mu_steps; mu++) {
-for (int QQ =0; QQ < num_histogram_bins; QQ++)
-{fout7 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
+fout7 << initial_position << " " << pow(10, mu)*mu_step << " " << double(0)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_bootstrapped_mean_homozygosities[mu][0] + (1-probability_of_hitting_origin) <<  endl;
+for (int QQ =1; QQ < num_histogram_bins; QQ++)
+{fout7 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
@@ -603,7 +648,7 @@ for (int QQ =0; QQ < num_histogram_bins; QQ++)
 char OUTPUTFILE5[50];
   sprintf(OUTPUTFILE5, "sorted_list_of_bootstrapped_mean_homozygosities");
   std::stringstream file_name102;
-         file_name102 <<  OUTPUTFILE5 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name102 <<  OUTPUTFILE5 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile102;
          file_name102 >> stringfile102;
 
@@ -614,7 +659,7 @@ fout8.open(stringfile102);
 
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < num_samples_bootstrapped_means; QQ++)
-{fout8 << initial_position << " " << pow(10, mu)*mu_step << " " << Sorted_List_of_bootstrapped_mean_homozygosities[mu][QQ]  << " " << 1.0/double(num_samples_bootstrapped_means)<<  endl;
+{fout8 << initial_position << " " << pow(10, mu)*mu_step << " " << Sorted_List_of_bootstrapped_mean_homozygosities[mu][QQ]  << " " << probability_of_hitting_origin/double(num_samples_bootstrapped_means)<<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
@@ -625,7 +670,7 @@ for (int QQ =0; QQ < num_samples_bootstrapped_means; QQ++)
 char OUTPUTFILE6[50];
   sprintf(OUTPUTFILE6, "list_of_single_trial_homozygosities");
   std::stringstream file_name103;
-         file_name103 <<  OUTPUTFILE6 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name103 <<  OUTPUTFILE6 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  <<  "MU" << MU << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile103;
          file_name103 >> stringfile103;
 
@@ -636,7 +681,7 @@ fout9.open(stringfile103);
 
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < num_trials; QQ++)
-{fout9 << initial_position << " " << pow(10, mu)*mu_step << " " << List_of_single_trial_homozygosities[mu][QQ]  << " " << 1.0/double(num_trials)<<  endl;
+{fout9 << initial_position << " " << pow(10, mu)*mu_step << " " << List_of_single_trial_homozygosities[mu][QQ]  << " " << List_of_single_trial_WEIGHTS[mu][QQ]*probability_of_hitting_origin<<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }

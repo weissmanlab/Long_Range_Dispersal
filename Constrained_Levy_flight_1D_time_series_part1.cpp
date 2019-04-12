@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
     
     //std::cout << time(0) << std::endl;
     std::vector<double> v;
-   if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, total number of trials, number of time steps in each trajectory, and scale parameter." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
+   if(argc != 7) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, total number of trials, number of time steps in each trajectory, scale parameter, and mutation rate." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
   // include periodic boundaries to ensure dist of coalescent times with jumps converges
  // const int distance_off_set = 0;
   const int num_time_steps = atoi(argv[4]);  //the total length of the trajectories considered
@@ -50,6 +50,7 @@ int main(int argc, char* argv[])
   const double delta_function_width = 1.0; //atof(argv[5]);;
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   const double scale_parameter = atof(argv[5]);//*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
+  const double MU = atof(argv[6]);
   // the scale parameter c is related to the generalized diffusion constant D as c =(4D*timestep)^(1/alpha)
   const gsl_rng_type * T;
   T = gsl_rng_default;
@@ -62,6 +63,15 @@ int main(int argc, char* argv[])
 
 double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
 
+
+std::vector<int> weights;
+    for(int i=0; i<num_time_steps +1; ++i) {
+        weights.push_back(i);
+        if(i ==0){weights.push_back(0); }
+         else{weights.push_back(exp(-2*MU*double(i)));}  // the probability of a particular origin time is related to its relevance at the given mutation rate.  
+
+    }
+  std::discrete_distribution<> draw_origin_time(weights.begin(), weights.end());
 
   double initial_position = atof(argv[2]) ;  // initial signed distance between individuals
   double current_position;
@@ -122,18 +132,22 @@ ofstream fout_parameter_file;
     fout_parameter_file << "scale_parameter " << scale_parameter << endl;
     fout_parameter_file.close();
 
-int total_trial_count = 0;
-for(int origin_time =1; origin_time < num_time_steps; origin_time++)
-{
+//int total_trial_count = 0;
+//for(int origin_time =1; origin_time < num_time_steps; origin_time++)
+//{
 
-for(int trial =0; trial < num_trials; trial++)
- {  
+//for(int trial =0; trial < num_trials; trial++)
+ //{  
   
+
+for(int trial =0; trial < Total_num_trials; trial++)
+ {  
+
    char OUTPUTFILE3[50];
   sprintf(OUTPUTFILE3, "entrance_and_exit_times");
   std::stringstream file_name3;
          //file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << total_trial_count << ".txt" ;
-         file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << initial_position <<  "trial" << total_trial_count << ".txt" ;
+         file_name3 <<  OUTPUTFILE3  << "alpha" << alpha << "distance" << initial_position << "MU" << MU <<  "trial" << trial << ".txt" ;
          std::string stringfile3;
          file_name3 >> stringfile3; 
     ofstream fout8;
@@ -145,7 +159,7 @@ for(int trial =0; trial < num_trials; trial++)
   sprintf(OUTPUTFILE4, "free_and_contrained_CHOSEN_TIME_jump_sizes");
   std::stringstream file_name4;
          //file_name4 <<  OUTPUTFILE4  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << total_trial_count << ".txt" ;
-         file_name4 <<  OUTPUTFILE4 << "alpha" << alpha << "distance" << initial_position <<  "trial" << total_trial_count << ".txt" ;
+         file_name4 <<  OUTPUTFILE4 << "alpha" << alpha << "distance" << initial_position <<  "MU" << MU << "trial" << trial << ".txt" ;
 
 
          std::string stringfile4;
@@ -156,7 +170,7 @@ for(int trial =0; trial < num_trials; trial++)
   bool inside_zone = false; 
    bool inside_zone_new; 
 
-total_trial_count += 1;
+//total_trial_count += 1;
 
 
     double free_trajectory[num_time_steps];  // dummy free trajectory generated will be used to construct constrained trajectory
@@ -179,7 +193,9 @@ double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
        }
   
 
+//std::uniform_real_distribution<double> uniform_dist_extra(1, num_time_steps + .999 );
 
+  int origin_time = draw_origin_time(generator);
 
 
   std::uniform_real_distribution<double> uniform_dist(0.0, origin_time );
@@ -246,7 +262,7 @@ fout8.close();
 fout9.close();
 current_position = fmod(initial_position, periodic_boundary); // reset to inital position
 
-}}
+}
 
 chdir("..");
 
