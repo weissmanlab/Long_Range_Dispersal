@@ -11,19 +11,20 @@
 #include <stdlib.h>     /* atof */
 #include <type_traits>
 #include <cstdlib>
+#include <algorithm>
+#include <vector>
 using namespace std;
 int main(int argc, char* argv[])
 {         if(argc != 6) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, number of trials, total number of time steps, rho_inverse " << endl; return 0;} 
   
 //We declare and initialize relevant variables in this section
-/********************************/
 
   const int num_time_steps = atoi(argv[4]);
   const int num_mu_steps = 4;  // number of mu increments in Laplace time 
   const int num_trials = atoi(argv[3]);
   std::mt19937 generator(time(0));
   std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
-
+  std::uniform_real_distribution<double> uniform_zero_to_one(0.0, num_trials);
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double timestep = 1.0; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
@@ -45,10 +46,7 @@ double initial_position = atof(argv[2]) ;  // initial signed distance between in
   double *Contribution_from_each_trial = new double[num_trials];// {0};
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
   double *dist_of_coalescent_times = new double[num_time_steps];
-const int num_histogram_bins = 2000;
-//double *List_of_single_trial_homozygosities = new double[num_mu_steps][num_trials];
-//List_of_single_trial_homozygosities = {0};
-
+const int num_histogram_bins = 1e4;
 
 
 
@@ -57,28 +55,55 @@ const int num_histogram_bins = 2000;
 
 double **List_of_single_trial_homozygosities = new double*[num_mu_steps];
 double **List_of_single_trial_WEIGHTS = new double*[num_mu_steps];
+
+//double **List_of_single_trial_WEIGHTS_CDF = new double*[num_mu_steps]; 
 for (int mu = 0; mu < num_mu_steps; mu++) {
   List_of_single_trial_homozygosities[mu] = new double[num_trials];
   List_of_single_trial_WEIGHTS[mu] = new double[num_trials];
-
+  //List_of_single_trial_WEIGHTS_CDF[mu] = new double[num_trials];
 }
-
 
 for (int mu = 0; mu < num_mu_steps; mu++) {
   for(int i =0; i < num_trials; i++)
 {List_of_single_trial_homozygosities[mu][i] = 0; 
  List_of_single_trial_WEIGHTS[mu][i] = 0;
+ //List_of_single_trial_WEIGHTS_CDF[mu][i] = 0;
+}}
 
+
+double *List_of_rand_uni_dist_nums = new double[num_trials]; // list of random numbers drawn from uniform distribution
+
+
+double **SORTED_List_of_single_trial_homozygosities = new double*[num_mu_steps];
+double **SORTED_List_of_single_trial_WEIGHTS = new double*[num_mu_steps];
+double **SORTED_List_of_single_trial_WEIGHTS_CDF = new double*[num_mu_steps];
+
+for (int mu = 0; mu < num_mu_steps; mu++) {
+  SORTED_List_of_single_trial_homozygosities[mu] = new double[num_trials];
+  SORTED_List_of_single_trial_WEIGHTS[mu] = new double[num_trials];
+  SORTED_List_of_single_trial_WEIGHTS_CDF[mu] = new double[num_trials];
 }
 
+for (int mu = 0; mu < num_mu_steps; mu++) {
+  for(int i =0; i < num_trials; i++)
+{SORTED_List_of_single_trial_homozygosities[mu][i] = 0; 
+ SORTED_List_of_single_trial_WEIGHTS[mu][i] = 0;
+ SORTED_List_of_single_trial_WEIGHTS_CDF[mu][i] = 0;
+}}
 
-}
 
 
 
+
+
+
+
+int single_trial_hist_index;
 double hist_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
-
+double CDF_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
 double hist_of_bootstrapped_mean_homozygosities[num_mu_steps][num_histogram_bins] = {0};
+
+
 const int num_samples_bootstrapped_means = 10000;
 
 
@@ -92,13 +117,13 @@ for(int i =0; i < num_trials; i++)
 {Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
  for(int i =0; i < num_time_steps; i++)
 {dist_of_coalescent_times[i] = 0;}
-/********************************/
+
   //We declare and initialize relevant variables in the above section
 
 
 //Next we change to the relevant directory
   
-/**********************************/
+
   std::stringstream file_name2;
          file_name2 <<  "alpha_value_"  <<  alpha  ;   // This is the directory name
          std::string stringfile2;
@@ -125,13 +150,13 @@ strcpy(OUTPUTFILE_Child_Directory, stringfile4.c_str());
 
 
 chdir(OUTPUTFILE_Child_Directory);
-/*******************************/
+
 //Above we opened/moved into the relevant directory
 
 //Now that we're in the proper directory with the entrance and exit times of interest, 
 //we read them in and calculate the distribution of coalescence times and the mean homozygosity
 
-/**************************************/
+
 for(int trial =0; trial < num_trials; trial++)
  {  Contribution_from_each_trial[trial] = 0;
      Contribution_from_each_trialEXPONENT[trial] = 0;
@@ -152,11 +177,11 @@ for(int trial =0; trial < num_trials; trial++)
          std::string stringfile_entrance_and_exit_times;
          file_name_entrance_and_exit_times >> stringfile_entrance_and_exit_times; 
     ifstream fin_entrance_and_exit_times;
-    /****************************************/
+    
     // Here we're opening the file containing entrance times associated with each individual trial
     char INPUTFILE_trajectory_WEIGHT[50];
 
-  sprintf(INPUTFILE_trajectory_WEIGHT, "trajectory_WEIGHT");
+  sprintf(INPUTFILE_trajectory_WEIGHT, "trajectory_WEIGHT_");
   
   std::stringstream file_name_trajectory_WEIGHT;
          file_name_trajectory_WEIGHT <<  INPUTFILE_trajectory_WEIGHT  << "alpha" << alpha << "distance" << initial_position <<  "trial" << trial << ".txt" ;
@@ -174,28 +199,19 @@ for(int trial =0; trial < num_trials; trial++)
  
   double TRAJECTORY_WEIGHT;
  fin_trajectory_WEIGHT >> TRAJECTORY_WEIGHT;
-
+//cout <<  TRAJECTORY_WEIGHT << endl;
  double entrance_time = -1.0 ;  // If file is empty entrance and exit time will be the same and while loops will be ignored - dist of coalescent times will remain zero
   double exit_time= -1.0 ;
   
 for (int time =0; time < num_time_steps; time++) {
 if (timestep*double(time) >= entrance_time && timestep*double(time) < exit_time) //update exponent and add to dist_of_coalescent_times[time] when in coalescence zone
 {Contribution_from_each_trial[trial] =  delta_function_height*rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
- Contribution_from_each_trialEXPONENT[trial] += delta_function_height*rho_inverse*timestep;
+ Contribution_from_each_trialEXPONENT[trial] += delta_function_height*rho_inverse*timestep; //updating for NEXT time step 
  //dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
  dist_of_coalescent_times[time] += TRAJECTORY_WEIGHT*Contribution_from_each_trial[trial];
 for( int mu = 0; mu < num_mu_steps; mu++)
      {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*2*mu_step*time*timestep); // extra factor of 2 in exponent of Laplace transform is standard in pop gen
-      
-      
-     
-      
-
-
-
-     }
-
-
+      }
 
 
 }
@@ -217,10 +233,12 @@ if (timestep*double(time) >= exit_time)
 
  // bin histogram of single trial homozygosities here.
 
-         for (int mu =0; mu < num_mu_steps; mu++){for(int QQ = 0; QQ < num_histogram_bins; QQ++)
-             {if( mean_homozygosity_INDIVIDUAL_TRIAL[mu]  >= double(QQ)/double(num_histogram_bins) && mean_homozygosity_INDIVIDUAL_TRIAL[mu] < double(QQ + 1)/double(num_histogram_bins) )
-                {hist_of_single_trial_homozygosities[mu][QQ] += TRAJECTORY_WEIGHT;}
-              }
+         for (int mu =0; mu < num_mu_steps; mu++){
+
+         
+
+            single_trial_hist_index = int(floor(double(num_histogram_bins)*mean_homozygosity_INDIVIDUAL_TRIAL[mu])); // bin values to histogram.
+            hist_of_single_trial_homozygosities[mu][single_trial_hist_index] += TRAJECTORY_WEIGHT;
 
             List_of_single_trial_homozygosities[mu][trial] = mean_homozygosity_INDIVIDUAL_TRIAL[mu];
             List_of_single_trial_WEIGHTS[mu][trial] = TRAJECTORY_WEIGHT;
@@ -236,18 +254,91 @@ if (timestep*double(time) >= exit_time)
 }
 
 
+
+
+
 // The loops above calculates the mean homozygosity
 
-/*******************************************/
-/*******************************************/
 
 // The loops below calculates the confidence interval of the mean homozygosity
 
 
 
 
+//sort list of individual trial homozygosities and the associated weights
+
+for (int mu =0; mu < num_mu_steps; mu++){
+
+         pair<double, double> *pair_list_of_single_trial_homozygosities_and_weights = new pair<double,double>[num_trials];           
+
+          
+          for(int trial = 0; trial < num_trials; trial++)
+             
+             {  pair_list_of_single_trial_homozygosities_and_weights[trial].first = List_of_single_trial_homozygosities[mu][trial];
+                pair_list_of_single_trial_homozygosities_and_weights[trial].second = List_of_single_trial_WEIGHTS[mu][trial];
+              //cout << List_of_single_trial_WEIGHTS[mu][trial] << endl;
+              }
+            
+          
+             sort(pair_list_of_single_trial_homozygosities_and_weights, pair_list_of_single_trial_homozygosities_and_weights + num_trials);
 
 
+            for(int trial = 0; trial < num_trials; trial++)
+             
+             {  //cout << pair_list_of_single_trial_homozygosities_and_weights[trial].first << " " <<  pair_list_of_single_trial_homozygosities_and_weights[trial].second << endl;
+              
+              SORTED_List_of_single_trial_homozygosities[mu][trial] = pair_list_of_single_trial_homozygosities_and_weights[trial].first;
+              SORTED_List_of_single_trial_WEIGHTS[mu][trial] = pair_list_of_single_trial_homozygosities_and_weights[trial].second;
+              }
+
+
+
+            }
+
+
+
+
+
+
+//generate CDF weights of sorted single trial homozygosities
+
+
+for (int mu =0; mu < num_mu_steps; mu++){
+
+         SORTED_List_of_single_trial_WEIGHTS_CDF[mu][0] =  SORTED_List_of_single_trial_WEIGHTS[mu][0];
+          for(int trial = 1; trial < num_trials; trial++)
+             
+             {   SORTED_List_of_single_trial_WEIGHTS_CDF[mu][trial] = SORTED_List_of_single_trial_WEIGHTS[mu][trial] +   SORTED_List_of_single_trial_WEIGHTS_CDF[mu][trial- 1];
+                     
+ 
+              }
+            
+          
+            }
+
+
+// generate quantile function (inverse of CDF) need to round probs in CDF to fit bins of quantile function array
+
+//int num_quantile_bins = 1e6;
+
+/*
+for (int mu =0; mu < num_mu_steps; mu++){
+int dummy_cdf_index = 0;
+for (int prob_bin = 0; prob_bin < num_quantile_bins; prob_bin++ ){//DEFINE num_quantile_bins
+    
+  //while(prob_bin > CDF_of_single_trial_homozygosities[mu][dummy_cdf_index] && dummy_cdf_index < num_histogram_bins){dummy_cdf_index++}
+   
+
+    //if(prob_bin <= CDF_of_single_trial_homozygosities[mu][dummy_cdf_index] )
+  
+//CDF_of_single_trial_homozygosities[mu][QQ]
+  }
+
+
+}
+*/
+
+// Sort list of single trial homozygosities
 
  
 
@@ -258,27 +349,63 @@ if (timestep*double(time) >= exit_time)
 
 double dummy_rand1 = 0;
 int dummy_rand1_INDEX = 0;
-
+//int dummy_prob_hit;
+//bool hit;
 // generate list of sample means
 
+int running_index = 0;
+for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
+   { 
 
 
-for( int mu = 0; mu < num_mu_steps; mu++)
-{for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
-   {  for(int trial =0; trial < num_trials; trial++)
-         {   
+       for(int trial =0; trial < num_trials; trial++)
+         { List_of_rand_uni_dist_nums[trial] = uniform_zero_to_one(generator);
+
+         
+         }
+         sort(List_of_rand_uni_dist_nums, List_of_rand_uni_dist_nums + num_trials);  // list of uniformly distributed random numbers is now sorted in ascending order
+
+
+
       
+
+
+
+    for( int mu = 0; mu < num_mu_steps; mu++){
+       
+       running_index = 0;
+      
+
+for(int trial =0; trial < num_trials; trial++)
+         { 
+                while(SORTED_List_of_single_trial_WEIGHTS_CDF[mu][running_index] < List_of_rand_uni_dist_nums[trial] ){running_index++;}
+         
+              // now use the running index to add single trial to sample boostrap mean
+            List_of_bootstrapped_mean_homozygosities[mu][sample] += SORTED_List_of_single_trial_homozygosities[mu][running_index]/double(num_trials);
+
+         }
+
+    /*
+    for(int trial =0; trial < num_trials; trial++)
+         {   
+           //  hit = false;
+          //while(hit == false)
+          //{
           dummy_rand1 = floor(uniform_dist(generator));    // we generate random numbers according to the single homozygosity histogram via inverse transform sampling
           //cout << dummy_rand1;
           dummy_rand1_INDEX = int(dummy_rand1);  //This is the index associated to the above domain value for the Quantile function array
           
+          //dummy_prob_hit = uniform_zero_to_one(generator);
+         //  if(dummy_prob_hit < List_of_single_trial_WEIGHTS[mu][trial] ) {hit = true;}   
+
+          //}
           //cout << dummy_rand1_INDEX << endl;
          
               
 
               List_of_bootstrapped_mean_homozygosities[mu][sample] += List_of_single_trial_homozygosities[mu][dummy_rand1_INDEX]/double(num_trials);
            }   
-   
+   */
               
                 Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
 
@@ -288,7 +415,7 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
 }
 
-// now just sort the list of bootstrapped mean homozygosities via bubble sort
+// now just sort the list of bootstrapped mean homozygosities via bubble sort (list isn't that big so bubble sort is fine)
 
 
 
@@ -387,12 +514,12 @@ upper_CI[mu]= Sorted_List_of_bootstrapped_mean_homozygosities[mu][upper_CI_INDEX
 
 
 
-/*******************************************/
+
 
 
 
 //Now we output our results to files
-/*******************************************/
+
 
 char OUTPUTFILE[50];
   sprintf(OUTPUTFILE, "dist_of_coalescent_times_");
@@ -526,3 +653,8 @@ chdir("..");
 
 return 0;
 }
+
+
+
+
+
