@@ -1,0 +1,67 @@
+library(libstableR)
+library(argparse)
+library(mdatools)
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args)!=6) {
+
+  print(length(args))
+  stop("Six input arguments are required - alpha, initial distance, number of timesteps, scale parameter, mutation rate, and rho inverse", call.=FALSE)
+  
+}
+
+
+alpha <- as.double(args[1])
+initial_distance <- as.double(args[2])
+num_time_steps <- as.integer(args[3]) # number of times considered
+scale_parameter <- as.double(args[4])
+MU <- as.double(args[5])
+rho_inverse <- as.double(args[6])
+
+# store name of directory and change into said directory
+dir <- paste("./alpha_value_", alpha, "/distance_value_", initial_distance, sep = "")
+#print(dir)
+setwd(dir)
+#system(cd_to_dir)
+
+X <- initial_distance #more convenient name for distance variable
+
+#Vectorize loop below?  Not that big/expensive.  Probably not necessary. 
+
+Laplace_Domain_Kernel_at_X <- 0
+Laplace_Domain_Kernel_at_ZERO <- 0
+timestep_size <- 1/1000
+#We start with the continous time expression and account for discretized time and finite width coalescence zone.
+for (time in 1:(1/timestep_size)*(num_time_steps)) { 
+pars <- c(alpha, 0, scale_parameter*(time*timestep_size)**(1/alpha), 0)
+
+ Laplace_Domain_Kernel_at_X <- Laplace_Domain_Kernel_at_X +  stable_pdf(X , pars)*exp(-2*MU*time*timestep_size)*timestep_size
+ Laplace_Domain_Kernel_at_ZERO <- Laplace_Domain_Kernel_at_ZERO +  stable_pdf(0 , pars)*exp(-2*MU*time*timestep_size)*timestep_size  
+
+            # coalescence zone has width one in our simulations
+
+    }
+
+
+Mean_Homozygosity <- rho_inverse*( Laplace_Domain_Kernel_at_X -  (rho_inverse*Laplace_Domain_Kernel_at_X**2)/(1 + rho_inverse*Laplace_Domain_Kernel_at_ZERO))
+
+
+
+
+
+
+filestring <- paste("mean_homozygosity_NUMERIC", alpha , "distance", initial_distance, "MU", MU, "rho_inverse_" , rho_inverse , ".txt", sep = "") 
+sink(filestring)
+#constrained_probability <- stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)
+cat(paste(initial_distance, MU, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = ""))
+sink()
+
+
+
+
+
+
+
+
+
+setwd("../..")
+#system("cd ../..")

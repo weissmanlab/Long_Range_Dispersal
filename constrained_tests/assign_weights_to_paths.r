@@ -56,8 +56,8 @@ weight_list[,1] <- weight_list[,1]/weight_sum #normalize lise
 
 no_hit_probability <- 1 # probability of an arbitrary never hitting the coalescence zone num_time_steps time.  
 timestep_size <- 1/1000
-#We start with the continous time expression and account for discretized time and finite width coalescence zone.
-for (time in 1:(1/timestep_size)*(num_time_steps -1)){ 
+#We use the continous time approximation.
+for (time in 1:(1/timestep_size)*(num_time_steps )){ 
 constrained_pars <- c(alpha, 0, scale_parameter*(time*timestep_size)**(1/alpha), 0)
 
   no_hit_probability <-  no_hit_probability *(1 - stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)*timestep_size )

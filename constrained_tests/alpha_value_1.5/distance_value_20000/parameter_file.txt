@@ -1,8 +1,0 @@
-alpha 1.5
-distance 20000
-number of trials per terminal timestep 10
-max number number of time steps considered 11
-max number number of time steps considered 11
-total number of trials 100
-t_con_inverse 0
-scale_parameter 250
