@@ -3,4 +3,4 @@ distance 2.71828
 number of time steps considered 100
 number of trials 100
 scale parameter 250
-mutation rate 0.1
+mutation rate 0.01
