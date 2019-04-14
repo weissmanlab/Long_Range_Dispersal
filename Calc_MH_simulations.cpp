@@ -15,8 +15,7 @@ void Calc_MH_simulations(const double ALPHA, const double INIT_DISTANCE, const i
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double timestep = 1.0; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
   const double MU = MUTATION_RATE;
-  const double mu_step = MU;  // .0001; //change back later 
-  //const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
+  const double mu_step = MU;  
   const double rho_inverse = RHO_INVERSE; // .1 ; // (1/rho) is for calculation of expectation over paths. Rho is population density.
   const double delta_function_width = 1.0; //atof(argv[5]);  //this must be same as in part 1
   const double delta_function_height = 1.0/delta_function_width;
@@ -24,7 +23,6 @@ void Calc_MH_simulations(const double ALPHA, const double INIT_DISTANCE, const i
   double mean_homozygosity[num_mu_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
 double mean_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // conditional expectation E[exp(-2mut)|path] ] = E[Hom|path]   
 double second_moment_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // Second moment (conditional) E[exp(-4*mu*t)|path] ] = E[Hom^2|path]
-
 double conditional_VARIANCE_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // conditional variance Var(exp(-2*mu*t)|path)  = E[Hom^2|path] - E[Hom|path]^2
 double mean_homozygosity_VARIANCE_of_Conditional_Expectations[num_mu_steps] = {0};  // Var(E[Hom| path])
 double mean_homozygosity_expectation_value_of_Conditional_VARIANCE[num_mu_steps] = {0};  // E[Var(Hom| path)]
@@ -33,59 +31,14 @@ double initial_position = INIT_DISTANCE ;  // initial signed distance between in
   double *Contribution_from_each_trial = new double[num_trials];// {0};
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
   double *dist_of_coalescent_times = new double[num_time_steps];
+for(int i =0; i < num_trials; i++)
+{Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
+ for(int i =0; i < num_time_steps; i++)
+{dist_of_coalescent_times[i] = 0;}
+
 const int num_histogram_bins = 1e4;
 double probability_of_hitting_origin; // this is the probability of obtaining a nonzero homozygosity value for an arbitrary path.  
 //If the path hits the coalescence zone at any time it's homozygosity is nonzero.
-
-
-
-
-
-double **List_of_single_trial_homozygosities = new double*[num_mu_steps];
-double **List_of_single_trial_WEIGHTS = new double*[num_mu_steps];
-
-//double **List_of_single_trial_WEIGHTS_CDF = new double*[num_mu_steps]; 
-for (int mu = 0; mu < num_mu_steps; mu++) {
-  List_of_single_trial_homozygosities[mu] = new double[num_trials];
-  List_of_single_trial_WEIGHTS[mu] = new double[num_trials];
-  //List_of_single_trial_WEIGHTS_CDF[mu] = new double[num_trials];
-}
-
-for (int mu = 0; mu < num_mu_steps; mu++) {
-  for(int i =0; i < num_trials; i++)
-{List_of_single_trial_homozygosities[mu][i] = 0; 
- List_of_single_trial_WEIGHTS[mu][i] = 0;
- //List_of_single_trial_WEIGHTS_CDF[mu][i] = 0;
-}}
-
-
-double *List_of_rand_uni_dist_nums = new double[num_trials]; // list of random numbers drawn from uniform distribution
-
-
-double **SORTED_List_of_single_trial_homozygosities = new double*[num_mu_steps];
-double **SORTED_List_of_single_trial_WEIGHTS = new double*[num_mu_steps];
-double **SORTED_List_of_single_trial_WEIGHTS_CDF = new double*[num_mu_steps];
-
-for (int mu = 0; mu < num_mu_steps; mu++) {
-  SORTED_List_of_single_trial_homozygosities[mu] = new double[num_trials];
-  SORTED_List_of_single_trial_WEIGHTS[mu] = new double[num_trials];
-  SORTED_List_of_single_trial_WEIGHTS_CDF[mu] = new double[num_trials];
-}
-
-for (int mu = 0; mu < num_mu_steps; mu++) {
-  for(int i =0; i < num_trials; i++)
-{SORTED_List_of_single_trial_homozygosities[mu][i] = 0; 
- SORTED_List_of_single_trial_WEIGHTS[mu][i] = 0;
- SORTED_List_of_single_trial_WEIGHTS_CDF[mu][i] = 0;
-}}
-
-
-
-
-
-
-
-
 int single_trial_hist_index;
 double hist_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
 double CDF_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
@@ -100,11 +53,33 @@ double List_of_bootstrapped_mean_homozygosities[num_mu_steps][num_samples_bootst
 double Sorted_List_of_bootstrapped_mean_homozygosities[num_mu_steps][num_samples_bootstrapped_means] = {0};
 
 
+double **List_of_single_trial_homozygosities = new double*[num_mu_steps];
+double **List_of_single_trial_WEIGHTS = new double*[num_mu_steps];
+double *List_of_rand_uni_dist_nums = new double[num_trials]; // list of random numbers drawn from uniform distribution
 
-for(int i =0; i < num_trials; i++)
-{Contribution_from_each_trial[i] = 0; Contribution_from_each_trialEXPONENT[i] = 0;}
- for(int i =0; i < num_time_steps; i++)
-{dist_of_coalescent_times[i] = 0;}
+
+double **SORTED_List_of_single_trial_homozygosities = new double*[num_mu_steps];
+double **SORTED_List_of_single_trial_WEIGHTS = new double*[num_mu_steps];
+double **SORTED_List_of_single_trial_WEIGHTS_CDF = new double*[num_mu_steps];
+//double **List_of_single_trial_WEIGHTS_CDF = new double*[num_mu_steps]; 
+for (int mu = 0; mu < num_mu_steps; mu++) {
+  List_of_single_trial_homozygosities[mu] = new double[num_trials];
+  List_of_single_trial_WEIGHTS[mu] = new double[num_trials];
+ SORTED_List_of_single_trial_homozygosities[mu] = new double[num_trials];
+  SORTED_List_of_single_trial_WEIGHTS[mu] = new double[num_trials];
+  SORTED_List_of_single_trial_WEIGHTS_CDF[mu] = new double[num_trials];
+  for(int i =0; i < num_trials; i++)
+  {List_of_single_trial_homozygosities[mu][i] = 0; 
+  List_of_single_trial_WEIGHTS[mu][i] = 0;
+  SORTED_List_of_single_trial_homozygosities[mu][i] = 0; 
+  SORTED_List_of_single_trial_WEIGHTS[mu][i] = 0;
+  SORTED_List_of_single_trial_WEIGHTS_CDF[mu][i] = 0;
+  }
+}
+
+
+
+
 
   //We declare and initialize relevant variables in the above section
 
@@ -138,11 +113,6 @@ strcpy(OUTPUTFILE_Child_Directory, stringfile4.c_str());
 
 
 chdir(OUTPUTFILE_Child_Directory);
-
-//Above we opened/moved into the relevant directory
-
-//Now that we're in the proper directory with the entrance and exit times of interest, 
-//we read them in and calculate the distribution of coalescence times and the mean homozygosity
 
 
 
@@ -325,32 +295,6 @@ for (int mu =0; mu < num_mu_steps; mu++){
             }
 
 
-// generate quantile function (inverse of CDF) need to round probs in CDF to fit bins of quantile function array
-
-//int num_quantile_bins = 1e6;
-
-/*
-for (int mu =0; mu < num_mu_steps; mu++){
-int dummy_cdf_index = 0;
-for (int prob_bin = 0; prob_bin < num_quantile_bins; prob_bin++ ){//DEFINE num_quantile_bins
-    
-  //while(prob_bin > CDF_of_single_trial_homozygosities[mu][dummy_cdf_index] && dummy_cdf_index < num_histogram_bins){dummy_cdf_index++}
-   
-
-    //if(prob_bin <= CDF_of_single_trial_homozygosities[mu][dummy_cdf_index] )
-  
-//CDF_of_single_trial_homozygosities[mu][QQ]
-  }
-
-
-}
-*/
-
-// Sort list of single trial homozygosities
-
- 
-
-//const int bootstrapped_mean = 0;
 
 
 
@@ -399,8 +343,8 @@ for(int trial =0; trial < num_trials; trial++)
 
                   
                    // Don't add zeros to histogram and bootstrap.  
-               //Instead sample the conditonal dist od paths that hit origin and multiply the calculated mean and CI's by probability of hitting orign.  
-               //This is a less noisy way of determinig the mean, will have tighter confidence intervals.
+               //Instead sample the conditonal dist of paths that hit origin and multiply the calculated mean and CI's by probability of hitting orign.  
+               //This is a less noisy way of determinig the confidence intervals.
                   /*
                 else{ List_of_bootstrapped_mean_homozygosities[mu][sample] += 0;
                       // CDF NOT normalized to one.  CDF is normalized to probability of trajectory hitting the origin.
@@ -412,28 +356,7 @@ for(int trial =0; trial < num_trials; trial++)
 
          }
 
-    /*
-    for(int trial =0; trial < num_trials; trial++)
-         {   
-           //  hit = false;
-          //while(hit == false)
-          //{
-          dummy_rand1 = floor(uniform_dist(generator));    // we generate random numbers according to the single homozygosity histogram via inverse transform sampling
-          //cout << dummy_rand1;
-          dummy_rand1_INDEX = int(dummy_rand1);  //This is the index associated to the above domain value for the Quantile function array
-          
-          //dummy_prob_hit = uniform_zero_to_one(generator);
-         //  if(dummy_prob_hit < List_of_single_trial_WEIGHTS[mu][trial] ) {hit = true;}   
-
-          //}
-          //cout << dummy_rand1_INDEX << endl;
-         
-              
-
-              List_of_bootstrapped_mean_homozygosities[mu][sample] += List_of_single_trial_homozygosities[mu][dummy_rand1_INDEX]/double(num_trials);
-           }   
-   */
-              
+   
                 Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
 
               //cout << List_of_bootstrapped_mean_homozygosities[mu][sample] << endl;
@@ -449,11 +372,9 @@ for(int trial =0; trial < num_trials; trial++)
 double tmp1 = 0;
 double tmp2 = 0;
 
-for( int mu = 0; mu < num_mu_steps; mu++)
-{ for(int sample1 = 0; sample1 < num_samples_bootstrapped_means; sample1++)
-    { 
-        for(int sample2 = sample1; sample2 < num_samples_bootstrapped_means; sample2++)
-    {    
+for( int mu = 0; mu < num_mu_steps; mu++){ for(int sample1 = 0; sample1 < num_samples_bootstrapped_means; sample1++)
+    { for(int sample2 = sample1; sample2 < num_samples_bootstrapped_means; sample2++)
+      {    
          tmp1 = Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample1];
 
          tmp2 = Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample2];
@@ -462,26 +383,13 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
                    Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample2] = tmp1;
 
-             }
+               }
 
     
 
 
-    }
-
-
-
-
-    }
-
-
- }
-
-
-
-
-
-
+       }
+  }}
 
 
 
@@ -546,7 +454,23 @@ upper_CI[mu]= Sorted_List_of_bootstrapped_mean_homozygosities[mu][upper_CI_INDEX
 
 
 
-//Now we output our results to files
+// CONVERT FROM CONDITIONAL TO MARGINAL DISTRIBUTION
+
+
+for( int mu = 0; mu < num_mu_steps; mu++)
+{ 
+mean_homozygosity[mu] *= probability_of_hitting_origin;
+lower_CI[mu] *= probability_of_hitting_origin;    
+upper_CI[mu] *= probability_of_hitting_origin;
+}
+
+for (int time =0; time < num_time_steps; time++) { dist_of_coalescent_times[time] *= probability_of_hitting_origin;}
+
+
+
+
+
+//OUTPUT TO FILES
 
 
 char OUTPUTFILE[50];
@@ -558,7 +482,7 @@ char OUTPUTFILE[50];
   ofstream fout4;
 
 fout4.open(stringfile);
-for (int time =0; time < num_time_steps; time++) {fout4 << time*timestep << " " << probability_of_hitting_origin*dist_of_coalescent_times[time] << endl;}
+for (int time =0; time < num_time_steps; time++) {fout4 << time*timestep << " " << dist_of_coalescent_times[time] << endl;}
 fout4.close();
 
 
@@ -577,10 +501,20 @@ fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
 
 
-fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << probability_of_hitting_origin*mean_homozygosity[mu] << " " << probability_of_hitting_origin*lower_CI[mu] <<  " " << probability_of_hitting_origin*upper_CI[mu] << endl;
+fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
  // Here we output mean homozygosity as a function of mu and include error bars
 }
 fout5.close();
+
+
+
+
+
+
+
+
+//EXTRA FILES GENERATED BELOW
+//Output Extra files below to help check for errors and debug
 
 
 char OUTPUTFILE3[50];

@@ -7,11 +7,10 @@ void Calc_MH_numerics(const double ALPHA, const double INIT_DISTANCE,  const int
          read_in_R_command <<  "Rscript Calc_MH_numerics.r "  <<  ALPHA << " " << INIT_DISTANCE << " "  << NUM_TIME_STEPS << " " << SCALE_PARAMETER << " " <<  MUTATION_RATE  << " " << RHO_INVERSE;   
          // This produces the R command "Rscript assign_weights_to_paths.r ALPHA INIT_DISTANCE NUM_TRIALS NUM_TIME_STEPS SCALE_PARAMETER MUTATION_RATE"
         std::string R_command = read_in_R_command.str();
-         //read_in_R_command >> R_command; 
-         //std::cout << R_command << std::endl;
+         
          char R_command_CHAR[200];   // conver to char array
 strcpy(R_command_CHAR, R_command.c_str());
-//std::cout << R_command_CHAR << std::endl;
+
 
 
 

@@ -8,7 +8,9 @@ if (length(args)!=6) {
   stop("Six input arguments are required - alpha, initial distance, number of timesteps, scale parameter, mutation rate, and rho inverse", call.=FALSE)
   
 }
-
+# store name of directory and change into said directory
+dir <- paste("./alpha_value_", alpha, "/distance_value_", initial_distance, sep = "")
+setwd(dir)
 
 alpha <- as.double(args[1])
 initial_distance <- as.double(args[2])
@@ -16,17 +18,7 @@ num_time_steps <- as.integer(args[3]) # number of times considered
 scale_parameter <- as.double(args[4])
 MU <- as.double(args[5])
 rho_inverse <- as.double(args[6])
-
-# store name of directory and change into said directory
-dir <- paste("./alpha_value_", alpha, "/distance_value_", initial_distance, sep = "")
-#print(dir)
-setwd(dir)
-#system(cd_to_dir)
-
 X <- initial_distance #more convenient name for distance variable
-
-#Vectorize loop below?  Not that big/expensive.  Probably not necessary. 
-
 Laplace_Domain_Kernel_at_X <- 0
 Laplace_Domain_Kernel_at_ZERO <- 0
 timestep_size <- 1/1000
@@ -43,25 +35,11 @@ pars <- c(alpha, 0, scale_parameter*(time*timestep_size)**(1/alpha), 0)
 
 
 Mean_Homozygosity <- rho_inverse*( Laplace_Domain_Kernel_at_X -  (rho_inverse*Laplace_Domain_Kernel_at_X**2)/(1 + rho_inverse*Laplace_Domain_Kernel_at_ZERO))
-
-
-
-
-
-
-filestring <- paste("mean_homozygosity_NUMERIC", alpha , "distance", initial_distance, "MU", MU, "rho_inverse_" , rho_inverse , ".txt", sep = "") 
-sink(filestring)
+output_file_name <- paste("mean_homozygosity_NUMERIC", alpha , "distance", initial_distance, "MU", MU, "rho_inverse_" , rho_inverse , ".txt", sep = "") 
+sink(output_file_name)
 #constrained_probability <- stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)
 cat(paste(initial_distance, MU, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = ""))
 sink()
 
 
-
-
-
-
-
-
-
 setwd("../..")
-#system("cd ../..")

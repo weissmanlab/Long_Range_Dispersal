@@ -5,23 +5,11 @@
 void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, const int NUM_TRIALS, const int NUM_TIME_STEPS, const double SCALE_PARAMETER, const double MUTATION_RATE)
 {      using namespace std;
     
-    //std::cout << time(0) << std::endl;
-    //std::vector<double> v;
-   //if(argc != 7) {cout << "Wrong number of arguments.  Arguments are alpha, initial distance, total number of trials, number of time steps in each trajectory, scale parameter, and mutation rate." << endl; return 0;}  //, and timescale coarse graining." << endl; return 0;} 
-  // include periodic boundaries to ensure dist of coalescent times with jumps converges
- // const int distance_off_set = 0;
+    
   const int num_time_steps = NUM_TIME_STEPS;  //the total length of the trajectories considered
- // const int time_scale_coarse_graining = 1; //atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
-  //const int num_trials = atoi(argv[3]); // numer of trials PER terminal timepoint. TOTAL
   const int num_trials = NUM_TRIALS;  //ACTUAL NUMBER OF TRIALS RUN IS SLIGHLY LESS: Total_num_trials - num_time_steps is true number of trials
-  
-
-   //num_time_steps*num_trials;
-  //const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
-  
   const double levy_param = 1.00;
-  
   const double timestep = 1.0;//const double timestep = .1; // for deterministic drift term
   const double t_con_inverse = .000;//.005; //.5 // (1/tcon) also for determinic drift term
   const double delta_function_width = 1.0; //atof(argv[5]);;
@@ -39,8 +27,6 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
 double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
-
-
 std::vector<int> weights;
     for(int i=0; i<num_time_steps; ++i) {
         weights.push_back(i);
@@ -49,7 +35,6 @@ std::vector<int> weights;
 
     }
   std::discrete_distribution<> draw_origin_time(weights.begin(), weights.end());
-
   double initial_position = INIT_DISTANCE;  // initial signed distance between individuals
   double current_position;
 //Relevant variables declared and initialized above
@@ -74,8 +59,6 @@ char OUTPUTFILE_Parent_Directory[50];
 strcpy(OUTPUTFILE_Parent_Directory, stringfile2.c_str());
 chdir(OUTPUTFILE_Parent_Directory);
 /********************************************/
-
-     
      
       std::stringstream file_name4;
          file_name4 <<  "distance_value_"  <<  initial_position  ;   // This is the directory name
@@ -108,12 +91,7 @@ ofstream fout_parameter_file;
     fout_parameter_file << "mutation rate " << MU << endl;
     fout_parameter_file.close();
 
-//int total_trial_count = 0;
-//for(int origin_time =1; origin_time < num_time_steps; origin_time++)
-//{
 
-//for(int trial =0; trial < num_trials; trial++)
- //{  
   
 
 for(int trial =0; trial < num_trials; trial++)
@@ -230,8 +208,8 @@ current_position = fmod((current_position + signed_step_size),  periodic_boundar
 
 
 // In part two we will normalize the weights and perform a weighted average over paths to get the distribution of coalsecence times.  
-// We then multiply the result by the probability of a trajectory ending at the origin to convert from the conditional expectation
-// over constrained paths to the expectation over all paths.
+// We then multiply the result by the probability of a entering the coalescence zone to convert from the conditional expectation
+// over origin-hitting paths to the expectation over all paths.
 
 
 fout8.close();
