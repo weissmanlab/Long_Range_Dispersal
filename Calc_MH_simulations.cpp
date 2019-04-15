@@ -614,6 +614,8 @@ for (int QQ =0; QQ < num_trials; QQ++)
 
 chdir("..");
 
+chdir("..");
+
 //Now we create and move into a directory for storing plots
   std::stringstream file_name_chdir_plot;
          file_name_chdir_plot <<  "MH_plots" ;   // This is the directory name
@@ -639,7 +641,7 @@ chdir(Change_to_Plot_Directory);
 char OUTPUTFILE_MH_for_plots[100];
   sprintf(OUTPUTFILE_MH_for_plots, "mean_homozygosity_");
   std::stringstream file_name_for_mh_plots;
-         file_name_for_mh_plots <<  OUTPUTFILE_MH_for_plots << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name_for_mh_plots <<  OUTPUTFILE_MH_for_plots << "alpha_value_"<< alpha << "distance_value_"  << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile_for_mh_plots;
          file_name_for_mh_plots >> stringfile_for_mh_plots; 
 
@@ -647,12 +649,12 @@ char OUTPUTFILE_MH_for_plots[100];
 
 
 
-fout_for_mh_plots.open(stringfile99);
+fout_for_mh_plots.open(stringfile_for_mh_plots);
 for (int mu =0; mu < num_mu_steps; mu++) {
 
 
-fout_for_mh_plots << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
- 
+//fout_for_mh_plots << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
+  fout_for_mh_plots << ALPHA << " " << initial_position << " " <<  RHO_INVERSE << " " << pow(10, mu)*mu_step << " SIMULATION " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
 //ADD ALPHA, RHO INVERSE and "SIMULATION" DESIGNATION TO OUTPUT SO THAT ALL OF THESE FILES CAN BE CONCATONATED INTO DATAFRAME FOR PLOTTING
 
  // Here we output mean homozygosity as a function of mu and include error bars
@@ -664,7 +666,7 @@ fout_for_mh_plots.close();
 
 
 
-chdir("..");
+
 chdir("..");
 
 

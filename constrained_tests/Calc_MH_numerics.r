@@ -40,16 +40,16 @@ output_file_name <- paste("mean_homozygosity_NUMERIC", alpha , "distance", initi
 output_file_name_plot <- paste("mean_homozygosity_NUMERIC", alpha , "distance", initial_distance, "MU", MU, "rho_inverse_" , rho_inverse , ".txt", sep = "") 
 sink(output_file_name)
 #constrained_probability <- stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)
-cat(paste(initial_distance, MU, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = ""))
+cat(paste(initial_distance, MU, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = " "))
 sink()
 
-setwd("../MH_plots")
+setwd("../../MH_plots")
 
 sink(output_file_name_plot)
 #constrained_probability <- stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)
-cat(paste(initial_distance, MU, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = ""))
+cat(paste(alpha, initial_distance, rho_inverse, MU, "NUMERIC" ,Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = " "))
 sink()
 
 
 
-setwd("../..")
+setwd("..")
