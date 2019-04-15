@@ -16,7 +16,12 @@ void create_dataframe_for_plots()
 
 
         chdir("./Mh_plots");
-  		std::system("awk 1 mean_homozygosity_* > MH_data_frame.txt");
+  		
+        std::system("awk 1 NUMERIC_mean_homozygosity* > NUMERIC_MH_data_frame.txt");
+
+        
+        std::system("awk 1 SIMULATION_mean_homozygosity* > SIMULATION_MH_data_frame.txt");
+
 
         chdir("..");
 

@@ -10,7 +10,7 @@ void Calc_MH_simulations(const double ALPHA, const double INIT_DISTANCE, const i
   const int num_trials = NUM_TRIALS;
   std::mt19937 generator(time(0));
   std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
-  std::uniform_real_distribution<double> uniform_zero_to_one(0.0, num_trials);
+  std::uniform_real_distribution<double> uniform_zero_to_one(0.0, 1);
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double timestep = 1.0; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
@@ -22,11 +22,11 @@ void Calc_MH_simulations(const double ALPHA, const double INIT_DISTANCE, const i
   const double alpha = ALPHA;  // controls power law tail of jump kernel
   double mean_homozygosity[num_mu_steps] = {0}; //probability of two individuals (lineages) being identical given initial seperation and mu
 double mean_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // conditional expectation E[exp(-2mut)|path] ] = E[Hom|path]   
-double second_moment_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // Second moment (conditional) E[exp(-4*mu*t)|path] ] = E[Hom^2|path]
-double conditional_VARIANCE_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // conditional variance Var(exp(-2*mu*t)|path)  = E[Hom^2|path] - E[Hom|path]^2
-double mean_homozygosity_VARIANCE_of_Conditional_Expectations[num_mu_steps] = {0};  // Var(E[Hom| path])
-double mean_homozygosity_expectation_value_of_Conditional_VARIANCE[num_mu_steps] = {0};  // E[Var(Hom| path)]
-double mean_homozygosity_TOTAL_VARIANCE[num_mu_steps] = {0} ;  // Var(exp(-2*mu*t)) = Var(Hom) = Var(E[Hom| path]) + E[Var(Hom| path)]
+//double second_moment_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // Second moment (conditional) E[exp(-4*mu*t)|path] ] = E[Hom^2|path]
+//double conditional_VARIANCE_of_homozygosity_INDIVIDUAL_TRIAL[num_mu_steps] = {0}; // conditional variance Var(exp(-2*mu*t)|path)  = E[Hom^2|path] - E[Hom|path]^2
+//double mean_homozygosity_VARIANCE_of_Conditional_Expectations[num_mu_steps] = {0};  // Var(E[Hom| path])
+//double mean_homozygosity_expectation_value_of_Conditional_VARIANCE[num_mu_steps] = {0};  // E[Var(Hom| path)]
+//double mean_homozygosity_TOTAL_VARIANCE[num_mu_steps] = {0} ;  // Var(exp(-2*mu*t)) = Var(Hom) = Var(E[Hom| path]) + E[Var(Hom| path)]
 double initial_position = INIT_DISTANCE ;  // initial signed distance between individuals
   double *Contribution_from_each_trial = new double[num_trials];// {0};
   double *Contribution_from_each_trialEXPONENT= new double[num_trials];
@@ -457,6 +457,12 @@ upper_CI[mu]= Sorted_List_of_bootstrapped_mean_homozygosities[mu][upper_CI_INDEX
 // CONVERT FROM CONDITIONAL TO MARGINAL DISTRIBUTION
 
 
+
+////DEBUGGING ONLY - COMMENT BELOW  OUT !!!!!!!!
+
+probability_of_hitting_origin = 1;  // THIS IS FOR DEBUGGING/FREE PATH COMPARSION.  TURN OFF LATER!!!!! Probl of hitting origin is not 1!!!!!!!!!!!!
+////DEBUGGING ONLY - COMMENT ABOVE  OUT !!!!!!!!
+
 for( int mu = 0; mu < num_mu_steps; mu++)
 { 
 mean_homozygosity[mu] *= probability_of_hitting_origin;
@@ -487,9 +493,9 @@ fout4.close();
 
 
 char OUTPUTFILE2[50];
-  sprintf(OUTPUTFILE2, "mean_homozygosity_");
+  sprintf(OUTPUTFILE2, "SIMULATION_mean_homozygosity_");
   std::stringstream file_name99;
-         file_name99 <<  OUTPUTFILE2 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
+         file_name99 <<  OUTPUTFILE2 << "alpha_value_" << alpha << "distance_value_"  << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile99;
          file_name99 >> stringfile99; 
 
@@ -501,7 +507,7 @@ fout5.open(stringfile99);
 for (int mu =0; mu < num_mu_steps; mu++) {
 
 
-fout5 << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
+fout5 << alpha << " " << rho_inverse <<  " " << MU << " " << initial_position << " "  << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
  // Here we output mean homozygosity as a function of mu and include error bars
 }
 fout5.close();
@@ -601,7 +607,7 @@ fout9.open(stringfile103);
 
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < num_trials; QQ++)
-{fout9 << initial_position << " " << pow(10, mu)*mu_step << " " << List_of_single_trial_homozygosities[mu][QQ]  << " " << List_of_single_trial_WEIGHTS[mu][QQ]*probability_of_hitting_origin<<  endl;
+{fout9 << initial_position << " " << pow(10, mu)*mu_step << " " << List_of_single_trial_homozygosities[mu][QQ]  << " " <<  SORTED_List_of_single_trial_homozygosities[mu][QQ] << " " << List_of_single_trial_WEIGHTS[mu][QQ]*probability_of_hitting_origin <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
@@ -639,7 +645,7 @@ chdir(Change_to_Plot_Directory);
 
 
 char OUTPUTFILE_MH_for_plots[100];
-  sprintf(OUTPUTFILE_MH_for_plots, "mean_homozygosity_");
+  sprintf(OUTPUTFILE_MH_for_plots, "SIMULATION_mean_homozygosity_");
   std::stringstream file_name_for_mh_plots;
          file_name_for_mh_plots <<  OUTPUTFILE_MH_for_plots << "alpha_value_"<< alpha << "distance_value_"  << initial_position <<  "MU" << MU  << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile_for_mh_plots;
@@ -654,7 +660,7 @@ for (int mu =0; mu < num_mu_steps; mu++) {
 
 
 //fout_for_mh_plots << initial_position << " " << pow(10, mu)*mu_step << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
-  fout_for_mh_plots << ALPHA << " " << initial_position << " " <<  RHO_INVERSE << " " << pow(10, mu)*mu_step << " SIMULATION " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
+  fout_for_mh_plots << ALPHA << " "  <<  RHO_INVERSE << " " << MU <<  " " << initial_position << " " << mean_homozygosity[mu] << " " << lower_CI[mu] <<  " " << upper_CI[mu] << endl;
 //ADD ALPHA, RHO INVERSE and "SIMULATION" DESIGNATION TO OUTPUT SO THAT ALL OF THESE FILES CAN BE CONCATONATED INTO DATAFRAME FOR PLOTTING
 
  // Here we output mean homozygosity as a function of mu and include error bars

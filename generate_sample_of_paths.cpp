@@ -29,14 +29,14 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
 double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
 std::vector<int> weights;
     for(int i=0; i<num_time_steps; ++i) {
-        weights.push_back(i);
+        
         if(i ==0){weights.push_back(0); }
          else{weights.push_back(exp(-2*MU*double(i)));}  // the probability of a particular origin time is related to its relevance at the given mutation rate.  
 
     }
   std::discrete_distribution<> draw_origin_time(weights.begin(), weights.end());
   double initial_position = INIT_DISTANCE;  // initial signed distance between individuals
-  double current_position;
+  double current_position = INIT_DISTANCE;
 //Relevant variables declared and initialized above
 /********************************/
  
@@ -149,20 +149,31 @@ double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
 
 //std::uniform_real_distribution<double> uniform_dist_extra(1, num_time_steps + .999 );
 
-  int origin_time = draw_origin_time(generator);
+  const int origin_time = draw_origin_time(generator);
 
 
   std::uniform_real_distribution<double> uniform_dist(0.0, origin_time );
 
   int chosen_time = int(floor(uniform_dist(generator)));  // Time at which we shift the trajectory by a large jump to ensure that the endpoint is the origin
 
-  constrained_step_list[chosen_time] = free_step_list[chosen_time] - free_trajectory[origin_time]; // correct constrained list so that it will result in trajectory that ends at the origin
+ // constrained_step_list[chosen_time] = free_step_list[chosen_time] - free_trajectory[origin_time]; // correct constrained list so that it will result in trajectory that ends at the origin
 
-  fout9  << free_step_list[chosen_time] <<  endl; 
-  fout9 << constrained_step_list[chosen_time] << endl;
-  
-
+//TURN THIS BACK ON LATER!!!!!!!  THIE LINE ABOVE CONVERTS FREE TRAJECTORIES TO ORGIN-HITTING TRAJECTORIES.  WE TURNED IT OFF FOR DEBUGGING.
  
+fout9  << free_step_list[chosen_time] <<  endl; 
+fout9 << constrained_step_list[chosen_time] << endl;
+
+//fout9 << chosen_time << endl;
+//fout9 << origin_time << endl;
+/*
+for (int test_time = 0; test_time < num_time_steps; test_time++)
+{
+    fout9  << free_step_list[test_time] <<  " " << constrained_step_list[test_time] <<  endl; 
+
+  
+  //fout9 << chosen_time << endl;
+}
+ */
 
 
   current_position = fmod(initial_position, periodic_boundary); //reset current position to inital position
