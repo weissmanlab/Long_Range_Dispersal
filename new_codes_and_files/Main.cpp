@@ -3,7 +3,7 @@
 #include "Calc_MH_simulations.h"
 #include "Calc_MH_numerics.h"
 #include "create_dataframe_for_plots.h"
-
+#include "generate_plots.h"
 
 int main()
 { 
@@ -60,7 +60,18 @@ int main()
 
 create_dataframe_for_plots();
 
+for(int alpha_index = 0; alpha_index < 1; alpha_index++)
+	{for(int mu_index = 1; mu_index < 2; mu_index++)
+	      {  for(int rho_inverse_index = 1; rho_inverse_index < 2; rho_inverse_index++)
+	       	 {  
 
+	       	 	double ALPHA = 1.2 + .2*double(alpha_index);
+            double MU = 1.0/pow(10.0, double(mu_index));
+	      	 double RHO_INVERSE = 1.0/pow(10.0, double(rho_inverse_index));  
+
+                  generate_plots(ALPHA, MU, RHO_INVERSE);
+	       	 
+	       	 }}}
 
 
 

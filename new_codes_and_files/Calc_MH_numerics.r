@@ -47,7 +47,7 @@ setwd("../../MH_plots")
 
 sink(output_file_name_plot)
 #constrained_probability <- stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)
-cat(paste(alpha, initial_distance, rho_inverse, MU ,Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = " "))
+cat(paste(alpha,   MU , rho_inverse,   initial_distance, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = " "))
 sink()
 
 
