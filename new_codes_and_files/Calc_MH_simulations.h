@@ -1,4 +1,8 @@
 #pragma once
+#include <gsl/gsl_randist.h>
+#include <gsl/gsl_cdf.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_statistics_double.h>
 #include <iostream>
 #include <iomanip>
 #include <unistd.h>

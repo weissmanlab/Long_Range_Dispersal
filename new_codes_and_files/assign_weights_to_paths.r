@@ -29,16 +29,23 @@ pars <- c(alpha, 0, scale_parameter, 0) # These are the parameters for the step 
 ## weights remove bias from individual trajectories
 
 for (trial in 1:num_trials) {
-   input_file_name <- paste("free_and_contrained_CHOSEN_TIME_jump_sizesalpha", alpha , "distance", initial_distance, "MU", MU, "trial", (trial -1), ".txt", sep = "") 
+   input_file_name <- paste("Extra_Step_jump_sizealpha", alpha , "distance", initial_distance, "MU", MU, "trial", (trial -1), ".txt", sep = "") 
    file <- read.table(input_file_name)
-   free_step <- file[1,1]
-   constrained_step <- file[2,1]
-   weight <- stable_pdf(constrained_step, pars)/stable_pdf(free_step , pars)
-   weight_list[trial, 1] <- weight
-   }
+   
+   extra_step <- file[1,1]
+   #free_step <- file[1,1]
+   #constrained_step <- file[2,1]
+   #probability_of_origin_time_and_big_jump_time <-  file[3,1]
+   #fake_probability <- stable_pdf(free_step, pars)*probability_of_origin_time_and_big_jump_time  # the dist used to sample the important paths 
+   #true_probability <- stable_pdf(constrained_step, pars) # the prob under dist we really want to draw from
+   ## ALL the other steps in the trajectories are drawn with the same probability in our true and fake distributions, so we only have to account for the bias in this one step
+   weight <- stable_pdf(extra_step, pars) # true_probability/fake_probability  # this ratio corrects for the bias in our importance sampling procedure.
+    weight_list[trial, 1] <- weight
 
-weight_sum <- sum(weight_list[,1])
-weight_list[,1] <- weight_list[,1]/weight_sum #normalize list
+   }
+ 
+#weight_sum <- sum(weight_list[,1])  DO NOT NORMALIZE.  UN-NORMALIZED weights w_i/num_trials are what give us the proper estimate of the expectation over all paths
+#weight_list[,1] <- weight_list[,1]/weight_sum #normalize list
 
 
 
@@ -62,22 +69,24 @@ for (trial in 1:num_trials) {
 
 
 
-no_hit_probability <- 1 # probability of an arbitrary never hitting the coalescence zone num_time_steps time.  
-timestep_size <- 1/1000 ## dt
+##no_hit_probability <- 1 # probability of an arbitrary never hitting the coalescence zone num_time_steps time.  
+##timestep_size <- 1/1000 ## dt
 #We use the continous time approximation.
-for (time in 1:(1/timestep_size)*(num_time_steps )){ 
-constrained_pars <- c(alpha, 0, scale_parameter*(time*timestep_size)**(1/alpha), 0)
+##for (time in 1:(1/timestep_size)*(num_time_steps )){ 
+##constrained_pars <- c(alpha, 0, scale_parameter*(time*timestep_size)**(1/alpha), 0)
 
-  no_hit_probability <-  no_hit_probability *(1 - stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)*timestep_size )
+ # no_hit_probability <-  no_hit_probability *(1 - stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)*timestep_size )
             # coalescence zone has width one in our simulations
 
-    }
+ #   }
 
-probability_of_hitting_coalescence_zone <- 1 - no_hit_probability
-output_file_name <- paste("probability_of_constrained_trajectory_WEIGHT_alpha", alpha , "distance", initial_distance,  ".txt", sep = "") 
-sink(output_file_name)
-cat(probability_of_hitting_coalescence_zone)
-sink()
+
+## NO EXTRA PROBABILITY FACTOR NEEDED. UN_NORMALIZED WEIGHTS ALREADY SAMPLE THE FULL DISTRIBUTION OF ALL PATHS
+#probability_of_hitting_coalescence_zone <- 1 - no_hit_probability
+#output_file_name <- paste("probability_of_constrained_trajectory_WEIGHT_alpha", alpha , "distance", initial_distance,  ".txt", sep = "") 
+#sink(output_file_name)
+#cat(probability_of_hitting_coalescence_zone)
+#sink()
 
 
 

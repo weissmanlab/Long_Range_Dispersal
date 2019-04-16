@@ -6,7 +6,7 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
 {      using namespace std;
     
     
-  const int num_time_steps = NUM_TIME_STEPS;  //the total length of the trajectories considered
+  const int num_time_steps = NUM_TIME_STEPS -1;  //the total length of the trajectories considered
   const int num_trials = NUM_TRIALS;  //ACTUAL NUMBER OF TRIALS RUN IS SLIGHLY LESS: Total_num_trials - num_time_steps is true number of trials
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double levy_param = 1.00;
@@ -17,6 +17,8 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
   const double scale_parameter = SCALE_PARAMETER;//*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
   const double MU = MUTATION_RATE;
   // the scale parameter c is related to the generalized diffusion constant D as c =(4D*timestep)^(1/alpha)
+  
+
   const gsl_rng_type * T;
   T = gsl_rng_default;
   gsl_rng* r;
@@ -26,17 +28,71 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
 
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
-double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
-std::vector<int> weights;
-    for(int i=0; i<num_time_steps; ++i) {
+//double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
+double* origin_time_weight_array = new double[num_trials];
+double* origin_time_array = new double[num_trials];
+//std::vector<int> weights;
+    
+  double origin_time_weight_array_sum = 0;   // origin time can be any time except first time step and last two timesteps
+    for(int i=0; i<num_time_steps -2; ++i) {
         
-        if(i ==0){weights.push_back(0); }
-         else{weights.push_back(exp(-2*MU*double(i)));}  // the probability of a particular origin time is related to its relevance at the given mutation rate.  
+        //if(i ==0){weights.push_back(0); weight_array[i] = 0; }
+        // else{weights.push_back(exp(-2*MU*double(i))); weight_array[i] = exp(-2*MU*double(i));}  // the probability of a particular origin time is related to its relevance at the given mutation rate.  
 
+      if(i ==0){ origin_time_weight_array[i] = 0; }
+         else{ origin_time_weight_array[i] = exp(-2*MU*double(i));}  // the probability of a particular origin time is related to its relevance at the given mutation rate.  
+            origin_time_weight_array_sum += origin_time_weight_array[i];
     }
-  std::discrete_distribution<> draw_origin_time(weights.begin(), weights.end());
+  unsigned int* origin_time_draws = new unsigned int[num_time_steps];
+ //int* SIGNED_origin_time_draws = new  int[num_time_steps];
+
+gsl_ran_multinomial(r, num_time_steps, num_trials, origin_time_weight_array,  origin_time_draws);
+
+ //for(int i=0; i<num_time_steps; ++i) { SIGNED_origin_time_draws[i] = int(origin_time_draws[i]);  }
+
+
+
+
+int dummy_trial_index = 0;
+for(int i=0; i<num_time_steps; ++i) {
+    //cout <<  SIGNED_origin_time_draws[i] << endl;
+    
+    
+    for(int j = 0; j < origin_time_draws[i]; j++)   // fill up the origin_time_array with all the origin_time_draws
+     {       origin_time_array[dummy_trial_index] = i;
+                 
+           //cout << origin_time_array[dummy_trial_index] << endl;
+          dummy_trial_index++;
+      }
+      
+
+
+}
+//for(int trial = 0; trial < num_trials; trial++)   
+//     {  cout << origin_time_array[trial] << endl;}
+//cout << dummy_trial_index << endl;
+
+
+// origin_time is a time between 1 and (num_timesteps -1).  path can't hit origin at time 0 since it is fixed  by initial condition.
+   // (num_timestes -1) is last avalilable index of array of length num_timesteps
+
+
+  
+  //std::discrete_distribution<> draw_origin_time(weights.begin(), weights.end());
   double initial_position = INIT_DISTANCE;  // initial signed distance between individuals
   double current_position = INIT_DISTANCE;
+
+
+
+delete[] origin_time_weight_array; 
+
+
+
+//for(int i =0; i < num_time_steps; i++)
+//{ cout << origin_time_draws[i] << endl;}
+
+
+
 //Relevant variables declared and initialized above
 /********************************/
  
@@ -110,7 +166,7 @@ for(int trial =0; trial < num_trials; trial++)
   
 
  char OUTPUTFILE4[50];
-  sprintf(OUTPUTFILE4, "free_and_contrained_CHOSEN_TIME_jump_sizes");
+  sprintf(OUTPUTFILE4, "Extra_step_jump_size");
   std::stringstream file_name4;
          //file_name4 <<  OUTPUTFILE4  << "alpha" << alpha << "distance" << initial_position << "num_time_steps" << num_time_steps <<  "trial" << total_trial_count << ".txt" ;
          file_name4 <<  OUTPUTFILE4 << "alpha" << alpha << "distance" << initial_position <<  "MU" << MU << "trial" << trial << ".txt" ;
@@ -128,9 +184,9 @@ for(int trial =0; trial < num_trials; trial++)
 
 
     double free_trajectory[num_time_steps];  // dummy free trajectory generated will be used to construct constrained trajectory
-    double constrained_trajectory[num_time_steps];  // the constrained trajectory we're interested in generating
+    //double constrained_trajectory[num_time_steps];  // the constrained trajectory we're interested in generating
     double free_step_list[num_time_steps];  // list of jumps taken at each timestep for free trajectory
-    double constrained_step_list[num_time_steps]; // list of jumps taken at each timestep for constrained trajectory
+    double constrained_step_list[NUM_TIME_STEPS]; // THIS LIST HAS ONE EXTRA STEP list of jumps taken at each timestep for constrained trajectory
  //std::cout << gsl_ran_levy(r,  scale_parameter, alpha) << endl;
     for (int time =0; time < num_time_steps; time++) {
      
@@ -140,7 +196,7 @@ double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
  
  free_step_list[time] = signed_step_size;  // list of jumps taken at each timestep for free trajectory
  free_trajectory[time] = current_position;
- constrained_step_list[time] = free_step_list[time]; // list of jumps taken at each timestep for constrained trajectory
+ //constrained_step_list[time] = free_step_list[time]; // list of jumps taken at each timestep for constrained trajectory
  current_position = fmod((current_position + signed_step_size),  periodic_boundary) ; 
  
  //fout9 << free_step_list[time] << endl;
@@ -148,20 +204,52 @@ double signed_step_size = gsl_ran_levy(r,  scale_parameter, alpha);
   
 
 //std::uniform_real_distribution<double> uniform_dist_extra(1, num_time_steps + .999 );
+int SEED_for_origin_time = int(abs(free_step_list[num_time_steps -1])); 
+std::mt19937 ORIGIN_TIME_generator(SEED_for_origin_time);
+std::exponential_distribution<double> exponential_dist(MU);
+int origin_time = int(floor(exponential_dist(ORIGIN_TIME_generator) + .5) + 1);
+while( origin_time >= num_time_steps -2){ origin_time = int(floor(exponential_dist(ORIGIN_TIME_generator) + .5)) + 1;}
+// keep drawing until our origin time is in the prescribed range.
+// This is fine for MU >= .001,  For smaller mu use GSL multinomial to generate the result of a singel trial, and search through the array to obatin the value.  
+//For Mu >= 0.001 This should be faster than GSL multinomial since we wont have a resulting array to search.
+/*
+const gsl_rng_type * T2;
+  T2 = gsl_rng_default;
+  gsl_rng* r2;
+   r2 = gsl_rng_alloc (T2);
+   gsl_rng_set(r2, SEED_for_origin_time);
+*/
 
-  const int origin_time = draw_origin_time(generator);
 
 
-  std::uniform_real_distribution<double> uniform_dist(0.0, origin_time );
-
-  int chosen_time = int(floor(uniform_dist(generator)));  // Time at which we shift the trajectory by a large jump to ensure that the endpoint is the origin
-
- // constrained_step_list[chosen_time] = free_step_list[chosen_time] - free_trajectory[origin_time]; // correct constrained list so that it will result in trajectory that ends at the origin
-
-//TURN THIS BACK ON LATER!!!!!!!  THIE LINE ABOVE CONVERTS FREE TRAJECTORIES TO ORGIN-HITTING TRAJECTORIES.  WE TURNED IT OFF FOR DEBUGGING.
+int SEED_for_big_jump_time = int(abs(free_step_list[num_time_steps -2])); 
  
-fout9  << free_step_list[chosen_time] <<  endl; 
-fout9 << constrained_step_list[chosen_time] << endl;
+
+std::mt19937 BIG_JUMP_generator(SEED_for_big_jump_time);
+
+ //int origin_time =  origin_time_array[trial]; //draw_origin_time(generator);  // origin_time is a time between 1 and (num_timesteps -1).  path can't hit origin at time 0 since it is fixed  by initial condition.
+   //double prob_of_origin_time = exp(-2*MU*double(origin_time))/origin_time_weight_array_sum;
+ std::uniform_int_distribution<int> uniform_dist(0.0, origin_time -1 );  // probability of selecting a given chosen time is 1/(origin_time)
+   int big_jump_time = (uniform_dist(BIG_JUMP_generator));  // Time at which we shift the trajectory by a large jump to ensure that the endpoint is the origin
+  //double prob_of_big_jump_time = 1/double(origin_time);  //we could choose any int from 0 origin_time
+
+  //double prob_of_selecting_origin_time_and_big_jump_time = prob_of_big_jump_time*prob_of_origin_time; //probability of selecting origin time and big jump time with this method
+double EXTRA_inserted_step = -free_trajectory[origin_time]; 
+
+  for (int time =0; time < big_jump_time; time++) {constrained_step_list[time] = free_step_list[time];}
+  constrained_step_list[big_jump_time] = free_step_list[big_jump_time];                                    // insert this step into the previously generated trajectory
+  for (int time =big_jump_time + 1; time < NUM_TIME_STEPS; time++) {constrained_step_list[time] = free_step_list[time -1];}
+
+  //constrained_step_list[big_jump_time] = free_step_list[big_jump_time] - free_trajectory[origin_time]; // correct constrained list so that it will result in trajectory that ends at the origin
+
+
+ 
+//fout9  << free_step_list[big_jump_time] <<  endl; 
+//fout9 << constrained_step_list[big_jump_time] << endl;
+
+
+
+fout9 << EXTRA_inserted_step << endl;
 
 //fout9 << chosen_time << endl;
 //fout9 << origin_time << endl;
@@ -182,7 +270,7 @@ for (int test_time = 0; test_time < num_time_steps; test_time++)
 
 
 
-     for (int time =0; time < num_time_steps; time++) {
+     for (int time =0; time < NUM_TIME_STEPS; time++) {
      
  double signed_step_size = constrained_step_list[time];
 
@@ -206,21 +294,9 @@ current_position = fmod((current_position + signed_step_size),  periodic_boundar
 
 }
 
-// The above process will generate trajectories that begin at the specified point and end at the origin.  However, the current sampling method is biased, 
-//and we must weight/reweight the trajectories to correct for this bias.
-// We want the probability of the constrained trajectory to be (proportional to) the probability of randomly drawing each of the constrained steps.
-// Currently the probability of drawing a constrained trajectory is the probability of randomly drawing each of the free steps in the free step list.
-// to correct for the bias we account for the one step that differs between the free and constrained step lists.
-// We include with each sampled trajectory a weight equal to WEIGHT = Prob(constrained_step_list[chosen_time])/Prob(free_step_list[chosen_time])
-// Including this weight in our calculations removes the bias and allows each path to contribute as if we had drawn directly from the conditional distribution.
+// The above process will generate trajectories that begin at the specified point and hit the origin at randomly drawn origin_time.  However, the current sampling method is biased, 
+//and we must weight/reweight the trajectories to correct for this bias to make it as if we drew paths from the distributuon of all Levy flights.
 
-// In part 1 we will output free_step_list[chosen_time] and constrained_step_list[chosen_time] along with the entrance and exit times
-// In part 1.5 we will use an r code to evaluate the Levy stable dist at these two distances and use their ratrio to produce the weights
-
-
-// In part two we will normalize the weights and perform a weighted average over paths to get the distribution of coalsecence times.  
-// We then multiply the result by the probability of a entering the coalescence zone to convert from the conditional expectation
-// over origin-hitting paths to the expectation over all paths.
 
 
 fout8.close();
@@ -235,6 +311,8 @@ chdir("..");
 chdir("..");
 
   //return 0;
-  
+  //delete[] weight_array;
+//delete[] origin_time_array;
+//delete[] origin_time_draws;
 
 }

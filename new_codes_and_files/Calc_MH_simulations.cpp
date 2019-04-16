@@ -37,7 +37,7 @@ for(int i =0; i < num_trials; i++)
 {dist_of_coalescent_times[i] = 0;}
 
 const int num_histogram_bins = 1e4;
-double probability_of_hitting_origin; // this is the probability of obtaining a nonzero homozygosity value for an arbitrary path.  
+//double probability_of_hitting_origin; // this is the probability of obtaining a nonzero homozygosity value for an arbitrary path.  
 //If the path hits the coalescence zone at any time it's homozygosity is nonzero.
 int single_trial_hist_index;
 double hist_of_single_trial_homozygosities[num_mu_steps][num_histogram_bins] = {0};
@@ -79,8 +79,8 @@ for (int mu = 0; mu < num_mu_steps; mu++) {
 
 
 
-
-
+double* trajectory_weight_array = new double[NUM_TRIALS];
+double trajectory_weight_sum = 0;
   //We declare and initialize relevant variables in the above section
 
 
@@ -116,6 +116,16 @@ chdir(OUTPUTFILE_Child_Directory);
 
 
 
+
+
+
+
+
+
+
+
+
+/*
 char INPUTFILE_PROB_OF_HITTING_ORIGIN[50]; //we're sampling paths that hit the origin and have nonzero mean homozygosity.  
 
   sprintf(INPUTFILE_PROB_OF_HITTING_ORIGIN, "probability_of_constrained_trajectory_WEIGHT_");
@@ -133,7 +143,7 @@ fin_PROB_OF_HITTING_ORIGIN.open(stringfile_PROB_OF_HITTING_ORIGIN);
 
 
 fin_PROB_OF_HITTING_ORIGIN.close();
-
+*/
 
 for(int trial =0; trial < num_trials; trial++)
  {  Contribution_from_each_trial[trial] = 0;
@@ -177,6 +187,9 @@ for(int trial =0; trial < num_trials; trial++)
  
   double TRAJECTORY_WEIGHT;
  fin_trajectory_WEIGHT >> TRAJECTORY_WEIGHT;
+  //cout << TRAJECTORY_WEIGHT << endl;
+  trajectory_weight_array[trial] = TRAJECTORY_WEIGHT;
+  trajectory_weight_sum += trajectory_weight_array[trial];
 //cout <<  TRAJECTORY_WEIGHT << endl;
  double entrance_time = -1.0 ;  // If file is empty entrance and exit time will be the same and while loops will be ignored - dist of coalescent times will remain zero
   double exit_time= -1.0 ;
@@ -243,7 +256,23 @@ if (timestep*double(time) >= exit_time)
 
 
 
+
+const gsl_rng_type * T;
+  T = gsl_rng_default;
+  gsl_rng* r;
+   r = gsl_rng_alloc (T);
+   gsl_rng_set(r, time(0));
+
+
+
+
+
+//gsl_ran_multinomial (const gsl_rng * r, size_t K, unsigned int N, const double p[], unsigned int n[]);
+
 //sort list of individual trial homozygosities and the associated weights
+
+
+/*
 
 for (int mu =0; mu < num_mu_steps; mu++){
 
@@ -296,18 +325,52 @@ for (int mu =0; mu < num_mu_steps; mu++){
 
 
 
+*/
 
 
-
-double dummy_rand1 = 0;
-int dummy_rand1_INDEX = 0;
+//double dummy_rand1 = 0;
+//int dummy_rand1_INDEX = 0;
 //int dummy_prob_hit;
 //bool hit;
 // generate list of sample means
 
-int running_index = 0;
+//int running_index = 0;
+
+for( int mu = 0; mu < num_mu_steps; mu++){
+
 for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
-   { 
+   {   unsigned int* trajectory_draws = new unsigned int[NUM_TRIALS];
+        
+
+        gsl_ran_multinomial(r, num_trials, num_trials, trajectory_weight_array,  trajectory_draws);
+
+         //int dummy_trial_index = 0;
+for(int i=0; i<num_trials; ++i) {
+   
+    for(int j = 0; j < trajectory_draws[i]; j++)   // fill up the origin_time_array with all the origin_time_draws
+     {       List_of_bootstrapped_mean_homozygosities[mu][sample] += List_of_single_trial_homozygosities[mu][i];//trajectory_weight_sum*List_of_single_trial_homozygosities[mu][i];
+                 //rather than add add an entry with value zero and weight (1-trajectory_weight_sum) we can just multiply all our nonzero values by the probability of a nonzero value, trajectory_weight_sum. 
+           //cout << origin_time_array[dummy_trial_index] << endl;
+          //dummy_trial_index++;
+      }
+      //cout << trajectory_draws[i] << endl;
+    }
+      
+
+
+      Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
+      
+
+}
+
+}
+       
+
+
+
+
+
+/*
 
 
        for(int trial =0; trial < num_trials; trial++)
@@ -351,19 +414,22 @@ for(int trial =0; trial < num_trials; trial++)
                       // Values above this represent probability that trajectories that never hit the origin and have single trial homozygosity value of zero
 
                     }
-                   */
+                  */
 
 
-         }
+        // }
 
    
-                Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
+          //      Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
 
               //cout << List_of_bootstrapped_mean_homozygosities[mu][sample] << endl;
-   }
+//   }
 
 
-}
+//}
+
+
+
 
 // now just sort the list of bootstrapped mean homozygosities via bubble sort (list isn't that big so bubble sort is fine)
 
@@ -372,8 +438,16 @@ for(int trial =0; trial < num_trials; trial++)
 double tmp1 = 0;
 double tmp2 = 0;
 
-for( int mu = 0; mu < num_mu_steps; mu++){ for(int sample1 = 0; sample1 < num_samples_bootstrapped_means; sample1++)
-    { for(int sample2 = sample1; sample2 < num_samples_bootstrapped_means; sample2++)
+for( int mu = 0; mu < num_mu_steps; mu++){ 
+
+
+  //for(int sample1 = 0; sample1 < num_samples_bootstrapped_means; sample1++)
+    //{ 
+
+       sort(Sorted_List_of_bootstrapped_mean_homozygosities[mu], Sorted_List_of_bootstrapped_mean_homozygosities[mu] + num_samples_bootstrapped_means);
+     /*
+
+      for(int sample2 = sample1; sample2 < num_samples_bootstrapped_means; sample2++)
       {    
          tmp1 = Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample1];
 
@@ -389,7 +463,13 @@ for( int mu = 0; mu < num_mu_steps; mu++){ for(int sample1 = 0; sample1 < num_sa
 
 
        }
-  }}
+  
+      */
+
+ // }
+
+
+}
 
 
 
@@ -397,6 +477,10 @@ for( int mu = 0; mu < num_mu_steps; mu++){ for(int sample1 = 0; sample1 < num_sa
 
 // use list of sample means to get histogram of sample mean values
 //
+
+
+/*
+
 for( int mu = 0; mu < num_mu_steps; mu++)
 {for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
   {
@@ -421,7 +505,7 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
 }
 
-
+*/
 
 int lower_CI_INDEX[4] = {0};
 
@@ -460,9 +544,9 @@ upper_CI[mu]= Sorted_List_of_bootstrapped_mean_homozygosities[mu][upper_CI_INDEX
 
 ////DEBUGGING ONLY - COMMENT BELOW  OUT !!!!!!!!
 
-probability_of_hitting_origin = 1;  // THIS IS FOR DEBUGGING/FREE PATH COMPARSION.  TURN OFF LATER!!!!! Probl of hitting origin is not 1!!!!!!!!!!!!
+//probability_of_hitting_origin = 1;  // THIS IS FOR DEBUGGING/FREE PATH COMPARSION.  TURN OFF LATER!!!!! Probl of hitting origin is not 1!!!!!!!!!!!!
 ////DEBUGGING ONLY - COMMENT ABOVE  OUT !!!!!!!!
-
+/*
 for( int mu = 0; mu < num_mu_steps; mu++)
 { 
 mean_homozygosity[mu] *= probability_of_hitting_origin;
@@ -471,7 +555,7 @@ upper_CI[mu] *= probability_of_hitting_origin;
 }
 
 for (int time =0; time < num_time_steps; time++) { dist_of_coalescent_times[time] *= probability_of_hitting_origin;}
-
+*/
 
 
 
@@ -522,7 +606,7 @@ fout5.close();
 //EXTRA FILES GENERATED BELOW
 //Output Extra files below to help check for errors and debug
 
-
+/*
 char OUTPUTFILE3[50];
   sprintf(OUTPUTFILE3, "histogram_of_single_trial_homozygosities");
   std::stringstream file_name100;
@@ -537,17 +621,17 @@ fout6.open(stringfile100);
 
 for (int mu =0; mu < num_mu_steps; mu++) {
 
-  fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(0)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_single_trial_homozygosities[mu][0] + (1-probability_of_hitting_origin) <<  endl;
-for (int QQ =1; QQ < num_histogram_bins; QQ++)
-{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
+ 
+for (int QQ =0; QQ < num_histogram_bins; QQ++)
+{fout6 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_single_trial_homozygosities[mu][QQ] <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
   fout6.close();
  
 
-
-
+*/
+/*
 char OUTPUTFILE4[50];
   sprintf(OUTPUTFILE4, "histogram_of_bootstrapped_mean_homozygosities");
   std::stringstream file_name101;
@@ -561,14 +645,14 @@ fout7.open(stringfile101);
 
 
 for (int mu =0; mu < num_mu_steps; mu++) {
-fout7 << initial_position << " " << pow(10, mu)*mu_step << " " << double(0)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_bootstrapped_mean_homozygosities[mu][0] + (1-probability_of_hitting_origin) <<  endl;
-for (int QQ =1; QQ < num_histogram_bins; QQ++)
-{fout7 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << probability_of_hitting_origin*hist_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
+
+for (int QQ =0; QQ < num_histogram_bins; QQ++)
+{fout7 << initial_position << " " << pow(10, mu)*mu_step << " " << double(QQ)/double(num_histogram_bins)  << " " << hist_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
   fout7.close();
- 
+ */
 
 
 char OUTPUTFILE5[50];
@@ -585,7 +669,7 @@ fout8.open(stringfile102);
 
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < num_samples_bootstrapped_means; QQ++)
-{fout8 << initial_position << " " << pow(10, mu)*mu_step << " " << Sorted_List_of_bootstrapped_mean_homozygosities[mu][QQ]  << " " << probability_of_hitting_origin/double(num_samples_bootstrapped_means)<<  endl;
+{fout8 << initial_position << " " << pow(10, mu)*mu_step << " " << Sorted_List_of_bootstrapped_mean_homozygosities[mu][QQ] <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
@@ -594,7 +678,7 @@ for (int QQ =0; QQ < num_samples_bootstrapped_means; QQ++)
 
 
 char OUTPUTFILE6[50];
-  sprintf(OUTPUTFILE6, "list_of_single_trial_homozygosities");
+  sprintf(OUTPUTFILE6, "list_of_single_trial_homozygosities_and_weights");
   std::stringstream file_name103;
          file_name103 <<  OUTPUTFILE6 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  <<  "MU" << MU << "rho_inverse_" << rho_inverse << ".txt" ;
          std::string stringfile103;
@@ -607,14 +691,28 @@ fout9.open(stringfile103);
 
 for (int mu =0; mu < num_mu_steps; mu++) {
 for (int QQ =0; QQ < num_trials; QQ++)
-{fout9 << initial_position << " " << pow(10, mu)*mu_step << " " << List_of_single_trial_homozygosities[mu][QQ]  << " " <<  SORTED_List_of_single_trial_homozygosities[mu][QQ] << " " << List_of_single_trial_WEIGHTS[mu][QQ]*probability_of_hitting_origin <<  endl;
+{fout9 << initial_position << " " << pow(10, mu)*mu_step << " " << List_of_single_trial_homozygosities[mu][QQ]  << " "  << List_of_single_trial_WEIGHTS[mu][QQ] << endl;  //<< " " << List_of_single_trial_WEIGHTS[mu][QQ]*probability_of_hitting_origin <<  endl;
  } 
 // Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
   }
   fout9.close();
 
 
+/*
+ofstream fout_rand_nums;
 
+
+fout_rand_nums.open("sorted_list_of_uni_distrandom_numbers.txt");
+
+
+
+for (int trial =0; trial < num_trials; trial++)
+{fout_rand_nums <<  List_of_rand_uni_dist_nums[trial] << endl;  //<< " " << List_of_single_trial_WEIGHTS[mu][QQ]*probability_of_hitting_origin <<  endl;
+ } 
+// Here we output mean homozygosity as a function of mu and error bars - mean plus or minus standard deviation of the mean.
+  
+  fout_rand_nums.close();
+*/
 
 
 

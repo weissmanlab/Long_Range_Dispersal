@@ -42,7 +42,7 @@ Simulation_Data  <-subset(Simulation_Data, V2 ==rho_inverse)
 Simulation_Data <- subset(Simulation_Data, V3 ==mu)
 
 Semianalytic_Data <- read.table("NUMERIC_MH_data_frame.txt")
-print(Semianalytic_Data)
+#print(Semianalytic_Data)
 
 Semianalytic_Data  <- subset(Semianalytic_Data, V1 == alpha)
 Semianalytic_Data  <-subset(Semianalytic_Data, V2 ==rho_inverse)
