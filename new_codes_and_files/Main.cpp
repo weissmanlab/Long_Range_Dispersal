@@ -21,8 +21,8 @@ int main()
              double ALPHA = 1.2 + .2*double(alpha_index);
              double INIT_DISTANCE = exp(double(distance_index));
 	      	 double MU = 1.0/pow(10.0, double(mu_index));
-	      	 int NUM_TIME_STEPS = 1e2; //int(10.0/MU);
-             int NUM_TRIALS = 1e4 ;//int(double(1e4)/double(NUM_TIME_STEPS));
+	      	 int NUM_TIME_STEPS = 250; //1e2; //int(10.0/MU);
+             int NUM_TRIALS = 1e5 ;//int(double(1e4)/double(NUM_TIME_STEPS));
              double SCALE_PARAMETER = 250;
 
              
