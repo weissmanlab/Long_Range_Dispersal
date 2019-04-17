@@ -4,7 +4,7 @@
 #include "Calc_MH_numerics.h"
 #include "create_dataframe_for_plots.h"
 #include "generate_plots.h"
-
+#include <omp.h>
 int main()
 { 
    
@@ -12,8 +12,11 @@ int main()
 
 
   for(int alpha_index = 0; alpha_index < 1; alpha_index++)
-	{for(int distance_index = 0; distance_index < 4; distance_index++)
-	 {for(int mu_index = 1; mu_index < 2; mu_index++)
+	{for(int mu_index = 1; mu_index < 2; mu_index++)
+	 {
+
+        #pragma omp parallel for schedule(auto)
+	 	for(int distance_index = 0; distance_index < 9; distance_index++)
 	      {  
              double ALPHA = 1.2 + .2*double(alpha_index);
              double INIT_DISTANCE = exp(double(distance_index));
@@ -24,7 +27,7 @@ int main()
 
              
              generate_sample_of_paths(ALPHA, INIT_DISTANCE, NUM_TRIALS, NUM_TIME_STEPS, SCALE_PARAMETER, MU);
-              //generate_sample_of_paths(1.5, 1, 11, 11, 250, .1);
+              generate_sample_of_paths(1.5, 1, 11, 11, 250, .1);
               assign_weights_to_paths(ALPHA, INIT_DISTANCE, NUM_TRIALS, NUM_TIME_STEPS, SCALE_PARAMETER, MU);
 	      	
 	      	for(int rho_inverse_index = 1; rho_inverse_index < 2; rho_inverse_index++)

@@ -21,12 +21,60 @@ MU <- as.double(args[5])
 rho_inverse <- as.double(args[6])
 X <- initial_distance #more convenient name for distance variable
 Laplace_Domain_Kernel_at_X <- 0  
+
+
 Laplace_Domain_Kernel_at_ZERO <- 0
+
 timestep_size <- 1/1000
 num_time_steps <- end_time/timestep_size
-
-
+Dummy_Vec <- numeric(num_time_steps)
+Laplace_Domain_Kernel_at_X_DUMMY_VEC <- numeric(num_time_steps)
+Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC <- numeric(num_time_steps)
 #We start with the continous time expression and account for discretized time and finite width coalescence zone.
+calculate_Laplace_domain_kernel_at_X = function(n){
+   ret = rep(NA, length(n))
+for(timestep in seq_along(n)){
+     time <- timestep*timestep_size
+     pars <- c(alpha, 0, scale_parameter*((time)^(1/alpha)), 0)
+   
+
+     ret[timestep] = stable_pdf(X , pars)*exp(-2*MU*time)*timestep_size
+   }
+
+   return(ret)
+
+}
+
+calculate_Laplace_domain_kernel_at_ZERO = function(n){
+ret = rep(NA, length(n))
+for(timestep in seq_along(n)){
+     time <- timestep*timestep_size
+     pars <- c(alpha, 0, scale_parameter*((time)^(1/alpha)), 0)
+   
+
+     ret[timestep] = stable_pdf(0 , pars)*exp(-2*MU*time)*timestep_size
+   }
+
+  return(ret)
+
+}
+
+
+
+
+
+
+ Laplace_Domain_Kernel_at_X_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_X(Dummy_Vec)
+Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_ZERO(Dummy_Vec)
+
+
+Laplace_Domain_Kernel_at_X <- sum(Laplace_Domain_Kernel_at_X_DUMMY_VEC)
+Laplace_Domain_Kernel_at_ZERO <- sum(Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC)
+
+
+if(FALSE) {
+
+
 for (timestep in 1:num_time_steps) { 
 
 
@@ -39,6 +87,9 @@ pars <- c(alpha, 0, scale_parameter*((time)^(1/alpha)), 0)
             # coalescence zone has width one in our simulations
 
     }
+
+
+}
 
 
 Mean_Homozygosity <-  rho_inverse*( Laplace_Domain_Kernel_at_X -  (rho_inverse*Laplace_Domain_Kernel_at_X**2)/(1 + rho_inverse*Laplace_Domain_Kernel_at_ZERO))

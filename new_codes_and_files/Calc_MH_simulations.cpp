@@ -18,8 +18,8 @@ void Calc_MH_simulations(const double ALPHA, const double INIT_DISTANCE, const i
   const int num_mu_steps = 1;  // number of mu increments in Laplace time 
   const int num_trials = NUM_TRIALS;
   std::mt19937 generator(time(0));
-  std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
-  std::uniform_real_distribution<double> uniform_zero_to_one(0.0, 1);
+  //std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
+  //std::uniform_real_distribution<double> uniform_zero_to_one(0.0, 1);
   const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
   const double periodic_boundary = 10000000; //position constrained between -pb and +pb
   const double timestep = 1.0; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
@@ -340,19 +340,30 @@ for (int mu =0; mu < num_mu_steps; mu++){
 
 //int running_index = 0;
 
+// Here we sample histogram directly/explicitly
+
+/*
+
+std::uniform_real_distribution<double> uniform_zero_to_one(0.0, 1);
+double check_if_nonzero = gsl_ran_binomial(r, trajectory_weight_sum, 1);  // draw yes or no from probability of a nonzero trajectory
+
 for( int mu = 0; mu < num_mu_steps; mu++){
 
 for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
    {   unsigned int* trajectory_draws = new unsigned int[NUM_TRIALS];
         
-
+   
         gsl_ran_multinomial(r, num_trials, num_trials, trajectory_weight_array,  trajectory_draws);
-
+//double sample_trajectory_weight_sum = 0;
          //int dummy_trial_index = 0;
 for(int i=0; i<num_trials; ++i) {
    
     for(int j = 0; j < trajectory_draws[i]; j++)   // fill up the origin_time_array with all the origin_time_draws
-     {       List_of_bootstrapped_mean_homozygosities[mu][sample] += (trajectory_weight_sum/num_samples_bootstrapped_means)*List_of_single_trial_homozygosities[mu][i];
+     {      check_if_nonzero = gsl_ran_binomial(r, trajectory_weight_sum, 1);  
+         if(check_if_nonzero == 1)
+         {List_of_bootstrapped_mean_homozygosities[mu][sample] += List_of_single_trial_homozygosities[mu][i]/num_trials;}
+                   // total proabability of not hitting zero for this bootstrapped sample
+
                  //rather than add add an entry with value zero and weight (1-trajectory_weight_sum) we can just multiply all our nonzero values by the probability of a nonzero value, trajectory_weight_sum. 
            //cout << origin_time_array[dummy_trial_index] << endl;
           //dummy_trial_index++;
@@ -360,15 +371,106 @@ for(int i=0; i<num_trials; ++i) {
       //cout << trajectory_draws[i] << endl;
     }
       
-
-
+    
+     
       Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
       
+      //all the undersampling that comes with  explicitly including zero in the draws.  //we avoid this here
 
 }
 
 }
        
+*/
+
+//BELOW GIVES THE CORRECT BOOTSTRAP FOR OUR IMPORTANCE SAMPLING PRODECURE.  THIS IS THE ERROR IN OUR ACTUAL ESTIMATES
+
+/*
+
+std::uniform_int_distribution<int> uniform_dist(0.0, num_trials -1 ); 
+
+int dummy_index_bootstrap;
+for( int mu = 0; mu < num_mu_steps; mu++){
+
+for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
+   {   //unsigned int* trajectory_draws = new unsigned int[NUM_TRIALS];
+         
+   
+        //gsl_ran_multinomial(r, num_trials, num_trials, trajectory_weight_array,  trajectory_draws);
+
+
+//int sample_trajectory_weight_sum = 0;
+         //int dummy_trial_index = 0;
+for(int trial=0; trial<num_trials; trial++) {
+   
+        
+              dummy_index_bootstrap = uniform_dist(generator);
+      List_of_bootstrapped_mean_homozygosities[mu][sample] +=  List_of_single_trial_WEIGHTS[mu][dummy_index_bootstrap]*List_of_single_trial_homozygosities[mu][dummy_index_bootstrap]/num_trials;
+                 //sample_trajectory_weight_sum += List_of_single_trial_WEIGHTS[mu][i];  // total proabability of not hitting zero for this bootstrapped sample
+
+                 //rather than add add an entry with value zero and weight (1-trajectory_weight_sum) we can just multiply all our nonzero values by the probability of a nonzero value, trajectory_weight_sum. 
+           //cout << origin_time_array[dummy_trial_index] << endl;
+          //dummy_trial_index++;
+      
+      //cout << trajectory_draws[i] << endl;
+    }
+      
+    
+     
+      Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
+      // We draw num_trial nonzero draws from histogram.  For our sample we sum the weights of all the draws and multiply by this factor.  
+      //This sum is our estimate of the probability of a nonzero draw.  This allows us to estimate the confidence intervals of the MH without dealing with 
+      //all the undersampling that comes with  explicitly including zero in the draws
+
+}}
+
+
+
+
+
+
+*/
+
+
+
+
+
+
+for( int mu = 0; mu < num_mu_steps; mu++){
+
+for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
+   {   unsigned int* trajectory_draws = new unsigned int[NUM_TRIALS];
+        
+   
+        gsl_ran_multinomial(r, num_trials, num_trials, trajectory_weight_array,  trajectory_draws);
+//double sample_trajectory_weight_sum = 0;
+         //int dummy_trial_index = 0;
+for(int i=0; i<num_trials; ++i) {
+   
+    for(int j = 0; j < trajectory_draws[i]; j++)   // fill up the origin_time_array with all the origin_time_draws
+     {     
+         List_of_bootstrapped_mean_homozygosities[mu][sample] += trajectory_weight_sum*List_of_single_trial_homozygosities[mu][i]/num_trials;
+                   // total proabability of not hitting zero is trajectory weight sum.  This accounts for the fact that the histogram of trials is not normalized
+                   // since their is some probability of a trajectory never hitting the origin and producing a single trial homozygosity of zero
+
+                 //rather than add add an entry with value zero and weight (1-trajectory_weight_sum) we can just multiply all our nonzero values by the probability of a nonzero value, trajectory_weight_sum. 
+           //cout << origin_time_array[dummy_trial_index] << endl;
+          //dummy_trial_index++;
+      }
+      //cout << trajectory_draws[i] << endl;
+    }
+      
+    
+     
+      Sorted_List_of_bootstrapped_mean_homozygosities[mu][sample] = List_of_bootstrapped_mean_homozygosities[mu][sample];
+      
+      //all the undersampling that comes with  explicitly including zero in the draws.  //we avoid this here
+
+}
+
+}
+
+
 
 
 
@@ -439,8 +541,8 @@ for(int trial =0; trial < num_trials; trial++)
 
 
 
-double tmp1 = 0;
-double tmp2 = 0;
+//double tmp1 = 0;
+//double tmp2 = 0;
 
 for( int mu = 0; mu < num_mu_steps; mu++){ 
 
