@@ -17,7 +17,9 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
   const double scale_parameter = SCALE_PARAMETER;//*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
   const double MU = MUTATION_RATE;
   // the scale parameter c is related to the generalized diffusion constant D as c =(4D*timestep)^(1/alpha)
-  
+  double initial_position = INIT_DISTANCE;  // initial signed distance between individuals
+  double current_position = INIT_DISTANCE;
+
 
   const gsl_rng_type * T;
   T = gsl_rng_default;
@@ -29,6 +31,9 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
 //double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
+
+
+/*
 double* origin_time_weight_array = new double[num_trials];
 double* origin_time_array = new double[num_trials];
 //std::vector<int> weights;
@@ -49,10 +54,10 @@ double* origin_time_array = new double[num_trials];
 gsl_ran_multinomial(r, num_time_steps, num_trials, origin_time_weight_array,  origin_time_draws);
 
  //for(int i=0; i<num_time_steps; ++i) { SIGNED_origin_time_draws[i] = int(origin_time_draws[i]);  }
+*/
 
 
-
-
+/*
 int dummy_trial_index = 0;
 for(int i=0; i<num_time_steps; ++i) {
     //cout <<  SIGNED_origin_time_draws[i] << endl;
@@ -68,6 +73,8 @@ for(int i=0; i<num_time_steps; ++i) {
 
 
 }
+
+*/
 //for(int trial = 0; trial < num_trials; trial++)   
 //     {  cout << origin_time_array[trial] << endl;}
 //cout << dummy_trial_index << endl;
@@ -79,12 +86,10 @@ for(int i=0; i<num_time_steps; ++i) {
 
   
   //std::discrete_distribution<> draw_origin_time(weights.begin(), weights.end());
-  double initial_position = INIT_DISTANCE;  // initial signed distance between individuals
-  double current_position = INIT_DISTANCE;
+  
 
 
-
-delete[] origin_time_weight_array; 
+//delete[] origin_time_weight_array; 
 
 
 
@@ -223,9 +228,7 @@ const gsl_rng_type * T2;
 
 
 int SEED_for_big_jump_time = int(abs(free_step_list[num_time_steps -2])); 
- 
-
-std::mt19937 BIG_JUMP_generator(SEED_for_big_jump_time);
+ std::mt19937 BIG_JUMP_generator(SEED_for_big_jump_time);
 
  //int origin_time =  origin_time_array[trial]; //draw_origin_time(generator);  // origin_time is a time between 1 and (num_timesteps -1).  path can't hit origin at time 0 since it is fixed  by initial condition.
    //double prob_of_origin_time = exp(-2*MU*double(origin_time))/origin_time_weight_array_sum;

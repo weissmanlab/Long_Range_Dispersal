@@ -5,6 +5,15 @@ void Calc_MH_simulations(const double ALPHA, const double INIT_DISTANCE, const i
 {        using namespace std;
 //We declare and initialize relevant variables in this section
 
+  const gsl_rng_type * T;
+  T = gsl_rng_default;      // Will be used in boostrap procedure for CI's
+  gsl_rng* r;
+   r = gsl_rng_alloc (T);
+   gsl_rng_set(r, time(0));
+
+
+
+
   const int num_time_steps = NUM_TIME_STEPS;
   const int num_mu_steps = 1;  // number of mu increments in Laplace time 
   const int num_trials = NUM_TRIALS;
@@ -257,11 +266,6 @@ if (timestep*double(time) >= exit_time)
 
 
 
-const gsl_rng_type * T;
-  T = gsl_rng_default;
-  gsl_rng* r;
-   r = gsl_rng_alloc (T);
-   gsl_rng_set(r, time(0));
 
 
 
@@ -348,7 +352,7 @@ for(int sample = 0; sample < num_samples_bootstrapped_means; sample++)
 for(int i=0; i<num_trials; ++i) {
    
     for(int j = 0; j < trajectory_draws[i]; j++)   // fill up the origin_time_array with all the origin_time_draws
-     {       List_of_bootstrapped_mean_homozygosities[mu][sample] += List_of_single_trial_homozygosities[mu][i];//trajectory_weight_sum*List_of_single_trial_homozygosities[mu][i];
+     {       List_of_bootstrapped_mean_homozygosities[mu][sample] += (trajectory_weight_sum/num_samples_bootstrapped_means)*List_of_single_trial_homozygosities[mu][i];
                  //rather than add add an entry with value zero and weight (1-trajectory_weight_sum) we can just multiply all our nonzero values by the probability of a nonzero value, trajectory_weight_sum. 
            //cout << origin_time_array[dummy_trial_index] << endl;
           //dummy_trial_index++;
@@ -472,7 +476,7 @@ for( int mu = 0; mu < num_mu_steps; mu++){
 }
 
 
-
+//for(int sample = 0; sample < num_samples_bootstrapped_means; sample++){cout << Sorted_List_of_bootstrapped_mean_homozygosities[0][sample] << endl;}
 
 
 // use list of sample means to get histogram of sample mean values

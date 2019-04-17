@@ -55,13 +55,13 @@ Simulation_Data[,4] <- log(Simulation_Data[,4])
 Semianalytic_Data[,4] <- log(Semianalytic_Data[,4]) 
 
 
-Simulation_Data[,5] <- log(Simulation_Data[,5] + exp(-40))   
+Simulation_Data[,5] <- log(Simulation_Data[,5] + exp(-80))   
 Semianalytic_Data[,5] <- log(Semianalytic_Data[,5]) 
 
-Simulation_Data[,6] <- log(Simulation_Data[,6] + exp(-40) ) 
+Simulation_Data[,6] <- log(Simulation_Data[,6] + exp(-80) ) 
 Semianalytic_Data[,6] <- log(Semianalytic_Data[,6]) 
 
-Simulation_Data[,7] <- log(Simulation_Data[,7] + exp(-40) ) 
+Simulation_Data[,7] <- log(Simulation_Data[,7] + exp(-80) ) 
 Semianalytic_Data[,7] <- log(Semianalytic_Data[,7]) 
 
 
