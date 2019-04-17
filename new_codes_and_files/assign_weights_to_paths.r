@@ -29,7 +29,7 @@ pars <- c(alpha, 0, scale_parameter, 0) # These are the parameters for the step 
 ## weights remove bias from individual trajectories
 
 for (trial in 1:num_trials) {
-   input_file_name <- paste("Extra_Step_jump_sizealpha", alpha , "distance", initial_distance, "MU", MU, "trial", (trial -1), ".txt", sep = "") 
+   input_file_name <- paste("Extra_step_jump_sizealpha", alpha , "distance", initial_distance, "MU", MU, "trial", (trial -1), ".txt", sep = "") 
    file <- read.table(input_file_name)
    
    extra_step <- file[1,1]
