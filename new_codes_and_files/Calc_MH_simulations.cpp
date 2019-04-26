@@ -208,7 +208,7 @@ if (timestep*double(time) >= entrance_time && timestep*double(time) < exit_time)
 {Contribution_from_each_trial[trial] =  delta_function_height*rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
  Contribution_from_each_trialEXPONENT[trial] += delta_function_height*rho_inverse*timestep; //updating for NEXT time step 
  //dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
- dist_of_coalescent_times[time] += TRAJECTORY_WEIGHT*Contribution_from_each_trial[trial];
+ dist_of_coalescent_times[time] += TRAJECTORY_WEIGHT*Contribution_from_each_trial[trial]/num_trials;
 for( int mu = 0; mu < num_mu_steps; mu++)
      {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*2*mu_step*time*timestep); // extra factor of 2 in exponent of Laplace transform is standard in pop gen
       }
@@ -242,7 +242,7 @@ if (timestep*double(time) >= exit_time)
 
             List_of_single_trial_homozygosities[mu][trial] = mean_homozygosity_INDIVIDUAL_TRIAL[mu];
             List_of_single_trial_WEIGHTS[mu][trial] = TRAJECTORY_WEIGHT;
-            mean_homozygosity[mu] += TRAJECTORY_WEIGHT*mean_homozygosity_INDIVIDUAL_TRIAL[mu];
+            mean_homozygosity[mu] += TRAJECTORY_WEIGHT*mean_homozygosity_INDIVIDUAL_TRIAL[mu]/num_trials;
             
             }
 
