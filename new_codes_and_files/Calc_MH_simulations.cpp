@@ -385,7 +385,7 @@ for(int i=0; i<num_trials; ++i) {
 
 //BELOW GIVES THE CORRECT BOOTSTRAP FOR OUR IMPORTANCE SAMPLING PRODECURE.  THIS IS THE ERROR IN OUR ACTUAL ESTIMATES
 
-/*
+
 
 std::uniform_int_distribution<int> uniform_dist(0.0, num_trials -1 ); 
 
@@ -429,10 +429,10 @@ for(int trial=0; trial<num_trials; trial++) {
 
 
 
-*/
 
 
 
+/*
 
 
 
@@ -472,7 +472,7 @@ for(int i=0; i<num_trials; ++i) {
 
 
 
-
+*/
 
 
 

@@ -1,8 +1,14 @@
 #########################################################
 #install.packages("argparse")
+#install.packages("libstableR")
+#install.packages("mdatools")
 library(libstableR)
 library(argparse)
 library(mdatools)
+Sys.umask('000')
+
+
+
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args)!=6) {
 
@@ -19,6 +25,7 @@ alpha <- as.double(args[1])
 initial_distance <- as.double(args[2])
 dir <- paste("./alpha_value_", alpha, "/distance_value_", initial_distance, sep = "")
 setwd(dir)
+#system(paste("cd", dir, sep = " "))
 num_trials <- as.integer(args[3]) # number of trials for each time
 num_time_steps <- as.integer(args[4]) # number of times considered
 weight_list <- data.frame(matrix(0, ncol = 1, nrow = num_trials))
@@ -90,5 +97,5 @@ for (trial in 1:num_trials) {
 
 
 
-
+#system("cd ../..")
 setwd("../..")

@@ -308,10 +308,12 @@ current_position = fmod(initial_position, periodic_boundary); // reset to inital
 
 }
 
-chdir("..");
+chdir("../..");
 
-
-chdir("..");
+ofstream fout_dummy;
+fout_dummy.open("dummy_file.txt");
+fout_dummy.close();
+//chdir("..");
 
   //return 0;
   //delete[] weight_array;

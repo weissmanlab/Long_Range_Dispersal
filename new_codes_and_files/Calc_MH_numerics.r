@@ -1,6 +1,7 @@
 library(libstableR)
 library(argparse)
 library(mdatools)
+Sys.umask('000')
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args)!=6) {
 
@@ -25,7 +26,7 @@ Laplace_Domain_Kernel_at_X <- 0
 
 Laplace_Domain_Kernel_at_ZERO <- 0
 
-timestep_size <- 1/1000
+timestep_size <- 1/100 #1/1000
 num_time_steps <- end_time/timestep_size
 Dummy_Vec <- numeric(num_time_steps)
 Laplace_Domain_Kernel_at_X_DUMMY_VEC <- numeric(num_time_steps)

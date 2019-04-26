@@ -6,6 +6,7 @@ library(dplyr)
 #library(libstableR)
 library(argparse)
 library(mdatools)
+Sys.umask('000')
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args)!=3) {
 

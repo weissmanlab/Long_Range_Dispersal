@@ -19,6 +19,7 @@ strcpy(R_command_CHAR, R_command.c_str());
 
 
   std::system(R_command_CHAR);
+  //std::system("Rscript assign_weights_to_paths.r");
 
      
 

@@ -15,7 +15,7 @@ void create_dataframe_for_plots()
          */
 
 
-        chdir("./Mh_plots");
+        chdir("./MH_plots");
   		
         std::system("awk 1 NUMERIC_mean_homozygosity* > NUMERIC_MH_data_frame.txt");
 
