@@ -240,7 +240,7 @@ int SEED_for_big_jump_time = int(abs(free_step_list[num_time_steps -2]));
 double EXTRA_inserted_step = -free_trajectory[origin_time]; 
 
   for (int time =0; time < big_jump_time; time++) {constrained_step_list[time] = free_step_list[time];}
-  constrained_step_list[big_jump_time] = free_step_list[big_jump_time];                                    // insert this step into the previously generated trajectory
+  constrained_step_list[big_jump_time] = EXTRA_inserted_step; //free_step_list[big_jump_time];                                    // insert this step into the previously generated trajectory
   for (int time =big_jump_time + 1; time < NUM_TIME_STEPS; time++) {constrained_step_list[time] = free_step_list[time -1];}
 
   //constrained_step_list[big_jump_time] = free_step_list[big_jump_time] - free_trajectory[origin_time]; // correct constrained list so that it will result in trajectory that ends at the origin
