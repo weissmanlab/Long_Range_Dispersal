@@ -1,6 +1,0 @@
-alpha 1.2
-distance 1
-number of time steps considered 249
-number of trials 1000
-scale parameter 250
-mutation rate 0.1

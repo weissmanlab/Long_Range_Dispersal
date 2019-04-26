@@ -247,8 +247,9 @@ if (timestep*double(time) >= exit_time)
             }
 
 
-
-
+//Free up disk space by deleting intermediate files
+remove(stringfile_entrance_and_exit_times.c_str());
+remove(stringfile_trajectory_WEIGHT.c_str());
 
 
 }
@@ -662,7 +663,6 @@ upper_CI[mu] *= probability_of_hitting_origin;
 
 for (int time =0; time < num_time_steps; time++) { dist_of_coalescent_times[time] *= probability_of_hitting_origin;}
 */
-
 
 
 

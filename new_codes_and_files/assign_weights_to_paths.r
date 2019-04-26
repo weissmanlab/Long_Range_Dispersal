@@ -48,7 +48,7 @@ for (trial in 1:num_trials) {
    ## ALL the other steps in the trajectories are drawn with the same probability in our true and fake distributions, so we only have to account for the bias in this one step
    weight <- stable_pdf(extra_step, pars) # true_probability/fake_probability  # this ratio corrects for the bias in our importance sampling procedure.
     weight_list[trial, 1] <- weight
-
+  file.remove(input_file_name) #free up disk space
    }
  
 #weight_sum <- sum(weight_list[,1])  DO NOT NORMALIZE.  UN-NORMALIZED weights w_i/num_trials are what give us the proper estimate of the expectation over all paths
