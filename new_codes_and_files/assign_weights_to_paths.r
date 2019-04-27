@@ -39,14 +39,15 @@ for (trial in 1:num_trials) {
    input_file_name <- paste("Extra_step_jump_sizealpha", alpha , "distance", initial_distance, "MU", MU, "trial", (trial -1), ".txt", sep = "") 
    file <- read.table(input_file_name)
    
-   extra_step <- file[1,1]
+   extra_step_mean <- file[1,1]
+   extra_step <- file[2, 1]
    #free_step <- file[1,1]
    #constrained_step <- file[2,1]
    #probability_of_origin_time_and_big_jump_time <-  file[3,1]
    #fake_probability <- stable_pdf(free_step, pars)*probability_of_origin_time_and_big_jump_time  # the dist used to sample the important paths 
    #true_probability <- stable_pdf(constrained_step, pars) # the prob under dist we really want to draw from
    ## ALL the other steps in the trajectories are drawn with the same probability in our true and fake distributions, so we only have to account for the bias in this one step
-   weight <- stable_pdf(extra_step, pars) # true_probability/fake_probability  # this ratio corrects for the bias in our importance sampling procedure.
+   weight <- stable_pdf(extra_step, pars)/dunif(extra_step, extra_step_mean -.5, extra_step_mean + .5) #(stable_cdf(extra_step+.5, pars) - stable_cdf(extra_step-.5, pars)) /1 # true_probability of entering coalescence zone /fake_probability  # this ratio corrects for the bias in our importance sampling procedure.
     weight_list[trial, 1] <- weight
   file.remove(input_file_name) #free up disk space
    }

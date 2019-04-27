@@ -26,7 +26,7 @@ Laplace_Domain_Kernel_at_X <- 0
 
 Laplace_Domain_Kernel_at_ZERO <- 0
 
-timestep_size <- 1/100 #1/1000
+timestep_size <- 1/10 #1/100 #1/1000
 num_time_steps <- end_time/timestep_size
 Dummy_Vec <- numeric(num_time_steps)
 Laplace_Domain_Kernel_at_X_DUMMY_VEC <- numeric(num_time_steps)
@@ -65,15 +65,15 @@ for(timestep in seq_along(n)){
 
 
 
- Laplace_Domain_Kernel_at_X_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_X(Dummy_Vec)
-Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_ZERO(Dummy_Vec)
+ #Laplace_Domain_Kernel_at_X_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_X(Dummy_Vec)
+#Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_ZERO(Dummy_Vec)
 
 
-Laplace_Domain_Kernel_at_X <- sum(Laplace_Domain_Kernel_at_X_DUMMY_VEC)
-Laplace_Domain_Kernel_at_ZERO <- sum(Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC)
+#Laplace_Domain_Kernel_at_X <- sum(Laplace_Domain_Kernel_at_X_DUMMY_VEC)
+#Laplace_Domain_Kernel_at_ZERO <- sum(Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC)
 
 
-if(FALSE) {
+if(TRUE) {
 
 
 for (timestep in 1:num_time_steps) { 
