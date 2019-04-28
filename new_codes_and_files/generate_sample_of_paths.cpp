@@ -30,7 +30,7 @@ void generate_sample_of_paths(const double ALPHA, const double INIT_DISTANCE, co
 
    std::mt19937 generator(time(0)); // mersenne twister psuedorandom number generator
 
-//std::normal_distribution<double> normal_dist(0.0, 0.001);
+std::normal_distribution<double> normal_dist(0.0, 0.1);
 
 //double gsl_ran_levy(const gsl_rng *r, double c, double Alpha);  // randomly generates numbers according to levy stable dist
 
@@ -239,7 +239,10 @@ int SEED_for_big_jump_time = int(abs(free_step_list[num_time_steps -2]));
   //double prob_of_big_jump_time = 1/double(origin_time);  //we could choose any int from 0 origin_time
 
   //double prob_of_selecting_origin_time_and_big_jump_time = prob_of_big_jump_time*prob_of_origin_time; //probability of selecting origin time and big jump time with this method
+
 double EXTRA_inserted_step = -free_trajectory[origin_time]; 
+double Gaussian_noise = gsl_ran_gaussian(r, .1);
+while(abs(Gaussian_noise) > .8){Gaussian_noise = gsl_ran_gaussian(r, .1); }
 std::uniform_real_distribution<double> uni_real_dist(EXTRA_inserted_step - .5,EXTRA_inserted_step + .5);
   for (int time =0; time < big_jump_time; time++) {constrained_step_list[time] = free_step_list[time];}
   constrained_step_list[big_jump_time] = uni_real_dist(generator); //draw from narrow uniform dist centered at EXTRA_inserted_step so we can take ratio of densities later                                    // insert this step into the previously generated trajectory
@@ -253,9 +256,10 @@ std::uniform_real_distribution<double> uni_real_dist(EXTRA_inserted_step - .5,EX
 //fout9 << constrained_step_list[big_jump_time] << endl;
 
 
-fout9 << EXTRA_inserted_step << endl; // mean of uniform dist of inserted steps
+//fout9 << EXTRA_inserted_step << endl; // mean of uniform dist of inserted steps
 fout9 << constrained_step_list[big_jump_time] << endl; // our draw
-
+//fout9 << Gaussian_noise << endl;
+//if(Gaussian_noise > .5){std::cout << Gaussian_noise  << std::endl;}
 //fout9 << chosen_time << endl;
 //fout9 << origin_time << endl;
 /*
