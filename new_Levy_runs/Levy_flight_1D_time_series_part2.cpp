@@ -386,7 +386,7 @@ char OUTPUTFILE333[50];
   ofstream fout333;
 
 fout333.open(stringfile333);
-fout333 << alpha <<  " " <<  rho_inverse  << " " << pow(10, mu)*mu_step << " " << initial_position; 
+fout333 << alpha <<  " " <<  rho_inverse  <<  " " << initial_position; 
 
 for (int time =0; time < num_time_steps; time++) {fout333  << " "  << dist_of_coalescent_times[time] ;}
 
