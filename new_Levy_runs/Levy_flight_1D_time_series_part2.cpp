@@ -396,8 +396,6 @@ fout333.close();
 
 
 
-
-
 char OUTPUTFILE[50];
   sprintf(OUTPUTFILE, "dist_of_coalescent_times_");
   std::stringstream file_name;
