@@ -11,7 +11,15 @@ y <- list()
 p <- list()
 k <- 1
 
-
+for(j in 1:4){#for(i in 0:2){
+if(j==1)
+{alpha <- 1.25}
+if(j==2)
+{alpha <- 1.45}
+if(j==3)
+{alpha <- 1.65}
+if(j==4)
+{alpha <- 1.85}
 Simulation_Data <-   read.table("ALL_runs_MH.txt")
 Semianalytic_Data <-read.table("numeric_MH_LOG_SCALE_ALL_but_zeros.txt")
 
@@ -30,6 +38,11 @@ Semianalytic_Data  <- subset(Semianalytic_Data, V3 <1)
 #Simulation_Data <- Simulation_Data[!(Simulation_Data$V5   < -30),]
 
 #Simulation_Data  <- subset(Simulation_Data, V1 < 1.8)
+
+
+
+
+
 Simulation_Data  <- subset(Simulation_Data, V1 == alpha)
 #Simulation_Data  <-subset(Simulation_Data, V2 ==rho_inverse)
 Simulation_Data <- subset(Simulation_Data, V3 ==mu)
@@ -56,11 +69,20 @@ colnames(Semianalytic_Data)[4] <- "log_of_distance"
 colnames(Simulation_Data)[5] <- "log_of_mean_homozygosity"
 colnames(Semianalytic_Data)[5] <- "log_of_mean_homozygosity"
 
+
+
 p <- ggplot() + geom_point(data=Semianalytic_Data, aes(log_of_distance, log_of_mean_homozygosity), color = "red") + 
-        geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("TEST"))
+        geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("alpha", alpha))
 
+
+
+file_name <- paste("log_plot_MH_varying_rho_alpha", alpha, ".pdf", sep = "")
+#pdf("plots.pdf")
+pdf(file_name)
 print(p)
+dev.off()
 
+}
 
 ### ALL BELOW IS COMMENTED OUT
 
