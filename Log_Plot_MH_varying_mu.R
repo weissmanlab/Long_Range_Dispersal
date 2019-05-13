@@ -76,7 +76,9 @@ p <- ggplot() + geom_point(data=Semianalytic_Data, aes(log_of_distance, log_of_m
 
 
 
-file_name <- paste("log_plot_MH_varying_mu_alpha", alpha, ".pdf", sep = "")
+alpha_dummy <- (alpha -1)*100
+file_name <- paste("log_plot_MH_varying_mu_alpha_1p", alpha_dummy, ".pdf", sep = "")
+
 #pdf("plots.pdf")
 pdf(file_name)
 print(p)

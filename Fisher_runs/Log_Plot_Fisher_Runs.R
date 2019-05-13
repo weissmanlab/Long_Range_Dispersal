@@ -18,12 +18,17 @@ Simulation_Data <-   read.table("ALL_Fisher_runs_MH.txt")
 Simulation_Data  <- subset(Simulation_Data, V1 == alpha)
 Simulation_Data  <-subset(Simulation_Data, V2 ==rho_inverse)
 Simulation_Data <- subset(Simulation_Data, V3 ==mu)
+Simulation_Data <- subset(Simulation_Data, V4 > 0)
 
 
 Simulation_Data[,4] <- log(Simulation_Data[,4])
 Simulation_Data[,5] <- log(Simulation_Data[,5])
 Simulation_Data[,6] <- log(Simulation_Data[,6])
 Simulation_Data[,7] <- log(Simulation_Data[,7])
+
+if(mu == .001){Simulation_Data <- subset(Simulation_Data, V4 < 11.9)}
+if(mu == .01){Simulation_Data <- subset(Simulation_Data, V4 < 9.9)}
+if(mu == .1){Simulation_Data <- subset(Simulation_Data, V4 < 8.9)  }
 
 #Semianalytic_Data <- read.table("formatted_semianalytic_data_ALL.txt")
 #Semianalytic_Data  <- subset(Semianalytic_Data, V1 == alpha)
@@ -35,7 +40,7 @@ Simulation_Data[,7] <- log(Simulation_Data[,7])
 #All_Data$labels[1:length(Simulation_Data[,1])] <- 'ni1'
 
 #All_Data <- All_Data[!(All_Data$V7 - All_Data$V6  > 5),]
-Simulation_Data <- Simulation_Data[!(Simulation_Data$V7 - Simulation_Data$V6  > 5),]
+#Simulation_Data <- Simulation_Data[!(Simulation_Data$V7 - Simulation_Data$V6  > 5),]
 #Semianalytic_Data <- Semianalytic_Data[!(Semianalytic_Data$V7 - Semianalytic_Data$V6  > 5),]
 
 

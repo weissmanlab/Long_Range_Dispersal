@@ -151,7 +151,10 @@ p[[j]] <- ggplot(data=Simulation_Data, aes(x = log_of_distance_rescaled, y =log_
 
 
 p[[k]]
-file_name <- paste("log_odds_collapsed_alpha", alpha, ".pdf", sep = "")
+
+alpha_dummy <- (alpha -1)*100
+
+file_name <- paste("log_odds_collapsed_alpha_1p", alpha_dummy, ".pdf", sep = "")
 #pdf("plots.pdf")
 pdf(file_name)
 plot(p[[j]])
