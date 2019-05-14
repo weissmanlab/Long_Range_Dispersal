@@ -2,6 +2,7 @@ library(ggplot2)
 library(gridExtra)
 library(Hmisc)
 library(dplyr)
+library(mosaic)
 alpha <- 2.05
 tail_cutoff <- 111 # on natural log scale
 #par(mfrow=c(3,3))
@@ -79,7 +80,7 @@ for( count in 1:1000){Tail_line[count, 1] <- lower_bound + (max(Simulation_Data[
 
 Tail_line[, 2] <-  Linear_Tail_Fit(Tail_line[, 1])
 
-p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse, "Mu", mu)) + geom_smooth(data=Tail_line, aes(x = Tail_line[,1], y =Tail_line[,2]), color="red", pch = 0) 
+p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7, color="Simulation Values"), pch = 0)  + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse, "Mu", mu)) + geom_smooth(data=Tail_line, aes(x = Tail_line[,1], y =Tail_line[,2], color="Linear Fit"), pch = 0) + scale_colour_manual("", breaks = c("Simulation Values", "Linear Fit"), values = c("red", "blue")) 
 
 #p <- p + geom_point()
 #print(p)
@@ -108,7 +109,7 @@ k <- k + 1
 
 }}
 
-do.call(grid.arrange,p)
+#do.call(grid.arrange,p)
 
 
 

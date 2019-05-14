@@ -61,7 +61,8 @@ exponential_function[,2] <- exponential_fit(exponential_function[,1])
 
 #print(exponential_fit(5))
 
-p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = V4, y =V5, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse, "Mu", mu)) + labs(x= "Distance", y =  "Mean Homozygosity" ) + geom_smooth(data=exponential_function, aes(x = exponential_function[,1], y =exponential_function[,2]), color="red", pch = 0) 
+p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = V4, y =V5, ymin =V6, ymax =V7, color="Simulation Values"), pch = 0)  + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse, "Mu", mu)) + labs(x= "Distance", y =  "Mean Homozygosity" ) + geom_smooth(data=exponential_function, aes(x = exponential_function[,1], y =exponential_function[,2], color="Exponential Fit", se = FALSE), pch = 0)  + scale_colour_manual("", breaks = c("Simulation Values", "Exponential Fit"), values = c("red", "blue")) 
+
 #p[[k]] <-  ggplot() + stat_function(fun =x exponential_fit) + xlim(0,3000)
 
 #+ geom_pointrange(data = analytic_data, aes(x = analytic_data[,4], y =analytic_data[,5], ymin =analytic_data[,6], ymax =analytic_data[,7]), color = "brown")
@@ -80,6 +81,9 @@ if(mu == .001){ mu_dummy <- "p001"}
 pdf(paste("Fisher_plot_rho", 1/rho_inverse, "mu_", mu_dummy, ".pdf", sep = ""))
 
 print(p[[k]])
+
+
+
 dev.off()
 k <- k + 1
 

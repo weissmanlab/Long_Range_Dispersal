@@ -75,12 +75,19 @@ colnames(Semianalytic_Data)[4] <- "log_of_distance"
 colnames(Simulation_Data)[5] <- "log_of_mean_homozygosity"
 colnames(Semianalytic_Data)[5] <- "log_of_mean_homozygosity"
 
-Semianalytic_Data_rho_1  <-subset(Semianalytic_Data, V2 ==1)
-Semianalytic_Data_rho_p1  <-subset(Semianalytic_Data, V2 ==.1)
-Semianalytic_Data_rho_p01  <-subset(Semianalytic_Data, V2 ==.01)
+Semianalytic_Data_rho_inverse_1  <-subset(Semianalytic_Data, V2 ==1)
+Semianalytic_Data_rho_inverse_p1  <-subset(Semianalytic_Data, V2 ==.1)
+Semianalytic_Data_rho_inverse_p01  <-subset(Semianalytic_Data, V2 ==.01)
 
-p <- ggplot() + geom_smooth(data=Semianalytic_Data_rho_1, aes(log_of_distance, log_of_mean_homozygosity), color = "green", se = FALSE)   + geom_smooth(data=Semianalytic_Data_rho_p1, aes(log_of_distance, log_of_mean_homozygosity), color = "yellow", se = FALSE) + geom_smooth(data=Semianalytic_Data_rho_p01, aes(log_of_distance, log_of_mean_homozygosity), color = "orange", se = FALSE) + 
-        geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="black", pch = 0)  + ggtitle(paste("Alpha", alpha, "  Mu", mu)) + labs(x= "Log of Distance"
+Rho_true <- as.factor(1/Simulation_Data[, 2]) 
+Rho <- as.factor(1/Semianalytic_Data_rho_inverse_1[, 2])
+Rho10 <- as.factor(1/Semianalytic_Data_rho_inverse_p1[, 2])
+Rho100 <- as.factor(1/Semianalytic_Data_rho_inverse_p01[, 2])
+
+
+
+p <- ggplot() + geom_smooth(data=Semianalytic_Data_rho_inverse_1, aes(log_of_distance, log_of_mean_homozygosity, color = Rho), se = FALSE)   + geom_smooth(data=Semianalytic_Data_rho_inverse_p1, aes(log_of_distance, log_of_mean_homozygosity, color = Rho10), se = FALSE) + geom_smooth(data=Semianalytic_Data_rho_inverse_p01, aes(log_of_distance, log_of_mean_homozygosity, color = Rho100),  se = FALSE) + 
+        geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7, color=Rho_true), pch = 0)  + ggtitle(paste("Alpha", alpha, "  Mu", mu)) + labs(x= "Log of Distance"
 , y = "Log of Mean Homozygosity" )  
 
 
