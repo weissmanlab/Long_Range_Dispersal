@@ -2,6 +2,7 @@ library(ggplot2)
 library(gridExtra)
 library(Hmisc)
 library(dplyr)
+library(mosaic)
 alpha <- 2.05
 tail_cutoff <- 111 # on natural log scale
 #par(mfrow=c(3,3))
@@ -20,7 +21,16 @@ Simulation_Data <-   read.table("ALL_Fisher_runs_MH.txt")
 Simulation_Data  <- subset(Simulation_Data, V1 == alpha)
 Simulation_Data  <-subset(Simulation_Data, V2 ==rho_inverse)
 Simulation_Data <- subset(Simulation_Data, V3 ==mu)
-Simulation_Data <- subset(Simulation_Data, V4 < 5000)
+if(mu == .001) {Simulation_Data <- subset(Simulation_Data, V4 < exp(9) + 1)
+	xlimit <- exp(9) + 1
+	}
+if(mu == .01) {Simulation_Data <- subset(Simulation_Data, V4 <exp(8) +1)
+	xlimit <- exp(8) +1 
+	}
+if(mu == .1) {Simulation_Data <- subset(Simulation_Data, V4 < exp(7) + 1)
+	xlimit <- exp(7) + 1
+	}
+
 #print(mu)
 Gaussian_dispersal_prediction <- (1/(1 + (2*sigma*sqrt(2*mu)/rho_inverse )))*exp(-(sqrt(2*mu)/sigma) *Simulation_Data[,4])
 
@@ -30,62 +40,48 @@ Gaussian_dispersal_prediction <- (1/(1 + (2*sigma*sqrt(2*mu)/rho_inverse )))*exp
 #print(Gaussian_dispersal_prediction)
 
 analytic_data <- data.frame(Simulation_Data[, 1], Simulation_Data[, 2], Simulation_Data[, 3], Simulation_Data[, 4], Gaussian_dispersal_prediction, Gaussian_dispersal_prediction, Gaussian_dispersal_prediction)
-print(analytic_data)
+#print(analytic_data)
 #print(Simulation_Data[,4])
 
-#Simulation_Data[,4] <- log(Simulation_Data[,4])
-#Simulation_Data[,5] <- log(Simulation_Data[,5]/(1 -Simulation_Data[,5]))
-#Simulation_Data[,6] <- log(Simulation_Data[,6]/(1 - Simulation_Data[,6]))
-#Simulation_Data[,7] <- log(Simulation_Data[,7]/(1 -Simulation_Data[,7] ))
-#print(Simulation_Data)
+rescaled_Simulation_Data <- 1*Simulation_Data
 
-#Semianalytic_Data <- read.table("formatted_semianalytic_data_ALL.txt")
-#Semianalytic_Data  <- subset(Semianalytic_Data, V1 == alpha)
-#Semianalytic_Data  <-subset(Semianalytic_Data, V2 ==rho_inverse)
-#Semianalytic_Data  <- subset(Semianalytic_Data, V3 ==mu)
-
-#All_Data <- rbind(Simulation_Data,Semianalytic_Data)
-#All_Data$labels[(length(Simulation_Data[,1])+1):length(All_Data[,1])] <- 'ni2'
-#All_Data$labels[1:length(Simulation_Data[,1])] <- 'ni1'
-
-#All_Data <- All_Data[!(All_Data$V7 - All_Data$V6  > 5),]
-#Simulation_Data <- Simulation_Data[!(Simulation_Data$V7 - Simulation_Data$V6  > 5),]
-#Semianalytic_Data <- Semianalytic_Data[!(Semianalytic_Data$V7 - Semianalytic_Data$V6  > 5),]
+exponential_fit <-  fitModel(V5 ~ (a^2)*exp(-(b^2)*V4), data =rescaled_Simulation_Data)
 
 
-#take tail for power law estimation
-#Tail_Sum <- 0
-#Dummy_Data_Tail <- subset(dummy_slope_Data, V1 >= tail_cutoff)
-#Tail_Sum <- sum(exp(Dummy_Data_Tail$V2)) # interpret probabilites as frequencies.  sum of frequencies is analogous to number of trials/events in the tail of a histogram divided by the total number of trials
-#Expected_log_dist_from_xmin <- sum(exp(Dummy_Data_Tail$V2)*(Dummy_Data_Tail$V1 -log(exp(tail_cutoff) )))/Tail_Sum
-
-#tail_estimate <- 1 + 1/Expected_log_dist_from_xmin
-#alpha_estimate <- tail_estimate -1
-#print(tail_estimate) 
-#See "Power Law Distributions in Empirical Data" by Clauset, Shalizi and Newman for an explanation of this maximum likelihood algorithm for power law tails.  The formula they give in section three to estimate tails from discrete data in a histogram is alpha = 1+ n[Sum(ln(xi/xmin))]^-1, where the sum is taken over all trials found in a bin greater than or equal to the tail cutoff xmin.  Since we have frequencies rather that a certain number of trials at each distance, we need to re-express this formula in terms of frequencies.  alpha = 1+ n[Sum(n_i ln(xi/xmin))]^-1 where the sum is now taken over all x.  This is equivlaent to 1+ f_tail[Sum(f_i ln(xi/xmin))]^-1, where f_i is the fraction of points found at a particular distance and f_tail = sum(f_i) is the fraction of points found in the tail.  f_i/f_tail = n_i/n, and the estimators are equvialent. 
+exponential_function <- data.frame(matrix(0, ncol = 2, nrow = xlimit))
+#exponential_function[1, 1] <- 0
+for( count in 1:xlimit){exponential_function[count, 1] = count-1}
 
 
 
+exponential_function[,2] <- exponential_fit(exponential_function[,1])
+
+#print(exponential_function)
 
 
-#colnames(Simulation_Data)[4] <- "log_of_distance"
-#colnames(Semianalytic_Data)[4] <- "log_of_distance"
-#colnames(Simulation_Data)[5] <- "log_of_mean_homozygosity"
-#colnames(Semianalytic_Data)[5] <- "log_of_mean_homozygosity"
+#print(exponential_fit(5))
 
+p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = V4, y =V5, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse, "Mu", mu)) + labs(x= "Distance", y =  "Mean Homozygosity" ) + geom_smooth(data=exponential_function, aes(x = exponential_function[,1], y =exponential_function[,2]), color="red", pch = 0) 
+#p[[k]] <-  ggplot() + stat_function(fun =x exponential_fit) + xlim(0,3000)
 
-p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = V4, y =V5, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("alpha", alpha, "rho", 1/rho_inverse, "mu", mu))#+ geom_pointrange(data = analytic_data, aes(x = analytic_data[,4], y =analytic_data[,5], ymin =analytic_data[,6], ymax =analytic_data[,7]), color = "brown")
+#+ geom_pointrange(data = analytic_data, aes(x = analytic_data[,4], y =analytic_data[,5], ymin =analytic_data[,6], ymax =analytic_data[,7]), color = "brown")
 
 #p[[k]] <- ggplot() + geom_pointrange(data = analytic_data, aes(x = analytic_data[,4], y =analytic_data[,5], ymin =analytic_data[,6], ymax =analytic_data[,7]), color = "brown")
 
 
- k <- k + 1
-#p <- p + geom_point()
+ #p <- p + geom_point()
 #print(p)
 #p <- ggplot(mtcars, aes(wt, mpg))
 #p <- p + geom_point()
-#print(p)
+if(mu == .1){ mu_dummy <- "p1"}
+if(mu == .01){ mu_dummy <- "p01"}
+if(mu == .001){ mu_dummy <- "p001"}
 
+pdf(paste("Fisher_plot_rho", 1/rho_inverse, "mu_", mu_dummy, ".pdf", sep = ""))
+
+print(p[[k]])
+dev.off()
+k <- k + 1
 
 ###############
 #dist <- ts(dummy)
@@ -96,47 +92,12 @@ p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = V4, y =V5, ym
 #abline(a = 9.8, b = -2.95)
  
  
- if(FALSE) {
-
- distance <- as.vector(Semianalytic_Data[,4])
- class(distance)
- avg <- as.vector(Semianalytic_Data[,5])
- class(avg)
- upper <- Semianalytic_Data[,6]
- lower <- Semianalytic_Data[,7]
- plot(distance, avg, col = "red", ylim=range(c(lower, upper)),
-    pch=19, xlab = "Log of Distance", ylab = "Log of Mean Homozygosity", main = paste("alpha", alpha, "rho", 1/rho_inverse, "mu", mu))
-
-#arrows(distance, lower, distance, upper, length=0.05, angle=90, code=3)
-
  
-  
-distance <- as.vector(Simulation_Data[,4])
-class(distance)
-avg <- as.vector(Simulation_Data[,5])
-class(avg)
-upper <- Simulation_Data[,6]
-lower <- Simulation_Data[,7]
-
-
-#par(new=TRUE)
-points(distance, avg, col ="blue" ,ylim=range(c(lower, upper)), pch=19)
-arrows(distance, lower, distance, upper, length=0.05, angle=90, code=3, col = "blue")
-
-
-
-legend( x= "bottomleft", y=0.99, 
-        legend=c("Simulations","Numerics"), 
-        col=c("blue",  "red"),   
-        pch=c(19, 19))
-}
- 
-
 
 
 }}
 
-do.call(grid.arrange,p)
+#do.call(grid.arrange,p)
 
 
 
