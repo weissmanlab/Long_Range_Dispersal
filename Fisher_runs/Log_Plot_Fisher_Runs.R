@@ -57,22 +57,42 @@ if(mu == .1){Simulation_Data <- subset(Simulation_Data, V4 < 8.9)  }
 
 
 
-
+Tail_Simulation_Data <- subset(Simulation_Data, V4 > 5.9) 
+Linear_Tail_Fit <-  fitModel(V5 ~ -3.05*V4 + b, data =Tail_Simulation_Data)
 
 colnames(Simulation_Data)[4] <- "log_of_distance"
 #colnames(Semianalytic_Data)[4] <- "log_of_distance"
 colnames(Simulation_Data)[5] <- "log_of_mean_homozygosity"
 #colnames(Semianalytic_Data)[5] <- "log_of_mean_homozygosity"
 
+#print(min(Simulation_Data[,4]))
+#print(max(Simulation_Data[,4]))
 
-p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("alpha", alpha, "rho", 1/rho_inverse, "mu", mu))
+
+Tail_line <- data.frame(matrix(0, ncol = 2, nrow = 1000))
+
+
+intercept <- Linear_Tail_Fit(0)
+lower_bound <- -1*(Simulation_Data[1,5] - intercept)/3.05
+
+for( count in 1:1000){Tail_line[count, 1] <- lower_bound + (max(Simulation_Data[,4]) - lower_bound)*(count-1)/1000}
+
+Tail_line[, 2] <-  Linear_Tail_Fit(Tail_line[, 1])
+
+p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("alpha", alpha, "rho", 1/rho_inverse, "mu", mu)) + geom_smooth(data=Tail_line, aes(x = Tail_line[,1], y =Tail_line[,2]), color="red", pch = 0) 
+
+#p <- p + geom_point()
+#print(p)
+
+if(mu == .1){ mu_dummy <- "p1"}
+if(mu == .01){ mu_dummy <- "p01"}
+if(mu == .001){ mu_dummy <- "p001"}
+
+pdf(paste("Fisher_log_plot_rho", 1/rho_inverse, "mu_", mu_dummy, ".pdf", sep = ""))
+
+print(p[[k]])
+dev.off()
 k <- k + 1
-#p <- p + geom_point()
-#print(p)
-#p <- ggplot(mtcars, aes(wt, mpg))
-#p <- p + geom_point()
-#print(p)
-
 
 ###############
 #dist <- ts(dummy)
@@ -83,40 +103,7 @@ k <- k + 1
 #abline(a = 9.8, b = -2.95)
  
  
- if(FALSE) {
-
- distance <- as.vector(Semianalytic_Data[,4])
- class(distance)
- avg <- as.vector(Semianalytic_Data[,5])
- class(avg)
- upper <- Semianalytic_Data[,6]
- lower <- Semianalytic_Data[,7]
- plot(distance, avg, col = "red", ylim=range(c(lower, upper)),
-    pch=19, xlab = "Log of Distance", ylab = "Log of Mean Homozygosity", main = paste("alpha", alpha, "rho", 1/rho_inverse, "mu", mu))
-
-#arrows(distance, lower, distance, upper, length=0.05, angle=90, code=3)
-
  
-  
-distance <- as.vector(Simulation_Data[,4])
-class(distance)
-avg <- as.vector(Simulation_Data[,5])
-class(avg)
-upper <- Simulation_Data[,6]
-lower <- Simulation_Data[,7]
-#par(new=TRUE)
-points(distance, avg, col ="blue" ,ylim=range(c(lower, upper)), pch=19)
-arrows(distance, lower, distance, upper, length=0.05, angle=90, code=3, col = "blue")
-
-
-
-legend( x= "bottomleft", y=0.99, 
-        legend=c("Simulations","Numerics"), 
-        col=c("blue",  "red"),   
-        pch=c(19, 19))
-}
- 
-
 
 
 }}

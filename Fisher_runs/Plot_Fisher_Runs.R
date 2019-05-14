@@ -43,9 +43,9 @@ analytic_data <- data.frame(Simulation_Data[, 1], Simulation_Data[, 2], Simulati
 #print(analytic_data)
 #print(Simulation_Data[,4])
 
-rescaled_Simulation_Data <- 1*Simulation_Data
+rescaled_Simulation_Data <- Simulation_Data
 
-exponential_fit <-  fitModel(V5 ~ (a^2)*exp(-(b^2)*V4), data =rescaled_Simulation_Data)
+exponential_fit <-  fitModel(V5 ~ (a^2)*exp(-(b^2)*V4), data =Simulation_Data)
 
 
 exponential_function <- data.frame(matrix(0, ncol = 2, nrow = xlimit))
