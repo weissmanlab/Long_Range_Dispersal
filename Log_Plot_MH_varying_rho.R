@@ -79,7 +79,7 @@ Semianalytic_Data_rho_1  <-subset(Semianalytic_Data, V2 ==1)
 Semianalytic_Data_rho_p1  <-subset(Semianalytic_Data, V2 ==.1)
 Semianalytic_Data_rho_p01  <-subset(Semianalytic_Data, V2 ==.01)
 
-p <- ggplot() + geom_smooth(data=Semianalytic_Data_rho_1, aes(log_of_distance, log_of_mean_homozygosity), color = "green")   + geom_smooth(data=Semianalytic_Data_rho_p1, aes(log_of_distance, log_of_mean_homozygosity), color = "yellow") + geom_smooth(data=Semianalytic_Data_rho_p01, aes(log_of_distance, log_of_mean_homozygosity), color = "orange") + 
+p <- ggplot() + geom_smooth(data=Semianalytic_Data_rho_1, aes(log_of_distance, log_of_mean_homozygosity), color = "green", se = FALSE)   + geom_smooth(data=Semianalytic_Data_rho_p1, aes(log_of_distance, log_of_mean_homozygosity), color = "yellow", se = FALSE) + geom_smooth(data=Semianalytic_Data_rho_p01, aes(log_of_distance, log_of_mean_homozygosity), color = "orange", se = FALSE) + 
         geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="black", pch = 0)  + ggtitle(paste("Alpha", alpha, "  Mu", mu)) + labs(x= "Log of Distance"
 , y = "Log of Mean Homozygosity" )  
 

@@ -79,7 +79,7 @@ for( count in 1:1000){Tail_line[count, 1] <- lower_bound + (max(Simulation_Data[
 
 Tail_line[, 2] <-  Linear_Tail_Fit(Tail_line[, 1])
 
-p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("alpha", alpha, "rho", 1/rho_inverse, "mu", mu)) + geom_smooth(data=Tail_line, aes(x = Tail_line[,1], y =Tail_line[,2]), color="red", pch = 0) 
+p[[k]] <- ggplot() + geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse, "Mu", mu)) + geom_smooth(data=Tail_line, aes(x = Tail_line[,1], y =Tail_line[,2]), color="red", pch = 0) 
 
 #p <- p + geom_point()
 #print(p)

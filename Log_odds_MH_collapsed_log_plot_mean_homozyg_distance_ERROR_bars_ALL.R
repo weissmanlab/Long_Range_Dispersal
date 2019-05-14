@@ -152,7 +152,7 @@ Mu <- as.factor(Simulation_Data[, 3])
 #Simulation_Data["SHAPE"] <- as.factor(Simulation_Data[,2]) #as.factor(-log10(Simulation_Data[,2]) +1)
 #print(Semianalytic_Data)
 
-p[[j]] <- ggplot(data=Simulation_Data, aes(x = log_of_distance_rescaled, y =log_odds_of_identity_rescaled, ymin =V6, ymax =V7, colour = Mu, shape = Rho)) + geom_point() +geom_pointrange() + ggtitle(paste("Alpha", alpha))  + geom_smooth(data=Semianalytic_Data, colour = "brown") + labs(x= "Log of Distance Rescaled", y = "Log odds of Mean Homozygosity Rescaled" )
+p[[j]] <- ggplot(data=Simulation_Data, aes(x = log_of_distance_rescaled, y =log_odds_of_identity_rescaled, ymin =V6, ymax =V7, colour = Mu, shape = Rho)) + geom_point() +geom_pointrange() + ggtitle(paste("Alpha", alpha))  + geom_smooth(data=Semianalytic_Data, colour = "brown", se = FALSE) + labs(x= "Log of Distance Rescaled", y = "Log odds of Mean Homozygosity Rescaled" )
 
 
 p[[k]]
