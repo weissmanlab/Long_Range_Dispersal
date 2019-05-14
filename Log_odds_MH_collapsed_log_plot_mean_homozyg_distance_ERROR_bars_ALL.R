@@ -65,6 +65,11 @@ Semianalytic_Data  <- subset(Semianalytic_Data, V1 == alpha)
 #Semianalytic_Data  <- subset(Semianalytic_Data, V3 ==mu)
 
 
+if(alpha == 1.65){Simulation_Data <- subset(Simulation_Data, V4 < 9.8)}
+if(alpha == 1.65){Semianalytic_Data <- subset(Semianalytic_Data, V4 < 9.8)}
+
+if(alpha == 1.85){Simulation_Data <- subset(Simulation_Data, V4 < 9.8)}
+if(alpha == 1.85){Semianalytic_Data <- subset(Semianalytic_Data, V4 < 9.8)}
 
 
 

@@ -56,7 +56,7 @@ df <- data.frame(numeric_axis, simulation_axis, lower_CI, upper_CI)
 
 
 
-p <- ggplot() + geom_pointrange(data=df, aes(x = numeric_axis, y =simulation_axis, ymin =lower_CI, ymax =upper_CI), color="blue", pch = 0)  + ggtitle(paste("Log of Mean Homozygosity Simulations vs Numerics"))
+p <- ggplot() + geom_pointrange(data=df, aes(x = numeric_axis, y =simulation_axis, ymin =lower_CI, ymax =upper_CI), color="blue", pch = 0)  + ggtitle(paste("Log of Mean Homozygosity Simulations vs Numerics")) + labs(x= "Log of Numeric Mean Homozygosity", y = "Log of Simulated Mean Homozygosity" )
 
 pdf("Log_plot_MH_sims_v_numerics.pdf")
 print(p)

@@ -48,13 +48,19 @@ Simulation_Data  <- subset(Simulation_Data, V1 == alpha)
 Simulation_Data <- subset(Simulation_Data, V3 ==mu)
 Simulation_Data <- subset(Simulation_Data, V4 < 10.8)
 
+
+
 #Semianalytic_Data  <- subset(Semianalytic_Data, V1 < 1.8)
 
 Semianalytic_Data  <- subset(Semianalytic_Data, V1 == alpha)
 #Semianalytic_Data  <-subset(Semianalytic_Data, V2 ==rho_inverse)
 Semianalytic_Data  <- subset(Semianalytic_Data, V3 ==mu)
 Semianalytic_Data <- subset(Semianalytic_Data, V4 < 10.8)
+if(alpha == 1.65){Simulation_Data <- subset(Simulation_Data, V4 < 9.8)}
+if(alpha == 1.65){Semianalytic_Data <- subset(Semianalytic_Data, V4 < 9.8)}
 
+if(alpha == 1.85){Simulation_Data <- subset(Simulation_Data, V4 < 8.8)}
+if(alpha == 1.85){Semianalytic_Data <- subset(Semianalytic_Data, V4 < 8.8)}
 
 
 
@@ -69,10 +75,13 @@ colnames(Semianalytic_Data)[4] <- "log_of_distance"
 colnames(Simulation_Data)[5] <- "log_of_mean_homozygosity"
 colnames(Semianalytic_Data)[5] <- "log_of_mean_homozygosity"
 
+Semianalytic_Data_rho_1  <-subset(Semianalytic_Data, V2 ==1)
+Semianalytic_Data_rho_p1  <-subset(Semianalytic_Data, V2 ==.1)
+Semianalytic_Data_rho_p01  <-subset(Semianalytic_Data, V2 ==.01)
 
-
-p <- ggplot() + geom_point(data=Semianalytic_Data, aes(log_of_distance, log_of_mean_homozygosity), color = "red") + 
-        geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="blue", pch = 0)  + ggtitle(paste("alpha", alpha))
+p <- ggplot() + geom_smooth(data=Semianalytic_Data_rho_1, aes(log_of_distance, log_of_mean_homozygosity), color = "green")   + geom_smooth(data=Semianalytic_Data_rho_p1, aes(log_of_distance, log_of_mean_homozygosity), color = "yellow") + geom_smooth(data=Semianalytic_Data_rho_p01, aes(log_of_distance, log_of_mean_homozygosity), color = "orange") + 
+        geom_pointrange(data=Simulation_Data, aes(x = log_of_distance, y =log_of_mean_homozygosity, ymin =V6, ymax =V7), color="black", pch = 0)  + ggtitle(paste("Alpha", alpha, "  Mu", mu)) + labs(x= "Log of Distance"
+, y = "Log of Mean Homozygosity" )  
 
 
 alpha_dummy <- (alpha -1)*100
