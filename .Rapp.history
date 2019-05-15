@@ -15,5 +15,4 @@ source("/Users/tylersmith/Long_Range_Dispersal/Log_odds_MH_collapsed_log_plot_me
 source("/Users/tylersmith/Long_Range_Dispersal/Log_Plot_MH_varying_rho.R")
 source("/Users/tylersmith/Long_Range_Dispersal/Log_Plot_MH_varying_mu.R")
 source("/Users/tylersmith/Long_Range_Dispersal/Log_Plot_MH_varying_rho.R")
-source("/Users/tylersmith/Long_Range_Dispersal/Log_Plot_MH_varying_rho.R")
 source("/Users/tylersmith/Long_Range_Dispersal/Log_Plot_MH_varying_mu.R")
