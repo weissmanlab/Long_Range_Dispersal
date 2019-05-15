@@ -1,105 +1,57 @@
 library(libstableR)
 library(argparse)
 library(mdatools)
+library(ggplot2)
+library(gridExtra)
+library(Hmisc)
+library(dplyr)
 
-alpha <- 1.25
-initial_distance <- as.double(args[2])
-dir <- paste("./alpha_value_", alpha, "/distance_value_", initial_distance, sep = "")
-setwd(dir)
-end_time <- as.integer(args[3]) # number of times considered
-scale_parameter <- as.double(args[4])
-MU <- as.double(args[5])
-rho_inverse <- as.double(args[6])
-X <- initial_distance #more convenient name for distance variable
-Laplace_Domain_Kernel_at_X <- 0  
+alpha <- 1.65
+rho_inverse <- .1
+rho <- 1/rho_inverse
+
+Final_Time <-1000
+
+Coalescence_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 11))
+for( Q in 1:10)
+{
+distance <- exp(Q)
+distance_lower_bound <- .9*distance - .001
+distance_upper_bound <- 1.1*distance + .001
+
+Coalescence_Data <-   read.table("ALL_runs_DCT.txt")
 
 
-Laplace_Domain_Kernel_at_ZERO <- 0
+Coalescence_Data <- subset(Coalescence_Data, V1 == alpha)
+Coalescence_Data <- subset(Coalescence_Data, V2 == rho_inverse)
+Coalescence_Data <- subset(Coalescence_Data, V3 > distance_lower_bound)
+Coalescence_Data <- subset(Coalescence_Data, V3 < distance_upper_bound)
 
-timestep_size <- 1/10 #1/100 #1/1000
-num_time_steps <- end_time/timestep_size
-Dummy_Vec <- numeric(num_time_steps)
-Laplace_Domain_Kernel_at_X_DUMMY_VEC <- numeric(num_time_steps)
-Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC <- numeric(num_time_steps)
-#We start with the continous time expression and account for discretized time and finite width coalescence zone.
-calculate_Laplace_domain_kernel_at_X = function(n){
-   ret = rep(NA, length(n))
-for(timestep in seq_along(n)){
-     time <- timestep*timestep_size
-     pars <- c(alpha, 0, scale_parameter*((time)^(1/alpha)), 0)
-   
+Coalescence_Data_Transposed <- t(Coalescence_Data)
+#Coalescence_Data_Transposed <- Coalescence_Data_Transposed[-c(1:3), ]
 
-     ret[timestep] = stable_pdf(X , pars)*exp(-2*MU*time)*timestep_size
-   }
 
-   return(ret)
-
+Coalescence_Data_plot <-  data.frame(matrix(0, Final_Time, 2))
+for( i in 1:Final_Time )
+{Coalescence_Data_plot[i, 1] <- i -1 
+ 
+ Coalescence_Data_plot[i, 2] <- log(Coalescence_Data_Transposed[i + 3, 1])	
+ 	
 }
 
-calculate_Laplace_domain_kernel_at_ZERO = function(n){
-ret = rep(NA, length(n))
-for(timestep in seq_along(n)){
-     time <- timestep*timestep_size
-     pars <- c(alpha, 0, scale_parameter*((time)^(1/alpha)), 0)
-   
-
-     ret[timestep] = stable_pdf(0 , pars)*exp(-2*MU*time)*timestep_size
-   }
-
-  return(ret)
-
+print(Coalescence_Data_plot[, 2])
+normalization_check <- sum(exp(Coalescence_Data_plot[, 2]))
+#normalization_check <- sum(Coalescence_Data_plot[, 2])
+#print(normalization_check)
+Coalescence_Data_plot_ALL[, 1] <-Coalescence_Data_plot[, 1]
+Coalescence_Data_plot_ALL[, Q+ 1] <-Coalescence_Data_plot[, 2]
 }
 
 
+#print(Coalescence_Data_plot)
 
+#Coalescence_Data_plot <- subset(Coalescence_Data_plot
 
+p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2)) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist 1")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist 2")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X8, color = "init dist 3")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X9, color = "init dist 4"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X10, color = "init dist 5")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X11, color = "init dist 6")) + geom_point()
 
-
- #Laplace_Domain_Kernel_at_X_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_X(Dummy_Vec)
-#Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC <- calculate_Laplace_domain_kernel_at_ZERO(Dummy_Vec)
-
-
-#Laplace_Domain_Kernel_at_X <- sum(Laplace_Domain_Kernel_at_X_DUMMY_VEC)
-#Laplace_Domain_Kernel_at_ZERO <- sum(Laplace_Domain_Kernel_at_ZERO_DUMMY_VEC)
-
-
-if(TRUE) {
-
-
-for (timestep in 1:num_time_steps) { 
-
-
-  time <- timestep*timestep_size
-pars <- c(alpha, 0, scale_parameter*((time)^(1/alpha)), 0)
-
- Laplace_Domain_Kernel_at_X <- Laplace_Domain_Kernel_at_X + stable_pdf(X , pars)*exp(-2*MU*time)*timestep_size
- Laplace_Domain_Kernel_at_ZERO <- Laplace_Domain_Kernel_at_ZERO +  stable_pdf(0 , pars)*exp(-2*MU*time)*timestep_size  
-
-            # coalescence zone has width one in our simulations
-
-    }
-
-
-}
-
-
-Mean_Homozygosity <-  rho_inverse*( Laplace_Domain_Kernel_at_X -  (rho_inverse*Laplace_Domain_Kernel_at_X**2)/(1 + rho_inverse*Laplace_Domain_Kernel_at_ZERO))
-
-
-output_file_name <- paste("NUMERIC_mean_homozygosity", alpha , "distance", initial_distance, "MU", MU, "rho_inverse_" , rho_inverse , ".txt", sep = "") 
-output_file_name_plot <- paste("NUMERIC_mean_homozygosity", alpha , "distance", initial_distance, "MU", MU, "rho_inverse_" , rho_inverse , ".txt", sep = "") 
-sink(output_file_name)
-#constrained_probability <- stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)
-cat(paste(initial_distance, MU, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = " "))
-sink()
-
-setwd("../../MH_plots")
-
-sink(output_file_name_plot)
-#constrained_probability <- stable_cdf(initial_distance + .5, constrained_pars) -   stable_cdf(initial_distance - .5, constrained_pars)
-cat(paste(alpha,   MU , rho_inverse,   initial_distance, Mean_Homozygosity, Mean_Homozygosity, Mean_Homozygosity, sep = " "))
-sink()
-
-
-
-setwd("..")
+print(p)
