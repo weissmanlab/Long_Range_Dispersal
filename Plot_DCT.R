@@ -6,14 +6,25 @@ library(gridExtra)
 library(Hmisc)
 library(dplyr)
 
-alpha <- 1.65
-rho_inverse <- .1
+
+for(j in 1:4){for(ZZ in 0:2){
+if(j==1)
+{alpha <- 1.25}
+if(j==2)
+{alpha <- 1.45}
+if(j==3)
+{alpha <- 1.65}
+if(j==4)
+{alpha <- 1.85}
+
+#alpha <- 1.65
+rho_inverse <- 10^(-1*ZZ)
 rho <- 1/rho_inverse
 
 Final_Time <-1000
 
-Coalescence_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 11))
-for( Q in 1:10)
+Coalescence_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 12))
+for( Q in 1:12)
 {
 distance <- exp(Q)
 distance_lower_bound <- .9*distance - .001
@@ -52,6 +63,13 @@ Coalescence_Data_plot_ALL[, Q+ 1] <-Coalescence_Data_plot[, 2]
 
 #Coalescence_Data_plot <- subset(Coalescence_Data_plot
 
-p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2)) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist 1")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist 2")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X8, color = "init dist 3")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X9, color = "init dist 4"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X10, color = "init dist 5")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X11, color = "init dist 6")) + geom_point()
+
+pdf(paste("Log_Plot_DCT_varying_distance_alpha_", alpha, "_rho_", 1/rho_inverse, ".pdf", sep = ""))
+p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "init dist e^01")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "init dist e^02"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "init dist e^03")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X5, color = "init dist e^04"))   +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist e^05")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist e^06")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X8, color = "init dist e^07")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X9, color = "init dist e^08")) +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X10, color = "init dist e^09")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X11, color = "init dist e^10")) + geom_point() + geom_point() + labs( x = "Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse))#+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
+
 
 print(p)
+
+dev.off()
+
+}}
