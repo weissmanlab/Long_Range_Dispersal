@@ -25,12 +25,30 @@ distance_upper_bound <- 1.1*distance + .001
 
 Final_Time <-1000
 
-Coalescence_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 3))
-for( Q in 0:3)
-{
-rho_inverse <- 10^(-1*Q)
-rho <- 1/rho_inverse
+Coalescence_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 4))
+Numeric_approx_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 4))
+for( i in 1:Final_Time )
+{   Numeric_approx_Data_plot_ALL[i,1] <- i -1 
+	
+	time_dummy <- i -1 +.001
+	 
+	 scale_parameter <- 250
+	 
+	 pars <- c(alpha, 0, scale_parameter*((time_dummy)^(1/alpha)), 0) 
+     log_stable_dist <- log(stable_pdf(distance, pars))	
+	Numeric_approx_Data_plot_ALL[i,2] <-  log_stable_dist + log(1)
+	Numeric_approx_Data_plot_ALL[i,3] <- log_stable_dist + log(1/10)
+	Numeric_approx_Data_plot_ALL[i,4] <- log_stable_dist + log(1/100)
+	
+	}
 
+
+
+for( Q in 1:3)
+{
+rho_inverse <- 10^(-1*(Q-1))
+rho <- 1/rho_inverse
+#print(rho_inverse)
 
 
 Coalescence_Data <-   read.table("ALL_runs_DCT.txt")
@@ -54,7 +72,7 @@ for( i in 1:Final_Time )
 }
 
 #print(Coalescence_Data_plot[, 2])
-normalization_check <- sum(exp(Coalescence_Data_plot[, 2]))
+#normalization_check <- sum(exp(Coalescence_Data_plot[, 2]))
 #normalization_check <- sum(Coalescence_Data_plot[, 2])
 #print(normalization_check)
 Coalescence_Data_plot_ALL[, 1] <-Coalescence_Data_plot[, 1]
@@ -67,14 +85,14 @@ Coalescence_Data_plot_ALL[, Q+ 1] <-Coalescence_Data_plot[, 2]
 #Coalescence_Data_plot <- subset(Coalescence_Data_plot
 
 alpha_dummy <- 100*(alpha -1)
-print(paste("Log_Plot_DCT_varying_distance_alpha_1p", alpha_dummy, "_rho_", rho, ".pdf", sep = ""))
-pdf(paste("Log_Plot_DCT_varying_distance_alpha_1p", alpha_dummy, "_rho_", rho, ".pdf", sep = ""))
 
-p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "init dist e^01")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "init dist e^02"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "init dist e^03")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X5, color = "init dist e^04"))   +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist e^05")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist e^06")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X8, color = "init dist e^07")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X9, color = "init dist e^08")) +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X10, color = "init dist e^09")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X11, color = "init dist e^10")) + geom_point() + geom_point() + labs( x = "Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse))#+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
+pdf(paste("Log_Plot_DCT_varying_distance_alpha_1p", alpha_dummy, "_distance_", distance, ".pdf", sep = ""))
+
+p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "simulated rho = 10"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "simulated rho = 100"))  + geom_point() + geom_smooth(data=Numeric_approx_Data_plot_ALL, aes(x = X1, y =X2, color = "numeric rho = 1", se = FALSE), linetype="dashed") + geom_smooth(data=Numeric_approx_Data_plot_ALL, aes(x = X1, y =X3, color = "numeric rho = 10", se = FALSE), linetype="dashed")   + geom_smooth(data=Numeric_approx_Data_plot_ALL, aes(x = X1, y =X4, color = "numeric rho = 100", se = FALSE), linetype="dashed")  + geom_point() + geom_point() + labs( x = "Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Distance e^", log(distance)))#+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
 
 
 print(p)
 
 dev.off()
-
+#print(Coalescence_Data_plot_ALL[,4])
 }}
