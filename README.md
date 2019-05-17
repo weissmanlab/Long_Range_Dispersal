@@ -10,14 +10,14 @@ The first two columns of the distribution of coalesene times (DCT) dataframes re
 
 
 Mean Homozygosity dataframes:
-ALL_Fisher_runs_MH.txt -  contains all the MH data for the Fisher dist dispersal simulations only (stored on linear scale)
-ALL_runs_MH.txt	-  ALL simulation MH data ( both distance and MH stored on linear scale)
-numeric_MH_LOG_SCALE_ALL_but_zeros.txt - numeric values of MH for nonzero initial separation (both distance and MH stored on nautural log scale)
-numeric_MH_zeros.txt - numeric values of MH for zero initial sepratation ( both distance and MH stored on linear scale)
+-ALL_Fisher_runs_MH.txt -  contains all the MH data for the Fisher dist dispersal simulations only (stored on linear scale)
+-ALL_runs_MH.txt	-  ALL simulation MH data ( both distance and MH stored on linear scale)
+-numeric_MH_LOG_SCALE_ALL_but_zeros.txt - numeric values of MH for nonzero initial separation (both distance and MH stored on -nautural log scale)
+-numeric_MH_zeros.txt - numeric values of MH for zero initial sepratation ( both distance and MH stored on linear scale)
 
 DCT dataframes:
-ALL_runs_DCT.txt - contains all the DCT simulation data (stored on linear scale for distance, time and DCT)
-ALL_Fisher_runs_DCT.tx - contains all the DCT data for the Fisher dist dispersal simulations only (stored on linear scale for distance, time and DCT)
+-ALL_runs_DCT.txt - contains all the DCT simulation data (stored on linear scale for distance, time and DCT)
+-ALL_Fisher_runs_DCT.tx - contains all the DCT data for the Fisher dist dispersal simulations only (stored on linear scale for -distance, time and DCT)
 
 
 
