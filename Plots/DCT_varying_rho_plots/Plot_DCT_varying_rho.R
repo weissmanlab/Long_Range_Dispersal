@@ -86,7 +86,7 @@ Coalescence_Data_plot_ALL[, Q+ 1] <-Coalescence_Data_plot[, 2]
 
 alpha_dummy <- 100*(alpha -1)
 
-pdf(paste("Log_Plot_DCT_varying_distance_alpha_1p", alpha_dummy, "_distance_", distance, ".pdf", sep = ""))
+pdf(paste("Log_Plot_DCT_varying_rho_alpha_1p", alpha_dummy, "_distance_e", trunc(log(distance)), ".pdf", sep = ""))
 
 p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "simulated rho = 10"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "simulated rho = 100"))  + geom_point() + geom_smooth(data=Numeric_approx_Data_plot_ALL, aes(x = X1, y =X2, color = "numeric rho = 1", se = FALSE), linetype="dashed") + geom_smooth(data=Numeric_approx_Data_plot_ALL, aes(x = X1, y =X3, color = "numeric rho = 10", se = FALSE), linetype="dashed")   + geom_smooth(data=Numeric_approx_Data_plot_ALL, aes(x = X1, y =X4, color = "numeric rho = 100", se = FALSE), linetype="dashed")  + geom_point() + geom_point() + labs( x = "Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Distance e^", log(distance)))#+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
 

@@ -32,6 +32,9 @@ Simulation_Data[,7] <-log(Simulation_Data[,7])
 
 Simulation_Data <- subset(Simulation_Data, V3 < 1)
 Semianalytic_Data  <- subset(Semianalytic_Data, V3 <1)
+Simulation_Data <- subset(Simulation_Data, V4 > 0)
+Semianalytic_Data  <- subset(Semianalytic_Data, V4 >0)
+
 #Simulation_Data <- Simulation_Data[!(Simulation_Data$V7 - Simulation_Data$V6  > 5),]
 #Semianalytic_Data <- Semianalytic_Data[!(Semianalytic_Data$V7 - Semianalytic_Data$V6  > 5),]
 
