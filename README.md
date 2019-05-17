@@ -1,6 +1,6 @@
 This repository contains numeric and simulation data of coalescence for lineages undergoing Long range dispersal.  
 
-Data from the runs in the original format can be found in the directories new_Levy_runs and Fisher runs (for Levy alpha Stable and Fisher distribution dispersal respectively).
+Data from the runs in the original format can be found in the directories new_Levy_runs and Fisher runs (for Levy alpha Stable and Fisher distribution dispersal respectively).  These directories also contain c++ source codes and executables  that produce the simulation data.  These codes work best with the g++ or clang compilers and require the gsl library.  Examples of the command line arguments used to produce our simulation results can be found in the example_Sim_Code_Runs.txt text file.
 
 This data has been aggregated into dataframes.  One set of dataframes is for the mean homozygosity, the other is for the distribution of coalescence times.
 
