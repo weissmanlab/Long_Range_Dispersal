@@ -5,5 +5,8 @@ write.table(Numeric_Data_swapped,"Numeric_MH_df_swapped.txt",sep="\t",row.names=
 Numeric_Data_zeros <- Numeric_Data_swapped[Numeric_Data_swapped$V2 == 0,]
 write.table(Numeric_Data_zeros,"numeric_MH_zeros.txt",sep="\t",row.names=FALSE,col.names=FALSE)
 Numeric_Data_nonzero <- Numeric_Data_swapped[Numeric_Data_swapped$V2 > 0,]
-Numeric_Data_nonzero[,4] <- log(Numeric_Data_nonzero[4])
+Numeric_Data_nonzero[,4] <- log(Numeric_Data_nonzero[,4])
+Numeric_Data_nonzero[,5] <- log(Numeric_Data_nonzero[,5])
+Numeric_Data_nonzero[,6] <- log(Numeric_Data_nonzero[,6])
+Numeric_Data_nonzero[,7] <- log(Numeric_Data_nonzero[,7])
 write.table(Numeric_Data_nonzero,"numeric_MH_LOG_SCALE_ALL_but_zeros.txt",sep="\t",row.names=FALSE,col.names=FALSE)
