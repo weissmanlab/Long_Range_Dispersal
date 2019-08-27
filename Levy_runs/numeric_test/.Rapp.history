@@ -1,0 +1,5 @@
+cumsum(1:10)
+stable_rnd(n, pars)
+library("libstableR")
+stable_rnd(n, pars)
+stable_rnd(50, pars)
