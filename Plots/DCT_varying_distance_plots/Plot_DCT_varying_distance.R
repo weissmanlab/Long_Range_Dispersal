@@ -7,7 +7,7 @@ library(Hmisc)
 library(dplyr)
 
 
-for(j in 1:4){for(ZZ in 0:2){
+for(j in 1:5){for(ZZ in 0:2){
 if(j==1)
 {alpha <- 1.25}
 if(j==2)
@@ -16,7 +16,8 @@ if(j==3)
 {alpha <- 1.65}
 if(j==4)
 {alpha <- 1.85}
-
+if(j==5)
+{alpha <- 2.05}
 #alpha <- 1.65
 rho_inverse <- 10^(-1*ZZ)
 rho <- 1/rho_inverse
@@ -64,8 +65,15 @@ Coalescence_Data_plot_ALL[, Q+ 1] <-Coalescence_Data_plot[, 2]
 #Coalescence_Data_plot <- subset(Coalescence_Data_plot
 
 alpha_dummy <- 100*(alpha -1)
+if(j < 5){
 print(paste("NEW_Log_Plot_DCT_varying_distance_alpha_1p", alpha_dummy, "_rho_", rho, ".pdf", sep = ""))
 pdf(paste("NEW_Log_Plot_DCT_varying_distance_alpha_1p", alpha_dummy, "_rho_", rho, ".pdf", sep = ""))
+}
+if(j == 5){
+print(paste("NEW_Log_Plot_DCT_varying_distance_alpha_2p05", "_rho_", rho, ".pdf", sep = ""))
+pdf(paste("NEW_Log_Plot_DCT_varying_distance_alpha_2p05", "_rho_", rho, ".pdf", sep = ""))
+}
+
 
 #p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "init dist e^01")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "init dist e^02"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "init dist e^03")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X5, color = "init dist e^04"))   +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist e^05")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist e^06")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X8, color = "init dist e^07")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X9, color = "init dist e^08")) +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X10, color = "init dist e^09")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X11, color = "init dist e^10")) + geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse))#+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
 p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "init dist e^01"), se = FALSE) + 
