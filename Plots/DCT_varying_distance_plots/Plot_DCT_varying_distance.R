@@ -7,7 +7,7 @@ library(Hmisc)
 library(dplyr)
 
 
-for(j in 1:5){for(ZZ in 0:2){
+for(j in 1:9){for(ZZ in 0:2){
 if(j==1)
 {alpha <- 1.25}
 if(j==2)
@@ -18,6 +18,15 @@ if(j==4)
 {alpha <- 1.85}
 if(j==5)
 {alpha <- 2.05}
+if(j==6)
+{alpha <- .25}
+if(j==7)
+{alpha <- .5}
+if(j==8)
+{alpha <- .75}
+if(j==9)
+{alpha <- 1}
+
 #alpha <- 1.65
 rho_inverse <- 10^(-1*ZZ)
 rho <- 1/rho_inverse
@@ -25,6 +34,28 @@ rho <- 1/rho_inverse
 Final_Time <-1000
 
 Coalescence_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 12))
+if(alpha <=2)
+{Numeric_approx_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 2))
+for( i in 1:Final_Time )
+{   Numeric_approx_Data_plot_ALL[i,1] <- log(i)
+	
+	time_dummy <- i
+	 
+	 scale_parameter <- 250
+	 
+	 pars <- c(alpha, 0, scale_parameter*((time_dummy)^(1/alpha)), 0) 
+     #distance set to zero
+     log_stable_dist <- log(stable_pdf(0, pars))	
+	Numeric_approx_Data_plot_ALL[i,2] <-  log_stable_dist + log(rho_inverse)
+	#Numeric_approx_Data_plot_ALL[i,3] <- log_stable_dist + log(1/10)
+	#Numeric_approx_Data_plot_ALL[i,4] <- log_stable_dist + log(1/100)
+	
+	}
+
+}
+
+
+
 for( Q in 1:12)
 {
 distance <- exp(Q)
@@ -73,9 +104,28 @@ if(j == 5){
 print(paste("NEW_Log_Plot_DCT_varying_distance_alpha_2p05", "_rho_", rho, ".pdf", sep = ""))
 pdf(paste("NEW_Log_Plot_DCT_varying_distance_alpha_2p05", "_rho_", rho, ".pdf", sep = ""))
 }
-
+if(j == 6){
+print(paste("NEW_Log_Plot_DCT_varying_distance_alpha_0p25", "_rho_", rho, ".pdf", sep = ""))
+pdf(paste("NEW_Log_Plot_DCT_varying_distance_alpha_0p25", "_rho_", rho, ".pdf", sep = ""))
+}
+if(j == 7){
+print(paste("NEW_Log_Plot_DCT_varying_distance_alpha_0p5", "_rho_", rho, ".pdf", sep = ""))
+pdf(paste("NEW_Log_Plot_DCT_varying_distance_alpha_0p5", "_rho_", rho, ".pdf", sep = ""))
+}
+if(j == 8){
+print(paste("NEW_Log_Plot_DCT_varying_distance_alpha_0p75", "_rho_", rho, ".pdf", sep = ""))
+pdf(paste("NEW_Log_Plot_DCT_varying_distance_alpha_0p75", "_rho_", rho, ".pdf", sep = ""))
+}
+if(j == 9){
+print(paste("NEW_Log_Plot_DCT_varying_distance_alpha_1", "_rho_", rho, ".pdf", sep = ""))
+pdf(paste("NEW_Log_Plot_DCT_varying_distance_alpha_1", "_rho_", rho, ".pdf", sep = ""))
+}
 
 #p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "init dist e^01")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "init dist e^02"))   + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "init dist e^03")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X5, color = "init dist e^04"))   +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist e^05")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist e^06")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X8, color = "init dist e^07")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X9, color = "init dist e^08")) +  geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X10, color = "init dist e^09")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X11, color = "init dist e^10")) + geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse))#+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
+
+if (alpha >2)
+{
+
 p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "init dist e^01"), se = FALSE) + 
 geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "init dist e^02"), se = FALSE)   + 
 geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "init dist e^03"), se = FALSE) + 
@@ -83,6 +133,22 @@ geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X5, color = "init dis
 geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist e^05"), se = FALSE)   + 
 geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist e^06"), se = FALSE)   + 
 geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black"))
+}
+
+
+if (alpha <= 2)
+{
+
+p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "init dist e^01"), se = FALSE) + 
+geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X3, color = "init dist e^02"), se = FALSE)   + 
+geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X4, color = "init dist e^03"), se = FALSE) + 
+geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X5, color = "init dist e^04"), se = FALSE)   +  
+geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X6, color = "init dist e^05"), se = FALSE)   + 
+geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X7, color = "init dist e^06"), se = FALSE)   + 
+geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Rho", 1/rho_inverse)) +  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(), axis.line = element_line(colour = "black")) + geom_smooth(data=Numeric_approx_Data_plot_ALL, aes(x = X1, y =X2, color = "numeric ", se = FALSE), linetype="dashed") 
+}
+
+
 
 print(p)
 
