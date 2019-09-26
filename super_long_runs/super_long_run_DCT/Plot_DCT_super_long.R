@@ -35,7 +35,7 @@ distance_lower_bound <- .9*distance - .001
 distance_upper_bound <- 1.1*distance + .001
 
 
-Final_Time <-5000
+Final_Time <-25000
 
 Coalescence_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 2))
 Numeric_approx_Data_plot_ALL <-  data.frame(matrix(0, Final_Time, 2))
@@ -47,13 +47,12 @@ for( i in 1:Final_Time )
 	 
 	 scale_parameter <- 0.250
 	 
-	 pars <- c(alpha, 0, scale_parameter*((time_dummy)^(1/alpha)), 0) 
-     log_stable_dist <- log(stable_pdf(distance, pars))	
-	Numeric_approx_Data_plot_ALL[i,2] <-  log_stable_dist + log(1)
-	if(alpha < 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log((gamma(1+1/alpha)*(.5*scale_parameter*time_dummy)^(-1/alpha))/(2*pi))}
-	if(alpha == 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log(pi*scale_parameter/(time_dummy* log(scale_parameter*time_dummy)^2))}
+	 #pars <- c(alpha, 0, scale_parameter*((time_dummy)^(1/alpha)), 0) 
+     #log_stable_dist <- log(stable_pdf(distance, pars))	
+	Numeric_approx_Data_plot_ALL[i,2] <- 1 # log_stable_dist + log(1)
+	
+	if(alpha = 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log(pi*scale_parameter*t^(-1)/(log(scale_parameter*t)^2))}
 	if(alpha > 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log(scale_parameter*(alpha -1)*sin(pi/alpha)*(time_dummy)^(1/alpha -2))}
-
 	
 	#Numeric_approx_Data_plot_ALL[i,3] <- log_stable_dist + log(1/10)
 	#Numeric_approx_Data_plot_ALL[i,4] <- log_stable_dist + log(1/100)
@@ -69,7 +68,7 @@ rho <- 1/rho_inverse
 #print(rho_inverse)
 
 
-Coalescence_Data <-   read.table("ALL_LONG_runs_DCT.txt")
+Coalescence_Data <-   read.table("ALL_SUPER_LONG_runs_DCT.txt")
 
 
 Coalescence_Data <- subset(Coalescence_Data, V1 == alpha)
@@ -167,12 +166,13 @@ slope <- fit$coef[2]
 if(alpha <=1){print(-1/slope)}
 if(alpha >1){print(1/(slope +2))}
 
+if(alpha < 1){
+p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1"), method = "lm", se=FALSE, color="black", formula = my.formula,linetype="dashed") +  geom_point() + geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Distance 0", "SLOPE", slope)) #+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
+}
 
-
-p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1")) +   geom_point() + geom_smooth(data=Asymptotic_approx_Data_plot_ALL, aes(x = X1, y =X2, color = "asymptotic", se = FALSE), linetype="dashed")  + geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Distance 0", "SLOPE", slope)) #+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
-
-#geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1"), method = "lm", se=FALSE, color="black", formula = my.formula,linetype="dashed") +
-
+if(alpha >= 1){
+p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1")) + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1"), method = "lm", se=FALSE, color="black", formula = my.formula,linetype="dashed") +  geom_point() + geom_smooth(data=Asymptotic_approx_Data_plot_ALL, aes(x = X1, y =X2, color = "asymptotic", se = FALSE), linetype="dashed")  + geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Distance 0", "SLOPE", slope)) #+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
+}
 
 
 
