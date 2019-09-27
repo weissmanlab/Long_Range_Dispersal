@@ -60,8 +60,8 @@ Simulation_Data[,7] <-log(Simulation_Data[,7])
 
 Simulation_Data <- subset(Simulation_Data, V3 < 1)
 Semianalytic_Data  <- subset(Semianalytic_Data, V3 <1)
-Simulation_Data <- subset(Simulation_Data, V4 > 0)
-Semianalytic_Data  <- subset(Semianalytic_Data, V4 >0)
+Simulation_Data <- subset(Simulation_Data, V4 >= 0)
+Semianalytic_Data  <- subset(Semianalytic_Data, V4 >= 0)
 
 #print(Semianalytic_Data)
 

@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
  // const int time_scale_coarse_graining = 1; //atoi(argv[5]); //number of steps per (in between) recorded step -this is necessary so that we dont exceed memory requirements with arrays that are too large
   const int num_trials = atoi(argv[3]);
   //const int num_distance_steps = 1;   //vary initial seperation exponentially for log plot of mean homozygosity as function of x for fixed mu
-  const double periodic_boundary = 10000000; //position constrained between -pb and +pb
+  const double periodic_boundary = 100000000000; //position constrained between -pb and +pb
   //const double D = 0;   // Diffusion constant
  // const double cauchy_param = 0.00;//0.1;//0.01; //20; // controls cauchy power law jump kernel
  // const double log_param = 0;   // controls lognormal jump kernel
