@@ -47,12 +47,12 @@ for( i in 1:Final_Time )
 	time_dummy <- i 
 	 
 	 scale_parameter <- 25.0
-	 
+	 generalized_D <- (scale_parameter^alpha)/2
 	 pars <- c(alpha, 0, scale_parameter*((time_dummy)^(1/alpha)), 0) 
      #log_stable_dist <- log(stable_pdf(distance, pars))	
 	#Numeric_approx_Data_plot_ALL[i,2] <-  log_stable_dist + log(1)
-	if(alpha < 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log((gamma(1+1/alpha)*(.5*scale_parameter*time_dummy)^(-1/alpha))/(2*pi))}
-	if(alpha == 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log(pi*scale_parameter/(time_dummy* log(scale_parameter*time_dummy)^2))}
+	if(alpha < 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log((gamma(1+1/alpha)*(generalized_D*time_dummy)^(-1/alpha))/(2*pi))}
+	if(alpha == 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log(2*pi*generalized_D /(time_dummy* log(scale_parameter*time_dummy)^2))}
 	if(alpha > 1){Asymptotic_approx_Data_plot_ALL[i,2] <-  log(scale_parameter*(alpha -1)*sin(pi/alpha)*(time_dummy)^(1/alpha -2))}
 
 	
