@@ -172,10 +172,6 @@ lm_eqn <- function(Coalescence_Data_plot_AL){
 
 p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1")) +   geom_point() + geom_smooth(data=Asymptotic_approx_Data_plot_ALL, aes(x = X1, y =X2, color = "asymptotic", se = FALSE), linetype="dashed")  + geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Distance 0")) #+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
 
-if(alpha == 1)
-{ p <- ggplot() + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1")) +   geom_point() + geom_smooth(data=Asymptotic_approx_Data_plot_ALL, aes(x = X1, y =X2, color = "Kernel, NOT asymptotic", se = FALSE), linetype="dashed")  + geom_point() + geom_point() + labs( x = "Log Time", y ="Log Dist of Coalescence Times") + ggtitle(paste("Alpha", alpha, "Distance 0")) #+ labs( x = "Time", y ="Log Dist of Coalescence Times") + geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X12, color = "init dist 11")) 
-
-}
 
 #geom_smooth(data=Coalescence_Data_plot_ALL, aes(x = X1, y =X2, color = "simulated rho = 1"), method = "lm", se=FALSE, color="black", formula = my.formula,linetype="dashed") +
 
