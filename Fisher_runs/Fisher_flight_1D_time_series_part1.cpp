@@ -158,7 +158,7 @@ if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we wan
 
 
 
-cout << ORIG_STD << endl;
+//cout << ORIG_STD << endl;
 signed_step_size += (scale_parameter/ORIG_STD)*jump_size_fisher;
 
 //ORIG_STD is the standard deviation of the fisher distribution.  We rescale so that scale_parameter is the standard deviation.

@@ -36,6 +36,9 @@ int main(int argc, char* argv[])
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   const double scale_parameter = atof(argv[5]);//*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
   // the scale parameter c is related to the generalized diffusion constant D as c =(4D*timestep)^(1/alpha)
+  
+double ORIG_STD = 2*sqrt(alpha*(4*alpha -2)/((2*alpha -2)*(2*alpha -2)*(2*alpha -4))); // This is for F -distribution when alpha > 2
+//ORIG_STD is the standard deviation of the fisher distribution.  We rescale so that scale_parameter is the standard deviation.
   const gsl_rng_type * T;
   T = gsl_rng_default;
   gsl_rng* r;
@@ -147,15 +150,18 @@ for(int trial =0; trial < num_trials; trial++)
 //double jump_size_log = lognorm_dist(generator);
 //double jump_size_fisher = fisher_dist(generator);
 double jump_size_levy = gsl_ran_levy(r,  scale_parameter, alpha);
+double jump_size_fisher = gsl_ran_fdist(r, 2*alpha, 2*alpha );
 //cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
 //if(abs(jump_size_cauchy) > cutoff){signed_step_size = signed_step_size + cauchy_param*jump_size_cauchy;  } 
 //if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
 //if(abs(jump_size_fisher) > cutoff){signed_step_size +=  fisher_param*jump_size_fisher;  }
+if(alpha <= 2)
+{signed_step_size +=  levy_param*jump_size_levy;}
+else{signed_step_size += (scale_parameter/ORIG_STD)*jump_size_fisher;}
 
-signed_step_size +=  levy_param*jump_size_levy;
- 
+
  if(abs(current_position) <= delta_function_width/2.0)  // use step function with finite width as replacement for delta function
  { inside_zone_new = true; }
 
