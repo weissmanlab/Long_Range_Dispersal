@@ -18,9 +18,11 @@ int main(int argc, char* argv[])
 //We declare and initialize relevant variables in this section
 /********************************/
 
+  
+  
   const int num_time_steps = atoi(argv[4]);
   const int num_mu_steps = 7;  // number of mu increments in Laplace time 
-  const int num_cdf_steps = 7;
+  const int num_cdf_steps = 14;
   const int num_trials = atoi(argv[3]);
   std::mt19937 generator(time(0));
   std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
@@ -209,7 +211,7 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
 for( int T = 0; T < num_cdf_steps; T++)
 {
-  if(pow(10,T) > time ){
+  if(exp(T) > time ){
   CDF_of_DCT_INDIVIDUAL_TRIAL[T] += Contribution_from_each_trial[trial]*timestep;
    List_of_single_trial_CDF[T][trial] = CDF_of_DCT_INDIVIDUAL_TRIAL[T];
    }
@@ -286,7 +288,7 @@ for (int time =0; time < num_time_steps; time++) {
 for (int time =0; time < num_time_steps; time++) {
    for(int T =0; T < num_cdf_steps; T++) 
    
-   if(pow(10, T) > time){
+   if(exp(T) > time){
    CDF_of_DCT[T] += dist_of_coalescent_times[time]*timestep; 
      }
 
@@ -670,11 +672,32 @@ fout55.open(stringfile999);
 for (int T =0; T < num_cdf_steps; T++) {
 
 
-fout55  << alpha <<  " " <<  rho_inverse  << " " << pow(10, T) << " " << initial_position << " " << CDF_of_DCT[T] << " " << lower_CI_CDF[T] <<  " " << upper_CI_CDF[T] << endl;
+fout55  << alpha <<  " " <<  rho_inverse  << " " << exp(T) << " " << initial_position << " " << CDF_of_DCT[T] << " " << lower_CI_CDF[T] <<  " " << upper_CI_CDF[T] << endl;
  // Here we output mean homozygosity as a function of mu and include error bars
 }
 fout55.close();
 
+
+
+char OUTPUTFILE222[50];
+  sprintf(OUTPUTFILE222, "Log_comp_CDF_of_coalescence_times");
+  std::stringstream file_name9999;
+         file_name9999 <<  OUTPUTFILE222 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
+         std::string stringfile9999;
+         file_name9999 >> stringfile9999; 
+
+  ofstream fout555;
+
+
+
+fout555.open(stringfile9999);
+for (int T =0; T < num_cdf_steps; T++) {
+
+
+fout555  << alpha <<  " " <<  rho_inverse  << " " << T << " " << initial_position << " " << log(1-CDF_of_DCT[T]) << " " << log(1-upper_CI_CDF[T]) <<  " " << log(1-lower_CI_CDF[T]) << endl;
+ // Here we output mean homozygosity as a function of mu and include error bars
+}
+fout555.close();
 
 
 
