@@ -36,6 +36,8 @@ int main(int argc, char* argv[])
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   const double scale_parameter = atof(argv[5]);//*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
   // the scale parameter c is related to the generalized diffusion constant D as c =(4D*timestep)^(1/alpha)
+  
+  double ORIG_STD = 2*sqrt(alpha*(4*alpha -2)/((2*alpha -2)*(2*alpha -2)*(2*alpha -4)));
   const gsl_rng_type * T;
   T = gsl_rng_default;
   gsl_rng* r;
@@ -154,9 +156,12 @@ if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we wan
 //if(abs(jump_size_log) > cutoff){signed_step_size = signed_step_size + log_param*jump_size_log;  } 
 //if(abs(jump_size_fisher) > cutoff){signed_step_size +=  fisher_param*jump_size_fisher;  }
 
-signed_step_size += (scale_parameter/10.73)*jump_size_fisher;
 
-//10.73 is the standard deviation of the fisher distribution with alpha set to 2.05.  We rescale to that scale_parameter is the standard deviation.
+
+cout << ORIG_STD << endl;
+signed_step_size += (scale_parameter/ORIG_STD)*jump_size_fisher;
+
+//ORIG_STD is the standard deviation of the fisher distribution.  We rescale so that scale_parameter is the standard deviation.
  
  if(abs(current_position) <= delta_function_width/2.0)  // use step function with finite width as replacement for delta function
  { inside_zone_new = true; }

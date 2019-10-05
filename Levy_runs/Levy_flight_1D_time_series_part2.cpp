@@ -183,11 +183,18 @@ for (int time =0; time < num_time_steps; time++) {
 if (timestep*double(time) >= entrance_time && timestep*double(time) < exit_time) //update exponent and add to dist_of_coalescent_times[time] when in coalescence zone
 {
 
-  Contribution_from_each_trialEXPONENT[trial] += delta_function_height*rho_inverse*timestep;
+  //Contribution_from_each_trial[trial] =  delta_function_height*rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial])
 
-  Contribution_from_each_trial[trial] =  delta_function_height*rho_inverse*exp(-Contribution_from_each_trialEXPONENT[trial]);
+
+  Contribution_from_each_trial[trial] =  exp(-Contribution_from_each_trialEXPONENT[trial])*(1- exp(-delta_function_height*rho_inverse*timestep));
  
-  dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+  // the (1- exp(-delta_function_height*rho_inverse*timestep) averages over the probability of coalescence for every time within the discrete timestep
+  //this ensures that the dist is normalized in time.  If we used the first order approx of delta_function_height*rho_inverse*timestep instead we'd run into discretization errors.
+
+ dist_of_coalescent_times[time] += Contribution_from_each_trial[trial]/num_trials;
+ 
+ Contribution_from_each_trialEXPONENT[trial] += delta_function_height*rho_inverse*timestep;
+ // for future times we account for all the time we spent sitting in the coalescence zone during this timestep
 
 for( int mu = 0; mu < num_mu_steps; mu++)
      {mean_homozygosity_INDIVIDUAL_TRIAL[mu] +=  Contribution_from_each_trial[trial]*exp(-pow(10, mu)*2*mu_step*time*timestep); // extra factor of 2 in exponent of Laplace transform is standard in pop gen
