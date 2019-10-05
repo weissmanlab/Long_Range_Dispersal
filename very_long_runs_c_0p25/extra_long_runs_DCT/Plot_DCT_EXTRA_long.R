@@ -6,7 +6,7 @@ library(gridExtra)
 library(Hmisc)
 library(dplyr)
 library(ggpmisc)
-Final_Time <-100000
+Final_Time <- 10000
 Coalescence_Data_dummy <-   read.table("ALL_EXTRA_LONG_runs_DCT.txt")
 Coalescence_Data_dummy <- head(Coalescence_Data_dummy, Final_Time)
 for(j in 1:9){for(ZZ in 0:0){
