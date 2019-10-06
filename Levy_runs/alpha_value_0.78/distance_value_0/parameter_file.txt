@@ -1,7 +1,7 @@
 alpha 0.78
 distance 0
-number of trials 1000
-number of time steps 1000
+number of trials 10000
+number of time steps 10000
 timestep size 1
 t_con_inverse 0
 scale_parameter 1
