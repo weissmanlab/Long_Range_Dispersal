@@ -679,25 +679,7 @@ fout55.close();
 
 
 
-char OUTPUTFILE222[50];
-  sprintf(OUTPUTFILE222, "Log_comp_CDF_of_coalescence_times");
-  std::stringstream file_name9999;
-         file_name9999 <<  OUTPUTFILE222 << "alpha_value_"<< alpha << "distance_value_" << setw(7) << setfill('0') << initial_position  << "rho_inverse_" << rho_inverse << ".txt" ;
-         std::string stringfile9999;
-         file_name9999 >> stringfile9999; 
 
-  ofstream fout555;
-
-
-
-fout555.open(stringfile9999);
-for (int T =0; T < num_cdf_steps; T++) {
-
-
-fout555  << alpha <<  " " <<  rho_inverse  << " " << T << " " << initial_position << " " << log(1-CDF_of_DCT[T]) << " " << log(1-upper_CI_CDF[T]) <<  " " << log(1-lower_CI_CDF[T]) << endl;
- // Here we output mean homozygosity as a function of mu and include error bars
-}
-fout555.close();
 
 
 
