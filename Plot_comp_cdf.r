@@ -9,9 +9,10 @@ library(ggpmisc)
 #Final_Time <- 10000
 #CDF_table <-data.frame(read.table("CDF_dist0_c10.txt"))
 #CDF_table <-data.frame(read.table("million_step_high_alpha_c_10_CDF.txt"))
-CDF_table <-data.frame(read.table("million_step_alpha_1_c_1_CDF.txt"))
-scale_parameter <- 1
-alpha <- 1
+CDF_table <-data.frame(read.table("million_step_high_alpha_c_5_CDF.txt"))
+#CDF_table <-data.frame(read.table("million_step_alpha_1_c_1_CDF.txt"))
+scale_parameter <- 5
+alpha <- 1.45
 rho <- 1
 #rho <- 100000
 rho_inverse <- 1/rho
