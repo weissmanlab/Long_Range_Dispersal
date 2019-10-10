@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   
   const int num_time_steps = atoi(argv[4]);
   const int num_mu_steps = 7;  // number of mu increments in Laplace time 
-  const int num_cdf_steps = 14;
+  const int num_cdf_steps = 15;
   const int num_trials = atoi(argv[3]);
   std::mt19937 generator(time(0));
   std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
