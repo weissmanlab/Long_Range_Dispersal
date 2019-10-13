@@ -159,7 +159,9 @@ double jump_size_fisher = gsl_ran_fdist(r, 2*alpha, 2*alpha );
 //if(abs(jump_size_fisher) > cutoff){signed_step_size +=  fisher_param*jump_size_fisher;  }
 if(alpha <= 2)
 {signed_step_size +=  levy_param*jump_size_levy;}
-else{signed_step_size += (scale_parameter/ORIG_STD)*jump_size_fisher;}
+if(alpha > 2){ // F distribution is one sided.  Make it two sided
+  if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
+  signed_step_size += (scale_parameter/ORIG_STD)*jump_size_fisher;}
 
 
  if(abs(current_position) <= delta_function_width/2.0)  // use step function with finite width as replacement for delta function
