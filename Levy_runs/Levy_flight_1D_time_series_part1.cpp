@@ -36,7 +36,8 @@ int main(int argc, char* argv[])
   const double alpha = atof(argv[1]);  // controls power law tail of jump kernel
   const double scale_parameter = atof(argv[5]);//*pow(timestep, 1.0/alpha); // sets scale of levy alpha stable.  Coalescence zone "delta function" is of width one.  In order to test analytical predictions we want c >> 1.
   // the scale parameter c is related to the generalized diffusion constant D as c =(4D*timestep)^(1/alpha)
-  
+  double jump_size_levy = 0;
+  double jump_size_fisher = 0;
 double ORIG_STD = 2*sqrt(alpha*(4*alpha -2)/((2*alpha -2)*(2*alpha -2)*(2*alpha -4))); // This is for F -distribution when alpha > 2
 //ORIG_STD is the standard deviation of the fisher distribution.  We rescale so that scale_parameter is the standard deviation.
   const gsl_rng_type * T;
@@ -149,8 +150,8 @@ for(int trial =0; trial < num_trials; trial++)
  //double jump_size_cauchy = cauchy_dist(generator);
 //double jump_size_log = lognorm_dist(generator);
 //double jump_size_fisher = fisher_dist(generator);
-double jump_size_levy = gsl_ran_levy(r,  scale_parameter, alpha);
-double jump_size_fisher = gsl_ran_fdist(r, 2*alpha, 2*alpha );
+if(alpha <= 2){ jump_size_levy = gsl_ran_levy(r,  scale_parameter, alpha);}
+if(alpha > 2){ jump_size_fisher = gsl_ran_fdist(r, 2*alpha, 2*alpha );}
 //cauchy already takes both negative and psotive values //if(generator() > generator()) {jump_size_cauchy = - jump_size_cauchy;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_log = - jump_size_log;} // we want both positive and negative jumps
 //if(generator() > generator()) {jump_size_fisher = - jump_size_fisher;} // we want both positive and negative jumps
