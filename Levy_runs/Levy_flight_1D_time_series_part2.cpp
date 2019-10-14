@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   
   const int num_time_steps = atoi(argv[4]);
   const int num_mu_steps = 7;  // number of mu increments in Laplace time 
-  const int num_cdf_steps = 15;
+  const int num_cdf_steps = 29;
   const int num_trials = atoi(argv[3]);
   std::mt19937 generator(time(0));
   std::uniform_real_distribution<double> uniform_dist(0.0, num_trials);
@@ -211,7 +211,7 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
 for( int T = 0; T < num_cdf_steps; T++)
 {
-  if(exp(T) > time ){
+  if(exp(T/2) > time ){
   CDF_of_DCT_INDIVIDUAL_TRIAL[T] += Contribution_from_each_trial[trial]*timestep;
    List_of_single_trial_CDF[T][trial] = CDF_of_DCT_INDIVIDUAL_TRIAL[T];
    }
@@ -672,7 +672,7 @@ fout55.open(stringfile999);
 for (int T =0; T < num_cdf_steps; T++) {
 
 
-fout55  << alpha <<  " " <<  rho_inverse  << " " << exp(T) << " " << initial_position << " " << CDF_of_DCT[T] << " " << lower_CI_CDF[T] <<  " " << upper_CI_CDF[T] << endl;
+fout55  << alpha <<  " " <<  rho_inverse  << " " << exp(T/2) << " " << initial_position << " " << CDF_of_DCT[T] << " " << lower_CI_CDF[T] <<  " " << upper_CI_CDF[T] << endl;
  // Here we output mean homozygosity as a function of mu and include error bars
 }
 fout55.close();
