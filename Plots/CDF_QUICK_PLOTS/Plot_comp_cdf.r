@@ -26,6 +26,7 @@ CDF_table <- CDF_table[-1, ]
 CDF_table <- CDF_table[-1, ]
 
 #print(Log_Comp_CDF_table[,1])
+#alpha <- 2.0
 
 D <- ((scale_parameter)^(alpha))/2
 improper_norm <- 1/(2*pi*rho*(1- alpha)*D + 1)
@@ -60,7 +61,9 @@ CDF_table[,5] <- log10(1 - CDF_table[,5] )
 CDF_table[,6] <- log10(1 - CDF_table[,6] )
 CDF_table[,7] <- log10(1 - CDF_table[,7] )
 
-fun.1 <- function(x)   (1/alpha -1)*x + log10((alpha)*rho*((2*D)^(1/alpha))*sin(pi/alpha)) #log((alpha -1)*rho*(2*D)^(1/alpha)*sin(pi/alpha)) + log(1/(1-1/alpha))  
+if( alpha < 2){fun.1 <- function(x)   (1/alpha -1)*x + log10((alpha)*rho*((2*D)^(1/alpha))*sin(pi/alpha))} #log((alpha -1)*rho*(2*D)^(1/alpha)*sin(pi/alpha)) + log(1/(1-1/alpha))  
+if( alpha >= 2){fun.1 <- function(x)   (1/alpha -1)*x + log10((alpha)*rho*((2*D)^(1/alpha))*sin(pi/alpha))}
+
 p <- ggplot(CDF_table, aes(V3, V5)) +
   geom_point() +  geom_pointrange(data=CDF_table, aes(x = V3, y =V5, ymin =V7, ymax =V6), pch  = 0) +
 stat_function(fun=fun.1) + labs( x = "Log Time", y ="Log Comp CDF") + ggtitle(paste("Alpha", alpha, "Distance 0"))
@@ -89,3 +92,7 @@ stat_function(fun=fun.1) + labs( x = "Log Time", y ="Log Comp CDF") + ggtitle(pa
   
   print(p)
 }
+
+
+
+
