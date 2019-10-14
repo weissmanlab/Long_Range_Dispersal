@@ -211,7 +211,7 @@ for( int mu = 0; mu < num_mu_steps; mu++)
 
 for( int T = 0; T < num_cdf_steps; T++)
 {
-  if(exp(T/2) > time ){
+  if(exp(double(T)/2.0) > time ){
   CDF_of_DCT_INDIVIDUAL_TRIAL[T] += Contribution_from_each_trial[trial]*timestep;
    List_of_single_trial_CDF[T][trial] = CDF_of_DCT_INDIVIDUAL_TRIAL[T];
    }
@@ -672,7 +672,7 @@ fout55.open(stringfile999);
 for (int T =0; T < num_cdf_steps; T++) {
 
 
-fout55  << alpha <<  " " <<  rho_inverse  << " " << exp(T/2) << " " << initial_position << " " << CDF_of_DCT[T] << " " << lower_CI_CDF[T] <<  " " << upper_CI_CDF[T] << endl;
+fout55  << alpha <<  " " <<  rho_inverse  << " " << exp(double(T)/2.0) << " " << initial_position << " " << CDF_of_DCT[T] << " " << lower_CI_CDF[T] <<  " " << upper_CI_CDF[T] << endl;
  // Here we output mean homozygosity as a function of mu and include error bars
 }
 fout55.close();
