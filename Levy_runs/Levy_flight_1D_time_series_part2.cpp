@@ -288,7 +288,7 @@ for (int time =0; time < num_time_steps; time++) {
 for (int time =0; time < num_time_steps; time++) {
    for(int T =0; T < num_cdf_steps; T++) 
    
-   if(exp(T) > time){
+   if(exp(double(T)/2.0) > time){
    CDF_of_DCT[T] += dist_of_coalescent_times[time]*timestep; 
      }
 
