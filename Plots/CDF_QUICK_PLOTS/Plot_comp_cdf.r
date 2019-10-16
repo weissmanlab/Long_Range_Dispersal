@@ -14,14 +14,16 @@ CDF_table <-data.frame(read.table("million_step_alpha_1_c_1_CDF.txt"))
 #CDF_table <-data.frame(read.table("10_6_runs_alpha_p75_CDF_of_coalescence_timesalpha_value_0.75distance_value_0000000rho_inverse_1e-05.txt"))
 #CDF_table <-data.frame(read.table("CDF_of_coalescence_timesalpha_value_0.5distance_value_0000000rho_inverse_1e-05.txt"))
 #CDF_table <-data.frame(read.table("CDF_of_coalescence_timesalpha_value_1distance_value_0000000rho_inverse_1000.txt"))
-scale_parameter <- 1
-alpha <- 1
+CDF_table <-data.frame(read.table("CDF_runs_low_alpha_dist0_c_250.txt"))
+
+scale_parameter <- 250
+alpha <- .75
 rho <- 1
 #rho <- .001
-#rho <- 100000
+#rho <- 10000
 rho_inverse <- 1/rho
 CDF_table <- subset(CDF_table, V1 == alpha)
-if(rho ==1){CDF_table <- subset(CDF_table, V2 == rho_inverse )}
+CDF_table <- subset(CDF_table, V2 == rho_inverse )
 if(rho_inverse ==.00001){CDF_table <- subset(CDF_table, V2 == "1e-05" )}
 #alpha <- 1.0
 #CDF_table <- CDF_table[-14, ]
