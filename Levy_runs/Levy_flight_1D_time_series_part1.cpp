@@ -111,7 +111,7 @@ ofstream fout_parameter_file;
     fout_parameter_file << "alpha " << alpha << endl;
     fout_parameter_file << "distance " << initial_position << endl;
     fout_parameter_file << "number of trials " << num_trials << endl;
-    fout_parameter_file << "number of time steps " << num_trials << endl;
+    fout_parameter_file << "number of time steps " << num_time_steps << endl;
     fout_parameter_file << "timestep size " << timestep << endl;
     fout_parameter_file << "t_con_inverse " << t_con_inverse << endl;
     fout_parameter_file << "scale_parameter " << scale_parameter << endl;
