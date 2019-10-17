@@ -16,13 +16,13 @@ library(ggpmisc)
 #CDF_table <-data.frame(read.table("CDF_of_coalescence_timesalpha_value_0.75distance_value_0000000rho_inverse_1e-05.txt"))
 #CDF_table <-data.frame(read.table("CDF_of_coalescence_timesalpha_value_1distance_value_0000000rho_inverse_1000.txt"))
 #CDF_table <-data.frame(read.table("CDF_runs_alpha_1_dist0_c_250.txt"))
-#CDF_table <-data.frame(read.table("CDF_runs_high_alpha_c_5.txt"))
-CDF_table <-data.frame(read.table("CDF_runs_alpha_1_c_1.txt"))
+CDF_table <-data.frame(read.table("CDF_runs_high_alpha_c_5.txt"))
+#CDF_table <-data.frame(read.table("CDF_runs_alpha_1_c_1.txt"))
 #CDF_table <-data.frame(read.table("CDF_runs_low_alpha_c1.txt"))
-scale_parameter <- 1
-alpha <- 1
-#rho <- 100000
-rho <- 10
+scale_parameter <- 5
+alpha <- 2.05
+rho <- 1
+#rho <- 10
 #rho <- 1
 rho_inverse <- 1/rho
 CDF_table <- subset(CDF_table, V1 == alpha)
@@ -69,7 +69,7 @@ CDF_table[,7] <- log10(CDF_table[,7] )
 fun.1 <- function(x) (1- 1/alpha)*x  
 p <- ggplot(CDF_table, aes(V3, V5)) +
   geom_point() +  geom_pointrange(data=CDF_table, aes(x = V3, y =V5, ymin =V7, ymax =V6), pch  = 0) +
-stat_function(fun=fun.1) + labs( x = "Log Time", y ="Log Comp CDF") + ggtitle(paste("Alpha", alpha, "Distance 0")) 
+stat_function(fun=fun.1) + labs( x = "Log Scaled Time", y ="Log Scaled Comp CDF") + ggtitle(paste("Alpha", alpha, "Distance 0")) + scale_x_continuous(limits = c(5, 6.7)) + scale_y_continuous(limits = c(-7, -5)) 
   
   print(p)
 }
@@ -143,7 +143,7 @@ fun.1 <- function(x)      - log10(log(10)*x)
 #log(2*pi*rho*D/( 2*pi*rho*D+ log(1 +D*2*exp(x))))
 p <- ggplot(CDF_table, aes(V3, V5)) +
   geom_point() +  geom_pointrange(data=CDF_table, aes(x = V3, y =V5, ymin =V7, ymax =V6), pch  = 0) +
-stat_function(fun=fun.1) + labs( x = "Log Time", y ="Log Comp CDF") + ggtitle(paste("Alpha", alpha, "Distance 0"))
+stat_function(fun=fun.1) + labs( x = "Log Scaled Time", y ="Log Scaled Comp CDF") + ggtitle(paste("Alpha", alpha, "Distance 0"))
  
   
   print(p)
