@@ -29,18 +29,22 @@ exponential_model_linear_input  <- function(x, xbar, rho, mu){exp(-x/abs(xbar))/
 power_law_model_log_input  <- function(logx, xbar, rho, mu, alpha) {(gamma(abs(alpha) + 1)/(2*pi))*sin(pi*abs(alpha)/2)*((exp(logx)/abs(xbar))^(-abs(alpha) -1))/abs(xbar*rho*mu)}
 exponential_model_log_input  <- function(logx, xbar, rho, mu){exp(-exp(logx)/abs(xbar))/(4*abs(rho*mu*xbar) + 1)}
 relative_log_likelihood_log_spread_avg <- data.frame(num_point_spreads, num_sigma)
+relative_log_likelihood_log_spread_SD <- data.frame(num_point_spreads, num_sigma)
+relative_log_likelihood_log_spread_upper_CI <- data.frame(num_point_spreads, num_sigma)
+relative_log_likelihood_log_spread_lower_CI <- data.frame(num_point_spreads, num_sigma)
 for(i in 1:num_sigma){ for(j in 1:num_point_spreads){relative_log_likelihood_log_spread_avg[j, i] <- 0 }}
 # we want to see how the difference in log likelihood between the models varies with the noise in the data and the spread between a fixed number of points.
 Num_trials = 100 # We can average over many different random samples to get a sense of expected discrepancy betweeen model fits
 
-
-
+someData <- rep(0, num_point_spreads*num_sigma*Num_trials);  
+relative_log_likelihood_log_spread_ARRAY <- array(someData, c(num_point_spreads, num_sigma, Num_trials));  
 
 
 
 for(Q in 1: Num_trials){
     relative_log_likelihood_log_spread <- data.frame(num_point_spreads, num_sigma)
      for( g in 1:num_point_spreads){ 
+       
        relative_log_likelihood_log_spread[g, 1] <- starting_point*exp((g)*.5*log(10))  # this column contains the end point
        power_func_w_noise_log_spread <- data.frame( num_distance_points, num_sigma)
        for(i in 2:num_sigma){ for(j in 1:num_distance_points){
@@ -62,15 +66,23 @@ for(Q in 1: Num_trials){
      exponential_AIC_log_spread <-  2*4 -  2*exponential_log_likelihood_log_spread  
      
      relative_log_likelihood_log_spread[g, i] <-  (exponential_AIC_log_spread - power_AIC_log_spread)/2 
-     
+      relative_log_likelihood_log_spread_ARRAY[g, i, Q] <- relative_log_likelihood_log_spread[g, i]
       }}
 
     relative_log_likelihood_log_spread_avg <- relative_log_likelihood_log_spread_avg +  relative_log_likelihood_log_spread/Num_trials
-     
+    
 
 }
 
+for( g in 1:num_point_spreads){ for(i in 2:num_sigma){ 
+relative_log_likelihood_log_spread_SD[g, 1] <-  starting_point*exp((g)*.5*log(10))
+relative_log_likelihood_log_spread_SD[g, i] <- sd(relative_log_likelihood_log_spread_ARRAY[g, i, ])
+relative_log_likelihood_log_spread_upper_CI[g, 1] <-  starting_point*exp((g)*.5*log(10))
+relative_log_likelihood_log_spread_lower_CI[g, 1] <-  starting_point*exp((g)*.5*log(10))
+relative_log_likelihood_log_spread_upper_CI[g, i] <- relative_log_likelihood_log_spread_avg[g, i] +  relative_log_likelihood_log_spread_SD[g, i]
+relative_log_likelihood_log_spread_lower_CI[g, i] <- relative_log_likelihood_log_spread_avg[g, i] -  relative_log_likelihood_log_spread_SD[g, i]
 
+  }}
 
 names(relative_log_likelihood_log_spread_avg)[1] <- "endpoint"
 names(relative_log_likelihood_log_spread_avg)[2] <- "sigma .01"
@@ -80,19 +92,43 @@ names(relative_log_likelihood_log_spread_avg)[5] <- "sigma .25"
 names(relative_log_likelihood_log_spread_avg)[6] <- "sigma .5"
 names(relative_log_likelihood_log_spread_avg)[7] <- "sigma 1"
 names(relative_log_likelihood_log_spread_avg)[8] <- "sigma 2.5"
-#df <- data.frame(time = 1:10,
-#                 a = cumsum(rnorm(10)),
-#                 b = cumsum(rnorm(10)),
-#                 c = cumsum(rnorm(10)))
-#df <- melt(df ,  id.vars = 'time', variable.name = 'series')
 
-df <- melt(relative_log_likelihood_log_spread_avg,  id.vars = 'endpoint', variable.name = 'series')
-print(df)
-ggplot(df, aes(endpoint,value)) + geom_line(aes(colour = series))
+
+names(relative_log_likelihood_log_spread_upper_CI)[1] <- "endpoint"
+names(relative_log_likelihood_log_spread_upper_CI)[2] <- "sigma .01"
+names(relative_log_likelihood_log_spread_upper_CI)[3] <- "sigma .05"
+names(relative_log_likelihood_log_spread_upper_CI)[4] <- "sigma .1"
+names(relative_log_likelihood_log_spread_upper_CI)[5] <- "sigma .25"
+names(relative_log_likelihood_log_spread_upper_CI)[6] <- "sigma .5"
+names(relative_log_likelihood_log_spread_upper_CI)[7] <- "sigma 1"
+names(relative_log_likelihood_log_spread_upper_CI)[8] <- "sigma 2.5"
+
+
+names(relative_log_likelihood_log_spread_lower_CI)[1] <- "endpoint"
+names(relative_log_likelihood_log_spread_lower_CI)[2] <- "sigma .01"
+names(relative_log_likelihood_log_spread_lower_CI)[3] <- "sigma .05"
+names(relative_log_likelihood_log_spread_lower_CI)[4] <- "sigma .1"
+names(relative_log_likelihood_log_spread_lower_CI)[5] <- "sigma .25"
+names(relative_log_likelihood_log_spread_lower_CI)[6] <- "sigma .5"
+names(relative_log_likelihood_log_spread_lower_CI)[7] <- "sigma 1"
+names(relative_log_likelihood_log_spread_lower_CI)[8] <- "sigma 2.5"
+
+
+df <- melt(relative_log_likelihood_log_spread_avg,  id.vars = 'endpoint', variable.name = 'sd_log')
+
+#df2 <- melt(relative_log_likelihood_log_spread_upper_CI,  id.vars = 'endpoint', variable.name = 'sd_log')
+#df3 <- melt(relative_log_likelihood_log_spread_lower_CI,  id.vars = 'endpoint', variable.name = 'sd_log')
+print(relative_log_likelihood_log_spread_avg)
+print(relative_log_likelihood_log_spread_upper_CI)
+print(relative_log_likelihood_log_spread_lower_CI)
+#print(df)
+#print(df2)
+
+string_title <- paste("1D Rel. Log Likelihood, starting point =", starting_point, ", sample size =", num_sigma, "points (log spacing)")
+
+ggplot(df, aes(endpoint,value)) + geom_line(aes(colour = sd_log)) + geom_point(aes(colour = sd_log)) + labs(x = "Endpoint of Range (linear distance)") + labs(y = "Relative Log Likelihood") + labs(title = string_title)
 #print(colnames(relative_log_likelihood_log_spread_avg))
 #extend array to more values of noise and distance, add linear spread array in addition to log spread array
 #plot(as.vector(relative_log_likelihood_log_spread_avg[, 6]))
 #add error bars for noise in the log likelihod for a given sample?
-
-
    
