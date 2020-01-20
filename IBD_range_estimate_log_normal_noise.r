@@ -30,8 +30,6 @@ power_law_model_log_input  <- function(logx, xbar, rho, mu, alpha) {(gamma(abs(a
 exponential_model_log_input  <- function(logx, xbar, rho, mu){exp(-exp(logx)/abs(xbar))/(4*abs(rho*mu*xbar) + 1)}
 relative_log_likelihood_log_spread_avg <- data.frame(num_point_spreads, num_sigma)
 relative_log_likelihood_log_spread_SD <- data.frame(num_point_spreads, num_sigma)
-relative_log_likelihood_log_spread_upper_CI <- data.frame(num_point_spreads, num_sigma)
-relative_log_likelihood_log_spread_lower_CI <- data.frame(num_point_spreads, num_sigma)
 for(i in 1:num_sigma){ for(j in 1:num_point_spreads){relative_log_likelihood_log_spread_avg[j, i] <- 0 }}
 # we want to see how the difference in log likelihood between the models varies with the noise in the data and the spread between a fixed number of points.
 Num_trials = 100 # We can average over many different random samples to get a sense of expected discrepancy betweeen model fits
@@ -77,10 +75,6 @@ for(Q in 1: Num_trials){
 for( g in 1:num_point_spreads){ for(i in 2:num_sigma){ 
 relative_log_likelihood_log_spread_SD[g, 1] <-  starting_point*exp((g)*.5*log(10))
 relative_log_likelihood_log_spread_SD[g, i] <- sd(relative_log_likelihood_log_spread_ARRAY[g, i, ])
-relative_log_likelihood_log_spread_upper_CI[g, 1] <-  starting_point*exp((g)*.5*log(10))
-relative_log_likelihood_log_spread_lower_CI[g, 1] <-  starting_point*exp((g)*.5*log(10))
-relative_log_likelihood_log_spread_upper_CI[g, i] <- relative_log_likelihood_log_spread_avg[g, i] +  relative_log_likelihood_log_spread_SD[g, i]
-relative_log_likelihood_log_spread_lower_CI[g, i] <- relative_log_likelihood_log_spread_avg[g, i] -  relative_log_likelihood_log_spread_SD[g, i]
 
   }}
 
@@ -105,24 +99,6 @@ names(relative_log_likelihood_log_spread_SD)[8] <- "sigma_2.5_error"
 
 
 
-names(relative_log_likelihood_log_spread_upper_CI)[1] <- "endpoint"
-names(relative_log_likelihood_log_spread_upper_CI)[2] <- "sigma .01"
-names(relative_log_likelihood_log_spread_upper_CI)[3] <- "sigma .05"
-names(relative_log_likelihood_log_spread_upper_CI)[4] <- "sigma .1"
-names(relative_log_likelihood_log_spread_upper_CI)[5] <- "sigma .25"
-names(relative_log_likelihood_log_spread_upper_CI)[6] <- "sigma .5"
-names(relative_log_likelihood_log_spread_upper_CI)[7] <- "sigma 1"
-names(relative_log_likelihood_log_spread_upper_CI)[8] <- "sigma 2.5"
-
-
-names(relative_log_likelihood_log_spread_lower_CI)[1] <- "endpoint"
-names(relative_log_likelihood_log_spread_lower_CI)[2] <- "sigma .01"
-names(relative_log_likelihood_log_spread_lower_CI)[3] <- "sigma .05"
-names(relative_log_likelihood_log_spread_lower_CI)[4] <- "sigma .1"
-names(relative_log_likelihood_log_spread_lower_CI)[5] <- "sigma .25"
-names(relative_log_likelihood_log_spread_lower_CI)[6] <- "sigma .5"
-names(relative_log_likelihood_log_spread_lower_CI)[7] <- "sigma 1"
-names(relative_log_likelihood_log_spread_lower_CI)[8] <- "sigma 2.5"
 
 relative_log_likelihood_log_spread_Total <- merge(relative_log_likelihood_log_spread_avg, relative_log_likelihood_log_spread_SD[, -1 ])
 
@@ -143,7 +119,7 @@ string_title <- paste("Rel. Log Likelihood, starting point =", starting_point, "
 p <- ggplot() + geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.01, colour = "sigma .01")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.01, colour = "sigma .01"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.01 - sigma_.01_error, ymax=sigma_.01 + sigma_.01_error, colour = "sigma .01"), width=.1)+
  #geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.05, colour = "sigma .05")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.05, colour = "sigma .05"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.05 - sigma_.05_error, ymax=sigma_.05 + sigma_.05_error, colour = "sigma .05"), width=.1) +
 geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.1, colour = "sigma .1")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.1, colour = "sigma .1"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.1 - sigma_.1_error, ymax=sigma_.1 + sigma_.1_error, colour = "sigma .1"), width=.1) +
-#geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.25, colour = "sigma .25")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.25, colour = "sigma .25"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.25 - sigma_.25_error, ymax=sigma_.25 + sigma_.25_error, colour = "sigma .25"), width=.1) +
+geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.25, colour = "sigma .25")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.25, colour = "sigma .25"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.25 - sigma_.25_error, ymax=sigma_.25 + sigma_.25_error, colour = "sigma .25"), width=.1) +
 #geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.5, colour = "sigma .5")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.5, colour = "sigma .5"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.5 - sigma_.5_error, ymax=sigma_.5 + sigma_.5_error, colour = "sigma .5"), width=.1) + 
 geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_1, colour = "sigma 1")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_1, colour = "sigma 1"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_1 - sigma_1_error, ymax=sigma_1 + sigma_1_error, colour = "sigma 1"), width=.1) +
  labs(x = "Endpoint of Range (linear distance)") + labs(y = "Relative Log Likelihood") + labs(title = string_title)
