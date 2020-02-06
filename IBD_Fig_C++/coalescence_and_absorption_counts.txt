@@ -1,27 +1,27 @@
-alpha 0.5 scale parameter1 distance 1 total trials: 50 number that coalesced: 5 number that hit absorbing boundary 45
-alpha 1.5 scale parameter1 distance 1 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter1 distance 1 total trials: 50 number that coalesced: 50 number that hit absorbing boundary 0
-alpha 0.5 scale parameter10 distance 1 total trials: 50 number that coalesced: 3 number that hit absorbing boundary 47
-alpha 1.5 scale parameter10 distance 1 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter10 distance 1 total trials: 50 number that coalesced: 47 number that hit absorbing boundary 0
-alpha 0.5 scale parameter100 distance 1 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
-alpha 1.5 scale parameter100 distance 1 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter100 distance 1 total trials: 50 number that coalesced: 27 number that hit absorbing boundary 14
-alpha 0.5 scale parameter1 distance 100 total trials: 50 number that coalesced: 2 number that hit absorbing boundary 48
-alpha 1.5 scale parameter1 distance 100 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter1 distance 100 total trials: 50 number that coalesced: 42 number that hit absorbing boundary 0
-alpha 0.5 scale parameter10 distance 100 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
-alpha 1.5 scale parameter10 distance 100 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter10 distance 100 total trials: 50 number that coalesced: 44 number that hit absorbing boundary 0
-alpha 0.5 scale parameter100 distance 100 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
-alpha 1.5 scale parameter100 distance 100 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter100 distance 100 total trials: 50 number that coalesced: 27 number that hit absorbing boundary 12
-alpha 0.5 scale parameter1 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
-alpha 1.5 scale parameter1 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter1 distance 10000 total trials: 50 number that coalesced: 3 number that hit absorbing boundary 0
-alpha 0.5 scale parameter10 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
-alpha 1.5 scale parameter10 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter10 distance 10000 total trials: 50 number that coalesced: 23 number that hit absorbing boundary 0
-alpha 0.5 scale parameter100 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
-alpha 1.5 scale parameter100 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
-alpha 2 scale parameter100 distance 10000 total trials: 50 number that coalesced: 26 number that hit absorbing boundary 13
+alpha 0.5 scale parameter 1 distance 1 total trials: 50 number that coalesced: 5 number that hit absorbing boundary 45
+alpha 1.5 scale parameter 1 distance 1 total trials: 50 number that coalesced: 50 number that hit absorbing boundary 0
+alpha 2 scale parameter 1 distance 1 total trials: 50 number that coalesced: 50 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 10 distance 1 total trials: 50 number that coalesced: 3 number that hit absorbing boundary 47
+alpha 1.5 scale parameter 10 distance 1 total trials: 50 number that coalesced: 47 number that hit absorbing boundary 0
+alpha 2 scale parameter 10 distance 1 total trials: 50 number that coalesced: 50 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 100 distance 1 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
+alpha 1.5 scale parameter 100 distance 1 total trials: 50 number that coalesced: 27 number that hit absorbing boundary 14
+alpha 2 scale parameter 100 distance 1 total trials: 50 number that coalesced: 46 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 1 distance 100 total trials: 50 number that coalesced: 2 number that hit absorbing boundary 48
+alpha 1.5 scale parameter 1 distance 100 total trials: 50 number that coalesced: 42 number that hit absorbing boundary 0
+alpha 2 scale parameter 1 distance 100 total trials: 50 number that coalesced: 39 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 10 distance 100 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
+alpha 1.5 scale parameter 10 distance 100 total trials: 50 number that coalesced: 44 number that hit absorbing boundary 0
+alpha 2 scale parameter 10 distance 100 total trials: 50 number that coalesced: 50 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 100 distance 100 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
+alpha 1.5 scale parameter 100 distance 100 total trials: 50 number that coalesced: 27 number that hit absorbing boundary 12
+alpha 2 scale parameter 100 distance 100 total trials: 50 number that coalesced: 48 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 1 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
+alpha 1.5 scale parameter 1 distance 10000 total trials: 50 number that coalesced: 3 number that hit absorbing boundary 0
+alpha 2 scale parameter 1 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 10 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
+alpha 1.5 scale parameter 10 distance 10000 total trials: 50 number that coalesced: 23 number that hit absorbing boundary 0
+alpha 2 scale parameter 10 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 0
+alpha 0.5 scale parameter 100 distance 10000 total trials: 50 number that coalesced: 0 number that hit absorbing boundary 50
+alpha 1.5 scale parameter 100 distance 10000 total trials: 50 number that coalesced: 26 number that hit absorbing boundary 13
+alpha 2 scale parameter 100 distance 10000 total trials: 50 number that coalesced: 34 number that hit absorbing boundary 0

@@ -31,6 +31,19 @@ int main(int argc, char* argv[])
 fout_coal.open(stringfile_coal_and_absorption_counts);
 
 
+
+ char OUTPUTFILE_coal_points[50];
+  sprintf(OUTPUTFILE_coal_points, "coalescence_points");
+  std::stringstream file_name_coal_points;
+         //file_name_sparse <<  OUTPUTFILE_sparse  << "alpha" << alpha << "distance" << initial_position << "scale_parameter" << scale_parameter << ".txt" ;
+         file_name_coal_points <<  OUTPUTFILE_coal_points  << ".txt" ;
+         std::string stringfile_coal_points;
+         file_name_coal_points >> stringfile_coal_points; 
+    ofstream fout_coal_points;
+fout_coal_points.open(stringfile_coal_points);
+fout_coal_points << "alpha distance scale_parameter trial time pos_1 pos_2" << endl;
+
+
  char OUTPUTFILE_sparse[50];
   sprintf(OUTPUTFILE_sparse, "sparse_pair_df");
   std::stringstream file_name_sparse;
@@ -197,8 +210,8 @@ if(current_position_raw_1 > 0){fout_sparse << alpha << " " << initial_position <
 
 
     if(alpha == .5){absorb_count_array_alpha_p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 1.5){absorb_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 2) {absorb_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 1.5){absorb_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 2) {absorb_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
 
 }
 
@@ -210,8 +223,8 @@ if(abs(current_position_raw_2) > absorbing_wall_position and abs(current_positio
 if(current_position_raw_2 > 0){fout_sparse << alpha << " " << initial_position << " " << scale_parameter << " " << trial << " " << time << " " << current_position_raw_1 << " " << absorbing_wall_position << endl;}
   
   if(alpha == .5){absorb_count_array_alpha_p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 1.5){absorb_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 2) {absorb_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 1.5){absorb_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 2) {absorb_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
 
 
 
@@ -230,8 +243,8 @@ if(current_position_raw_2 > 0 and current_position_raw_1 > 0){fout_sparse << alp
 
 
      if(alpha == .5){absorb_count_array_alpha_p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 1.5){absorb_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 2) {absorb_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 1.5){absorb_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 2) {absorb_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
 
 }
 
@@ -244,10 +257,10 @@ if(current_position_raw_2 > 0 and current_position_raw_1 > 0){fout_sparse << alp
  { inside_zone_new = true; 
     coal_check = true;
  fout_sparse << alpha << " " << initial_position << " " << scale_parameter << " " << trial << " " << time << " " << current_position_raw_1 << " " << current_position_raw_1 << endl;
-
+ fout_coal_points << alpha << " " << initial_position << " " << scale_parameter << " " << trial << " " << time << " " << current_position_raw_1 << " " << current_position_raw_1 << endl;
   if(alpha == .5){coal_count_array_alpha_p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 1.5){coal_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
-  if(alpha == 2) {coal_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 1.5){coal_count_array_alpha_1p5[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
+  if(alpha == 2) {coal_count_array_alpha_2[SCALE_PARAMETER_LOOP_VAR][INITIAL_SEPARATION_LOOP_VAR] += 1;}
 
  }
 
@@ -306,6 +319,7 @@ if(100000 < time  && time %10000 == 0){fout_sparse << alpha << " " << initial_po
 }}}
 fout_sparse.close();
 fout_coal.close();
+fout_coal_points.close(); 
   return 0;
 
 }
