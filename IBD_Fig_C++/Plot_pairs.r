@@ -4,9 +4,9 @@ library(reshape2)
 
 absorbing_boundary <- 999999
 
-ALPHA <- 1.5
+ALPHA <- .5
 SCALE_PARAMETER <- 10
-
+extra_scale <- .1 #1/SCALE_PARAMETER
 trial_cutoff <- 50
 dist_1_num_of_trials_coalesced_or_absorbed <- 0
 dist_100_num_of_trials_coalesced_or_absorbed <- 0
@@ -21,8 +21,8 @@ df$trial <- df$trial +1  # shift from c convention of starting from zero to r co
 df$time <- df$time +1 # shift starting generation from zero to one for log time axis
 df$time <- log10(df$time)
 
-df$pos_1 <- asinh(df$pos_1)
-df$pos_2 <- asinh(df$pos_2)
+df$pos_1 <- asinh(df$pos_1*extra_scale)
+df$pos_2 <- asinh(df$pos_2*extra_scale)
 
 #print(df_coal_points$trial)
 #if(length(df_coal_points$trial) > 0){
@@ -30,8 +30,8 @@ df_coal_points$trial <- df_coal_points$trial +1  # shift from c convention of st
 df_coal_points$time <- df_coal_points$time +1 # shift starting generation from zero to one for log time axis
 df_coal_points$time <- log10(df_coal_points$time)
 
-df_coal_points$pos_1 <- asinh(df_coal_points$pos_1)
-df_coal_points$pos_2 <- asinh(df_coal_points$pos_2)
+df_coal_points$pos_1 <- asinh(df_coal_points$pos_1*extra_scale)
+df_coal_points$pos_2 <- asinh(df_coal_points$pos_2*extra_scale)
 
 
 
@@ -71,11 +71,19 @@ total_time <- max(df$time)
 
 df_coal_points_distance_1 <- subset(df_coal_points, distance == 1)
 
- df_distance_100 <- subset(df, distance == 100)
+ df_distance_10 <- subset(df, distance == 10)
+  
+ df_coal_points_distance_10 <- subset(df_coal_points, distance == 10)
+ 
+ 
+df_distance_100 <- subset(df, distance == 100)
   
  df_coal_points_distance_100 <- subset(df_coal_points, distance == 100)
- 
- 
+
+ df_distance_1000 <- subset(df, distance == 1000)
+  
+ df_coal_points_distance_1000 <- subset(df_coal_points, distance == 1000)
+
  
  df_distance_10k <- subset(df, distance == 10000)
 
@@ -84,8 +92,8 @@ df_coal_points_distance_10k <- subset(df_coal_points, distance == 10000)
 
 
 
-df_boundary = data.frame(right_boundary=rep(asinh(absorbing_boundary), length(df$time)), left_boundary=rep(asinh(-1*absorbing_boundary), length(df$time)), time = df$time )
-
+df_boundary = data.frame(right_boundary=rep(asinh(absorbing_boundary*extra_scale), length(df$time)), left_boundary=rep(asinh(-1*absorbing_boundary*extra_scale), length(df$time)), time = df$time )
+#df_boundary = data.frame(right_boundary=rep(absorbing_boundary, length(df$time)), left_boundary=rep(-1*absorbing_boundary, length(df$time)), time = df$time )
 #print(head(df_boundary ))
 
 # if(ALPHA >= 2) {
@@ -96,12 +104,14 @@ df_boundary = data.frame(right_boundary=rep(asinh(absorbing_boundary), length(df
 #}
 
 #if(ALPHA < 2 ) {
-p <-  ggplot() + geom_path(data= df_distance_1, aes(pos_1, time, group = trial, alpha=I(.2)), color="RED", show.legend = FALSE) + geom_path(data= df_distance_1, aes(pos_2, time, group = trial, alpha=I(.2)), color="RED", show.legend = FALSE) +
-geom_point(data= df_coal_points_distance_1, aes(pos_1, time), color="BLUE", show.legend = FALSE, shape = 4) +
- #geom_path(data= df_distance_100, aes(pos_1, time, group = trial), color="BLUE", show.legend = FALSE) + geom_path(data= df_distance_100, aes(pos_2, time, group = trial), color="BLUE", show.legend = FALSE) + 
-geom_path(data= df_distance_10k, aes(pos_1, time, group = trial, alpha=I(0.2)), color="BLACK", show.legend = FALSE) + geom_path(data= df_distance_10k, aes(pos_2, time, group = trial, alpha=I(0.2)), color="BLACK", show.legend = FALSE) + 
-geom_point(data= df_coal_points_distance_10k, aes(pos_1, time), color="GREEN", show.legend = FALSE, shape = 4) +
-theme_bw() + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank())  + geom_path(data=df_boundary, aes(right_boundary, time), color='grey', show.legend = FALSE) + geom_path(data=df_boundary, aes(left_boundary, time), color = 'grey', show.legend = FALSE) + scale_y_continuous(limits = c(0, y_max))  + xlab("Arcsinh(x)") + ylab("Log(time)")  #+ ylab("Time") #+ ylab("Log(time)") 
+p <-  ggplot() + geom_path(data= df_distance_10, aes(pos_1, time, group = trial, alpha=I(.2)), color="RED", show.legend = FALSE) + geom_path(data= df_distance_10, aes(pos_2, time, group = trial, alpha=I(.2)), color="RED", show.legend = FALSE) +
+
+ geom_path(data= df_distance_1000, aes(pos_1, time, group = trial), color="ORANGE", show.legend = FALSE) + geom_path(data= df_distance_1000, aes(pos_2, time, group = trial), color="ORANGE", show.legend = FALSE) + 
+ geom_point(data= df_coal_points_distance_10, aes(pos_1, time), color="BLACK", show.legend = FALSE, shape = 4) +
+ geom_point(data= df_coal_points_distance_1000, aes(pos_1, time), color="BLUE", show.legend = FALSE, shape = 4) +
+#geom_path(data= df_distance_10k, aes(pos_1, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + geom_path(data= df_distance_10k, aes(pos_2, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + 
+#geom_point(data= df_coal_points_distance_10k, aes(pos_1, time), color="BLUE", show.legend = FALSE, shape = 4) +
+theme_bw() + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank())  + geom_path(data=df_boundary, aes(right_boundary, time), color='grey', show.legend = FALSE) + geom_path(data=df_boundary, aes(left_boundary, time), color = 'grey', show.legend = FALSE) + scale_y_continuous(limits = c(0, total_time))  + xlab("Arcsinh(x/10)") + ylab("Log(time)")  #+ ylab("Time") #+ ylab("Log(time)") 
 
 #}
 
