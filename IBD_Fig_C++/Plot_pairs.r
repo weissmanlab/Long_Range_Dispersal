@@ -4,10 +4,15 @@ library(reshape2)
 
 absorbing_boundary <- 999999
 
-mutation_rate <- .01
-ALPHA <- .5
-SCALE_PARAMETER <- .005
-#SCALE_PARAMETER <- 10
+
+ALPHA <- 1.5
+
+if(ALPHA == .5){SCALE_PARAMETER <-  .005
+	mutation_rate <- .01 # KEEP MUTATION AT ONE FOR DISTANCE RESCALED BY SCALE PARAMETER
+	}
+if(ALPHA != .5){SCALE_PARAMETER <- 10 
+	
+	mutation_rate <- .01 }
 extra_scale <- 1/SCALE_PARAMETER #1/SCALE_PARAMETER
 trial_cutoff <- 50
 dist_1_num_of_trials_coalesced_or_absorbed <- 0
@@ -21,9 +26,9 @@ df_coal_points <- data.frame(dummy_df_coal_points)
 
 df$trial <- df$trial +1  # shift from c convention of starting from zero to r convention of starting from 1
 df$time <- df$time +1 # shift starting generation from zero to one for log time axis
-df$time <- mutation_rate*(df$time)
-df$time <- df$time +1
-df$time <- log10(df$time)
+#df$time <- mutation_rate*(df$time)
+#df$time <- df$time +1
+#df$time <- log10(df$time)
 
 
 df$pos_1 <- asinh(df$pos_1*extra_scale*(mutation_rate)^(1/ALPHA))
@@ -33,9 +38,9 @@ df$pos_2 <- asinh(df$pos_2*extra_scale*(mutation_rate)^(1/ALPHA))
 #if(length(df_coal_points$trial) > 0){
 df_coal_points$trial <- df_coal_points$trial +1  # shift from c convention of starting from zero to r convention of starting from 1
 df_coal_points$time <- df_coal_points$time +1 # shift starting generation from zero to one for log time axis
-df_coal_points$time <- mutation_rate*(df_coal_points$time)
-df_coal_points$time <- df_coal_points$time +1
-df_coal_points$time <- log10(df_coal_points$time)
+#df_coal_points$time <- mutation_rate*(df_coal_points$time)
+#df_coal_points$time <- df_coal_points$time +1
+#df_coal_points$time <- log10(df_coal_points$time)
 
 df_coal_points$pos_1 <- asinh(df_coal_points$pos_1*extra_scale*(mutation_rate)^(1/ALPHA))
 df_coal_points$pos_2 <- asinh(df_coal_points$pos_2*extra_scale*(mutation_rate)^(1/ALPHA))
@@ -110,17 +115,52 @@ df_boundary = data.frame(right_boundary=rep(asinh(absorbing_boundary*extra_scale
 # theme_bw() + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank())   +  xlab("Arcsinh(x)") + ylab("Log(time)") 
 #}
 
-#if(ALPHA < 2 ) {
-p <-  ggplot() + geom_path(data= df_distance_10, aes(pos_1, time, group = trial, alpha=I(.2)), color="RED", show.legend = FALSE) + geom_path(data= df_distance_10, aes(pos_2, time, group = trial, alpha=I(.2)), color="RED", show.legend = FALSE) +
+if(ALPHA == 2  ) {
+p <-  ggplot() + geom_path(data= df_distance_10, aes(pos_1, time, group = trial, alpha=I(.2)), color="BLUE", show.legend = FALSE) + geom_path(data= df_distance_10, aes(pos_2, time, group = trial, alpha=I(.2)), color="BLUE", show.legend = FALSE) +
 
- geom_path(data= df_distance_1000, aes(pos_1, time, group = trial), color="ORANGE", show.legend = FALSE) + geom_path(data= df_distance_1000, aes(pos_2, time, group = trial), color="ORANGE", show.legend = FALSE) + 
- geom_point(data= df_coal_points_distance_10, aes(pos_1, time), color="BLACK", show.legend = FALSE, shape = 4, size = 2) +
- geom_point(data= df_coal_points_distance_1000, aes(pos_1, time), color="blue1", show.legend = FALSE, shape = 4, size = 2) +
+ geom_path(data= df_distance_1000, aes(pos_1, time, group = trial), color="GREEN", show.legend = FALSE) + geom_path(data= df_distance_1000, aes(pos_2, time, group = trial), color="GREEN", show.legend = FALSE) + 
+ geom_point(data= df_coal_points_distance_10, aes(pos_1, time), color="RED", show.legend = FALSE, shape = 4, size = 2) +
+ geom_point(data= df_coal_points_distance_1000, aes(pos_1, time), color="Black", show.legend = FALSE, shape = 4, size = 2) +
 #geom_path(data= df_distance_10k, aes(pos_1, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + geom_path(data= df_distance_10k, aes(pos_2, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + 
 #geom_point(data= df_coal_points_distance_10k, aes(pos_1, time), color="BLUE", show.legend = FALSE, shape = 4) +
-theme_bw() + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank())  + geom_path(data=df_boundary, aes(right_boundary, time), color='grey', show.legend = FALSE) + geom_path(data=df_boundary, aes(left_boundary, time), color = 'grey', show.legend = FALSE) + scale_y_continuous(limits = c(0, total_time))  + xlab("Arcsinh(x/xbar)") + ylab("Log(mutation*time)") + geom_hline(yintercept= 1, linetype="dashed", color = "black", size=.5)
+theme_bw() + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank())  + geom_path(data=df_boundary, aes(right_boundary, time), color='grey', show.legend = FALSE) + geom_path(data=df_boundary, aes(left_boundary, time), color = 'grey', show.legend = FALSE) + scale_y_continuous(limits = c(0, total_time))  + xlab("Arcsinh(x/xbar)") + ylab("Time") + geom_hline(yintercept= 10/mutation_rate, linetype="dashed", color = "black", size=.5) + geom_hline(yintercept= 1/mutation_rate, linetype="dashed", color = "black", size=.5) + scale_y_log10() + annotate(geom="text", x=9, y=80, label="1/Mu", color="Black") + annotate(geom="text", x=9, y=800, label="10/Mu", color="Black")
+
  #+ ylab("Time") #+ ylab("Log(time)") 
 
-#}
+}
 
-print(p)
+if(ALPHA == 1.5  ) {
+p <-  ggplot() + geom_path(data= df_distance_10, aes(pos_1, time, group = trial, alpha=I(.2)), color="BLUE", show.legend = FALSE) + geom_path(data= df_distance_10, aes(pos_2, time, group = trial, alpha=I(.2)), color="BLUE", show.legend = FALSE) +
+
+ geom_path(data= df_distance_1000, aes(pos_1, time, group = trial), color="GREEN", show.legend = FALSE) + geom_path(data= df_distance_1000, aes(pos_2, time, group = trial), color="GREEN", show.legend = FALSE) + 
+ geom_point(data= df_coal_points_distance_10, aes(pos_1, time), color="RED", show.legend = FALSE, shape = 4, size = 2) +
+ geom_point(data= df_coal_points_distance_1000, aes(pos_1, time), color="Black", show.legend = FALSE, shape = 4, size = 2) +
+#geom_path(data= df_distance_10k, aes(pos_1, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + geom_path(data= df_distance_10k, aes(pos_2, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + 
+#geom_point(data= df_coal_points_distance_10k, aes(pos_1, time), color="BLUE", show.legend = FALSE, shape = 4) +
+theme_bw() + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank())  + geom_path(data=df_boundary, aes(right_boundary, time), color='grey', show.legend = FALSE) + geom_path(data=df_boundary, aes(left_boundary, time), color = 'grey', show.legend = FALSE) + scale_y_continuous(limits = c(0, total_time))  + xlab("Arcsinh(x/xbar)") + ylab("Time") + geom_hline(yintercept= 10/mutation_rate, linetype="dashed", color = "black", size=.5) + geom_hline(yintercept= 1/mutation_rate, linetype="dashed", color = "black", size=.5) + scale_y_log10() + annotate(geom="text", x=9, y=80, label="1/Mu", color="Black") + annotate(geom="text", x=9, y=800, label="10/Mu", color="Black")
+
+ #+ ylab("Time") #+ ylab("Log(time)") 
+
+}
+
+
+
+if(ALPHA == .5  ) {
+p <-  ggplot() + geom_path(data= df_distance_10, aes(pos_1, time, group = trial, alpha=I(.2)), color="BLUE", show.legend = FALSE) + geom_path(data= df_distance_10, aes(pos_2, time, group = trial, alpha=I(.2)), color="BLUE", show.legend = FALSE) +
+
+ geom_path(data= df_distance_1000, aes(pos_1, time, group = trial), color="GREEN", show.legend = FALSE) + geom_path(data= df_distance_1000, aes(pos_2, time, group = trial), color="GREEN", show.legend = FALSE) + 
+ geom_point(data= df_coal_points_distance_10, aes(pos_1, time), color="RED", show.legend = FALSE, shape = 4, size = 2) +
+ geom_point(data= df_coal_points_distance_1000, aes(pos_1, time), color="Black", show.legend = FALSE, shape = 4, size = 2) +
+#geom_path(data= df_distance_10k, aes(pos_1, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + geom_path(data= df_distance_10k, aes(pos_2, time, group = trial, alpha=I(0.2)), color="ORANGE", show.legend = FALSE) + 
+#geom_point(data= df_coal_points_distance_10k, aes(pos_1, time), color="BLUE", show.legend = FALSE, shape = 4) +
+theme_bw() + theme( panel.grid.major = element_blank(), panel.grid.minor = element_blank())  + geom_path(data=df_boundary, aes(right_boundary, time), color='grey', show.legend = FALSE) + geom_path(data=df_boundary, aes(left_boundary, time), color = 'grey', show.legend = FALSE) + scale_y_continuous(limits = c(0, total_time))  + xlab("Arcsinh(x/xbar)") + ylab("Time")  + geom_hline(yintercept= 10/mutation_rate, linetype="dashed", color = "black", size=.5) + geom_hline(yintercept= 1/mutation_rate, linetype="dashed", color = "black", size=.5)  + scale_y_log10() + annotate(geom="text", x=9, y=80, label="1/Mu", color="Black") + annotate(geom="text", x=9, y=800, label="10/Mu", color="Black")
+
+ #+ ylab("Time") #+ ylab("Log(time)") 
+
+}
+
+
+#+ geom_hline(yintercept= 20/mutation_rate, linetype="dashed", color = "black", size=.5) + geom_hline(yintercept= 2/mutation_rate, linetype="dashed", color = "black", size=.5)
+
+ggsave("Rplots.jpg")
+#print(p)

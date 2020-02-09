@@ -85,8 +85,8 @@ double alpha;
  if(ALPHA_LOOP_VAR == 1){alpha = 1.5;}
   if(ALPHA_LOOP_VAR == 2){alpha = 2.0;}
 double scale_parameter;
-if(SCALE_PARAMETER_LOOP_VAR == 0){scale_parameter = .005;}
- if(SCALE_PARAMETER_LOOP_VAR == 1){scale_parameter = .01;}
+if(SCALE_PARAMETER_LOOP_VAR == 0){scale_parameter = .0005;}
+ if(SCALE_PARAMETER_LOOP_VAR == 1){scale_parameter = .005;}
   if(SCALE_PARAMETER_LOOP_VAR == 2){scale_parameter = 10;}
 double initial_position;
   if(INITIAL_SEPARATION_LOOP_VAR == 0){initial_position = 10;}
