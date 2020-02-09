@@ -5,7 +5,7 @@ library(reshape2)
 absorbing_boundary <- 999999
 
 
-ALPHA <- 1.5
+ALPHA <- 2
 
 if(ALPHA == .5){SCALE_PARAMETER <-  .005
 	mutation_rate <- .01 # KEEP MUTATION AT ONE FOR DISTANCE RESCALED BY SCALE PARAMETER
