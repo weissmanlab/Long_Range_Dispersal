@@ -1,4 +1,4 @@
-Note that simulations were run on mac and linux machines only.  The recursive directory creation relies on unix commands which likely won't work on Windows.  Look in the directory Code_without_recursive_directories for a version of the code doesn't create or change directories.  This should work on any OS.
+Note that simulations were run on mac and linux machines only.  The recursive directory creation in this code relies on unix commands which likely won't work on Windows.  Look in the directory Code_without_recursive_directories for a version of the code doesn't create or change directories.  This should work on any OS.
 
 
 
