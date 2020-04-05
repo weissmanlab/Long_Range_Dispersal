@@ -6,5 +6,5 @@ This repository contains simulation codes and data for isolation by distance of 
 
 - Cartoon figures used to illustrate the model can be found in the cartoons directory
 
-- IBD_model_distinction_range_estimate contains an R code we used to make rough estimates of the range of spatial scales necessary to distinguish long range dispersal from short range dispersal
+- IBD_range_estimates contains an R code we used to make rough estimates of the range of spatial scales necessary to distinguish long range dispersal from short range dispersal
 
