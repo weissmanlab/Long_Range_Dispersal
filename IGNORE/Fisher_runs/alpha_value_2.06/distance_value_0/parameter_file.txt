@@ -1,7 +1,0 @@
-alpha 2.06
-distance 0
-number of trials 10
-number of time steps 10
-timestep size 1
-t_con_inverse 0
-scale_parameter 20

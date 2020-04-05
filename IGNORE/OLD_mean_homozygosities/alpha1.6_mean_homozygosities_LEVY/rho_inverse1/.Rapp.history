@@ -1,7 +1,0 @@
-source("/Users/tylersmith/mean_homozygosities/alpha1.6_mean_homozygosities_LEVY/rho_inverse1/log_plot_mean_homozyg_distance_ERROR_bars.R")
-source("/Users/tylersmith/mean_homozygosities/alpha1.6_mean_homozygosities_LEVY/rho_inverse1/log_plot_mean_homozyg_distance_ERROR_bars_mu0.1.R")
-source("/Users/tylersmith/mean_homozygosities/alpha1.6_mean_homozygosities_LEVY/rho_inverse1/log_plot_mean_homozyg_distance_ERROR_bars_mu0.01.R")
-source("/Users/tylersmith/mean_homozygosities/alpha1.6_mean_homozygosities_LEVY/rho_inverse1/log_plot_mean_homozyg_distance_ERROR_bars_mu0.001.R")
-source("/Users/tylersmith/mean_homozygosities/alpha1.6_mean_homozygosities_LEVY/rho_inverse1/log_plot_mean_homozyg_distance_ERROR_bars_mu0.1.R")
-source("/Users/tylersmith/mean_homozygosities/alpha1.6_mean_homozygosities_LEVY/rho_inverse1/log_plot_mean_homozyg_distance_ERROR_bars_mu0.01.R")
-source("/Users/tylersmith/mean_homozygosities/alpha1.6_mean_homozygosities_LEVY/rho_inverse1/log_plot_mean_homozyg_distance_ERROR_bars_mu0.01.R")
