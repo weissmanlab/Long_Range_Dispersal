@@ -1,10 +1,11 @@
 
+Note that simulations were run on mac and linux machines only.  The recursive directory creation relies on unix commands which likely won't work on Windows.  Look in the directory Code_without_recursive_directories for a version of the code doesn't create or change directories.  This should work on any OS.
+
 compilation example:
 
 
-g++  Levy_flight_1D_time_series_part1.cpp -o3 -lgsl -o part1
-g++ Levy_flight_1D_time_series_part2.cpp -o3 -o part2
-
+g++  Levy_flight_1D_coalescence_part1_change_dir.cpp -o3 -lgsl -o part1
+g++ Levy_flight_1D_coalescence_part2_change_dir.cpp -o3 -o part2
 
 
 Execution examples:
