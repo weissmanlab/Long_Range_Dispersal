@@ -81,7 +81,7 @@ print_histogram_of_bootstrapped_mean_homozygosities(alpha, scale_parameter, init
 print_Sorted_List_of_bootstrapped_mean_homozygosities(alpha, scale_parameter, initial_position, num_trials, num_time_steps, rho_inverse, Sorted_List_of_bootstrapped_mean_homozygosities);
 print_list_of_single_trial_homozygosities(alpha, scale_parameter, initial_position, num_trials, num_time_steps, rho_inverse, List_of_single_trial_homozygosities);
 
-chdir("..");
-chdir("..");  // return to original directory
+//chdir("..");
+//chdir("..");  // return to original directory
 return 0;
 }

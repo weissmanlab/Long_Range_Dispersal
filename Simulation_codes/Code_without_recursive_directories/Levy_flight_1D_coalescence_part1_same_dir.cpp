@@ -56,7 +56,7 @@ for(int trial =0; trial < num_trials; trial++)
     current_position = fmod(initial_position, periodic_boundary);  //reset initial separation for each trial
 
    }
-chdir("..");
-chdir("..");  // return to original directory
+//chdir("..");
+//chdir("..");  // return to original directory
   return 0;
 }
