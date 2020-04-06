@@ -16,8 +16,8 @@ using namespace std;
 std::string input_filename;
 const double delta_function_width = 1.0; 
 const double delta_function_height = 1.0/delta_function_width; 
-const int num_mu_steps = 7;  // number of mu increments 
-const int num_cdf_steps = 29;
+const int num_mu_steps = 4;  // number of mu increments 
+const int num_cdf_steps = 29;  // make this small if you only care about mean homozygosity and isolation by distance
 const double timestep = 1.0; //const double timestep = .1; // for deterministic drift term and dist of coalescence.  for finite t_con this must be the same in part1 and part2
 const double mu_step = .001;  
 const int num_histogram_bins = 2000;
