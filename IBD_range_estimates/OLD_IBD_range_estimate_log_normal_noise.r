@@ -1,11 +1,15 @@
-library(ggplot2)
+library(tidyverse)
 require(reshape2)
 
-# To generate noisy data, we use a 1D power law model with alpha = 1.5, xbar = 1, mu = .1, and rho = 10
+# To generate noisy data, we use a 1D power law model 
+#with alpha = 1.5, xbar = 1, mu = .1, and rho = 10
+
 powerfunction <- function(x){(gamma(2.5)/(2*pi))*sin(pi*1.5/2)*x^-2.5}
 expfunction <- function(x){exp(-x)/(4*10*.1*1 + 1)}
+
 num_sigma <- 8 # number of distinct noise strengths considered.  We want to see how differences in model log likelihoods vary with the amount of noise
 index_to_sigma <- data.frame(1, num_sigma)   # relates integer index to noise in subset of data
+Num_trials = 10
 num_distance_points <- 3 # number of distinct spatial points in sample
 num_point_spreads <- 4   # points are spread evenly across log distances.  
 # each increment increases the point spread by half an order of magnitude, 10^.5
@@ -31,7 +35,7 @@ relative_log_likelihood_log_spread_avg <- data.frame(num_point_spreads, num_sigm
 relative_log_likelihood_log_spread_SD <- data.frame(num_point_spreads, num_sigma)
 for(i in 1:num_sigma){ for(j in 1:num_point_spreads){relative_log_likelihood_log_spread_avg[j, i] <- 0 }}
 # we want to see how the difference in log likelihood between the models varies with the noise in the data and the spread between a fixed number of points.
-Num_trials = 100 # We can average over many different random samples to get a sense of expected discrepancy betweeen model fits
+ # We can average over many different random samples to get a sense of expected discrepancy betweeen model fits
 
 someData <- rep(0, num_point_spreads*num_sigma*Num_trials);  
 relative_log_likelihood_log_spread_ARRAY <- array(someData, c(num_point_spreads, num_sigma, Num_trials));  
@@ -105,7 +109,6 @@ df <- melt(relative_log_likelihood_log_spread_avg,  id.vars = 'endpoint', variab
 
 string_title <- paste("Rel. Log Likelihood, starting point =", starting_point, ", sample size =", num_distance_points, "points (log spacing)")
 
-p <- ggplot() + geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.01, colour = "sigma .01")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.01, colour = "sigma .01"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.01 - sigma_.01_error, ymax=sigma_.01 + sigma_.01_error, colour = "sigma .01"), width=.1)+geom_point(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.1, colour = "sigma .1")) + geom_line(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, y = sigma_.1, colour = "sigma .1"))  +  geom_errorbar(data=relative_log_likelihood_log_spread_Total, aes(x = endpoint, ymin=sigma_.1 - sigma_.1_error, ymax=sigma_.1 + sigma_.1_error, colour = "sigma .1"), width=.1) + labs(x = "Endpoint of Range (linear distance)") + labs(y = "Relative Log Likelihood") + labs(title = string_title)
-
+p <- ggplot() + geom_line(data=df, aes(x = endpoint, y = value, color = sd_log)) 
 print(p)
 
