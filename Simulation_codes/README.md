@@ -5,9 +5,9 @@ Note that simulations were run on mac and linux machines only.  The recursive di
 - compilation examples:
 
 
-	g++  Levy_flight_1D_coalescence_part1_change_dir.cpp -o3 -lgsl -o part1
+	g++  Levy_flight_1D_coalescence_part1.cpp -o3 -lgsl -o part1
  
-	g++ Levy_flight_1D_coalescence_part2_change_dir.cpp -o3 -o part2
+	g++ Levy_flight_1D_coalescence_part2.cpp -o3 -o part2
 
 
 - Execution examples:
