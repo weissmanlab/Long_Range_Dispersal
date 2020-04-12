@@ -12,7 +12,7 @@ exponential_model  <- function(x, xbar, rhomu){exp(-x/abs(xbar))/(4*abs(rhomu*xb
 # We want see how the likeilhood ratio of the two models varies with the amound of noise and the size of the spatial range considered
 
 num_ending_distances <- 4   # number of different range sizes
-num_sigma <- 5. #number of different noise sizes
+num_sigma <- 4 #number of different noise sizes
 total_length <- num_sigma*num_ending_distances #total number of rows of dataframe
 starting_distances <- rep(1, total_length) # create vector with one starting distance, x = 1
 ending_distances <- c(2*rep(1,num_sigma), 10*rep(1,num_sigma), 20*rep(1,num_sigma), 40*rep(1,num_sigma)) # create vector with all ending distances
@@ -34,6 +34,7 @@ for(i in 1:total_length){  # find likelihood of models for each row in LLR_df
   MLE_power_avg <- 0
   MLE_exp_avg <- 0
   num_rand_trials <- 500
+  Trials_df <- tibble(MLE_power = 0*c(1:num_rand_trials), MLE_exp= 0*c(1:num_rand_trials), LLR= 0*c(1:num_rand_trials))
   for(Q in 1:num_rand_trials){  # Average over many trials of noisy data
   simulated_data <- rlnorm(num_dist_points, meanlog = log(means), sdlog = sigma_val) # We generate random data, power law model + noise
   
@@ -43,15 +44,17 @@ for(i in 1:total_length){  # find likelihood of models for each row in LLR_df
   neg_exponential_LL_func <- function(par) #  Log likeihood for exponential model on noisy data
    {-1*sum(dlnorm(simulated_data, meanlog =log(exponential_model(dist_vec, par[1], par[2])), sdlog = abs(par[3]), log = TRUE))}
   
-  MLE_power <- -1*optim(c(1, 1, 1.5, 1), neg_power_LL_func)$value # maximum likelihood estimate for power law model on data from this trial
-  MLE_exp <- -1*optim(c(5, 1, 1), neg_exponential_LL_func)$value # maximum likelihood estimate for exponential model on data from this trial
-  MLE_power_avg <- MLE_power_avg + MLE_power/num_rand_trials # average likelihood estimate of power law model for many trials of noisy data
-  MLE_exp_avg <- MLE_exp_avg + MLE_exp/num_rand_trials  # average likelihood estimate of exponential model for many trials of noisy data
+  Trials_df$MLE_power[Q] <- -1*optim(c(1, 1, 1.5, 1), neg_power_LL_func)$value # maximum likelihood estimate for power law model on data from this trial
+  Trials_df$MLE_exp[Q] <- -1*optim(c(5, 1, 1), neg_exponential_LL_func)$value # maximum likelihood estimate for exponential model on data from this trial
+  Trials_df$LLR[Q] <- Trials_df$MLE_power[Q] - Trials_df$MLE_exp[Q] 
   }
   
-  Log_of_Likelihood_ratio <- MLE_power_avg - MLE_exp_avg  #difference of log likeihoods for the two models
-  LLR_df$LLR_avg[i] <- Log_of_Likelihood_ratio  # We have log of likelihood ratio averaged over many noisy data sets for each choice of noise size and range size
+  LLR_df$LLR_avg[i] <- mean(Trials_df$LLR)  # We have log of likelihood ratio averaged over many noisy data sets for each choice of noise size and range size
+  LLR_df$LLR_low[i] <- mean(Trials_df$LLR) - sd(Trials_df$LLR)
+  LLR_df$LLR_high[i] <- mean(Trials_df$LLR) + sd(Trials_df$LLR)
   }
 LLR_df <- mutate(LLR_df, sigma = as.factor(sigma))
-ggplot(data = LLR_df) + geom_line(aes(x = ending_distance, y = LLR_avg, color = sigma)) + labs(x= "Size of Spatial Range", y = "Log of Likelihood Ratio for IBD Models" )
+ggplot(data = LLR_df) + geom_pointrange(aes(x = ending_distance, y = LLR_avg, ymin = LLR_low, ymax = LLR_high, color = sigma))  +
+  geom_line(aes(x = ending_distance, y = LLR_avg,  color = sigma)) +
+  labs(x= "Size of Spatial Range", y = "Log of Likelihood Ratio for IBD Models" ) +facet_wrap(~sigma)
 
