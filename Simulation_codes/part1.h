@@ -23,7 +23,7 @@ double signed_step_size; // used to increment random walk below
 
 double return_rescaled_SD(double alpha, double scale_parameter)
 {  double ORIG_SD  = 2*sqrt(alpha*(4*alpha -2)/((2*alpha -2)*(2*alpha -2)*(2*alpha -4)));
-   return   (scale_parameter/ORIG_SD);
+   return   sqrt(2)*(scale_parameter/ORIG_SD);
 //ORIG_STD is the standard deviation of the original F-distribution. 
 
 // We rescale so that scale_parameter is the standard deviation of the distribution we draw from. 
