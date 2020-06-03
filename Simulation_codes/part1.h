@@ -22,7 +22,7 @@ double delta_function_width = 1.0; //width of coalescence zone
 double signed_step_size; // used to increment random walk below
 
 double return_rescaled_SD(double alpha, double scale_parameter)
-{  double ORIG_SD  = 2*sqrt(alpha*(4*alpha -2)/((2*alpha -2)*(2*alpha -2)*(2*alpha -4)) + (alpha*alpha)/(2*alpha -2) );
+{  double ORIG_SD  = 2*sqrt(alpha*(4*alpha -2)/((2*alpha -2)*(2*alpha -2)*(2*alpha -4)) + (alpha*alpha)/((2*alpha -2)*(2*alpha -2)) );
    return   sqrt(2)*(scale_parameter/ORIG_SD);
 //ORIG_STD is the standard deviation of the original F-distribution. 
 
