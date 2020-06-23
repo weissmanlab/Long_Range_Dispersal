@@ -60,7 +60,7 @@ for(int trial =0; trial < num_trials; trial++)
          }
 
            if (time_value >= exit_time){fin_entrance_and_exit_times >> entrance_time >> exit_time;} // read in new entrance and exit times
-
+                   //note that you can't coalesce at time zero.  You have to jump before you can coalesce.
        }
 
      fin_entrance_and_exit_times.close();
