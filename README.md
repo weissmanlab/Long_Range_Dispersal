@@ -6,5 +6,5 @@ This repository contains simulation codes and data for isolation by distance of 
 
 - Images used for figures in the paper can be found in data_and_plots/images
 
-- IBD_range_estimates contains an R code we used to make rough estimates of the range of spatial scales necessary to distinguish long range dispersal from short range dispersal
+- IBD_range_estimates contains an R code we used to make rough estimates of the range of spatial scales necessary to distinguish heavy-tailed dispersal from thin-tailed dispersal
 
